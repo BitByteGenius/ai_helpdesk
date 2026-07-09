@@ -1,5 +1,15 @@
 import mongoose from "mongoose";
 import Ticket from "../models/ticket.model.js";
+import {
+  assignTicketService,
+  findTicketService,
+  updateTicketStatusService,
+} from "../services/assign.ticket.service.js";
+
+
+import { createNotification } from "../services/notification.service.js";
+import { createAudit } from "../services/audit.service.js";
+
 
 
 
@@ -27,6 +37,34 @@ export const createTicket = async (req, res) => {
       priority,
       createdBy: req.user.userId,
     });
+
+    // Notify all admins
+const admins = await User.find({
+  role: "admin",
+  isDeleted: false,
+});
+
+for (const admin of admins) {
+  await createNotification({
+    user: admin._id,
+    title: "New Ticket",
+    message: `${req.user.name} created a new ticket.`,
+    type: "ticket",
+    referenceId: ticket._id,
+    referenceModel: "Ticket",
+  });
+}
+
+await createAudit({
+  user: req.user.id,
+  action: "CREATE",
+  entity: "TICKET",
+  entityId: ticket._id,
+  description: "Ticket created",
+  newData: ticket,
+  ipAddress: req.ip,
+  userAgent: req.headers["user-agent"],
+});
 
     const populatedTicket = await Ticket.findById(ticket._id)
       .populate("createdBy", "name email profileImage");
@@ -255,12 +293,28 @@ export const deleteTicket = async (req, res) => {
       isDeleted: false,
     });
 
+  
+
     if (!ticket) {
       return res.status(404).json({
         success: false,
         message: "Ticket not found",
       });
     }
+
+     ticket.isDeleted = true;
+ticket.deletedAt = new Date();
+
+await ticket.save();
+
+      await createNotification({
+  user: ticket.createdBy,
+  title: "Ticket Deleted",
+  message: `Your ticket "${ticket.title}" has been deleted.`,
+  type: "ticket",
+  referenceId: ticket._id,
+  referenceModel: "Ticket",
+});
 
     // User can only delete own ticket while Open
     if (req.user.role === "user") {
@@ -342,6 +396,31 @@ export const assignTicket = async (req, res) => {
     }
 
     const updatedTicket = await assignTicketService(ticket, assignedTo);
+   // Used for Notification
+    await createNotification({
+  user: assignedTo,
+  title: "Ticket Assigned",
+  message: `Ticket "${updatedTicket.title}" has been assigned to you.`,
+  type: "assignment",
+  referenceId: updatedTicket._id,
+  referenceModel: "Ticket",
+});
+
+await createAudit({
+  user: req.user.id,
+  action: "ASSIGN",
+  entity: "TICKET",
+  entityId: ticket._id,
+  description: `Assigned ticket to ${assignedUser.name}`,
+  oldData: {
+    assignedTo: oldAssignedUser,
+  },
+  newData: {
+    assignedTo: assignedUser._id,
+  },
+  ipAddress: req.ip,
+  userAgent: req.headers["user-agent"],
+});
 
     return res.status(200).json({
       success: true,
@@ -377,6 +456,15 @@ export const updateTicketStatus = async (req, res) => {
       ticket,
       status
     );
+
+    await createNotification({
+  user: updatedTicket.createdBy,
+  title: "Ticket Status Updated",
+  message: `Your ticket "${updatedTicket.title}" is now ${updatedTicket.status}.`,
+  type: "status",
+  referenceId: updatedTicket._id,
+  referenceModel: "Ticket",
+});
 
     return res.status(200).json({
       success: true,

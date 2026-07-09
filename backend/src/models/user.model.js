@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import bcrypt from "bcryptjs";
 
 const userSchema = new mongoose.Schema(
   {
@@ -44,6 +45,11 @@ const userSchema = new mongoose.Schema(
       default: "email",
     },
 
+    isVerified: {
+  type: Boolean,
+  default: false,
+},
+
     gender: {
       type: String,
       enum: ["male", "female", "other"],
@@ -84,6 +90,10 @@ lastLogin: {
   },
   { timestamps: true }
 );
+
+userSchema.methods.comparePassword = async function (password) {
+  return await bcrypt.compare(password, this.password);
+};
 
 const User = mongoose.model("User", userSchema);
 

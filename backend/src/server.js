@@ -1,6 +1,13 @@
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import app from "./app.js";
+import http from "http";
+
+import { initializeSocket } from "../socket/socket.js";
+
+const server = http.createServer(app);
+initializeSocket(server);
+
 
 dotenv.config();
 
@@ -11,6 +18,6 @@ mongoose.connect(process.env.MONGO_URI)
 
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+server.listen(PORT, () => {
+  console.log(`Server running on ${PORT}`);
 });

@@ -1,4 +1,5 @@
 import User from "../models/user.model.js";
+import { createAudit } from "../services/audit.service.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 
@@ -95,6 +96,22 @@ export const authCreateController = async (req, res) => {
 
     const token = generateToken(user);
 
+    
+    await createAudit({
+  user: user._id,
+  action: "REGISTER",
+  entity: "AUTH",
+  entityId: user._id,
+  description: "New user registered",
+  newData: {
+    name: user.name,
+    email: user.email,
+    role: user.role,
+  },
+  ipAddress: req.ip,
+  userAgent: req.headers["user-agent"],
+});
+
     return res.status(201).json({
       success: true,
       user: safeUser(user),
@@ -148,6 +165,14 @@ export const authLoginController = async (req, res) => {
     }
 
     const token = generateToken(user);
+    await createAudit({
+  user: user._id,
+  action: "LOGIN",
+  entity: "AUTH",
+  description: `${user.name} logged into the system`,
+  ipAddress: req.ip,
+  userAgent: req.headers["user-agent"],
+});
 
     return res.status(200).json({
       success: true,

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/controllers/dashboard_controller.dart';
+import 'package:frontend/layouts/admin_layout.dart';
 import 'package:frontend/models/darshboard_model.dart';
-import 'package:frontend/screens/admin/widget/dashboard_sidebar.dart';
 import 'package:frontend/screens/admin/widget/stat_card.dart';
 import 'package:get/get.dart';
 
@@ -11,39 +11,9 @@ class AdminDashboard extends GetView<DashboardController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        title: const Text(
-          "Admin Dashboard",
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        centerTitle: false,
-        automaticallyImplyLeading: false,
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.notifications_none),
-          ),
-          const SizedBox(width: 8),
-          const CircleAvatar(
-            child: Icon(Icons.person),
-          ),
-          const SizedBox(width: 16),
-        ],
-      ),
-      drawer: LayoutBuilder(
-        builder: (context, constraints) {
-          return constraints.maxWidth < 1200
-              ? Drawer(
-                  child: DashboardSidebar(
-                    compact: false,
-                  ),
-                )
-              : const SizedBox.shrink();
-        },
-      ),
-      body: LayoutBuilder(
+    return AdminLayout(
+      title: 'Admin Dashboard',
+      child: LayoutBuilder(
         builder: (context, constraints) {
           final isDesktop = constraints.maxWidth >= 1200;
           final horizontalPadding = constraints.maxWidth >= 1200 ? 28.0 : 16.0;
@@ -182,19 +152,6 @@ class AdminDashboard extends GetView<DashboardController> {
               ),
             );
           });
-
-          if (isDesktop) {
-            return Row(
-              children: [
-                SizedBox(
-                  width: 280,
-                  child: DashboardSidebar(),
-                ),
-                Expanded(child: content),
-              ],
-            );
-          }
-
           return content;
         },
       ),
