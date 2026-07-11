@@ -20,7 +20,16 @@ import {
  */
 export const createTicket = async (req, res) => {
   try {
-    const { title, description, category, priority } = req.body;
+    const {
+  title,
+  description,
+  category,
+  priority,
+  summary,
+  suggestedReply,
+  duplicateTicket,
+  attachments = [],
+} = req.body;
 
     if (!title || !description) {
       return res.status(400).json({
@@ -30,12 +39,25 @@ export const createTicket = async (req, res) => {
     }
 
     const ticket = await Ticket.create({
-      title: title.trim(),
-      description: description.trim(),
-      category: category || "Other",
-      priority: priority || "Medium",
-      createdBy: req.user.userId,
-    });
+  title: title.trim(),
+  description: description.trim(),
+
+  category: category || "Other",
+  priority: priority || "Medium",
+
+  createdBy: req.user.userId,
+
+  aiSummary: summary || "",
+  aiSuggestedReply: suggestedReply || "",
+
+  duplicateTicket:
+      typeof duplicateTicket === "string" &&
+      mongoose.Types.ObjectId.isValid(duplicateTicket)
+          ? duplicateTicket
+          : null,
+
+  attachments,
+});
 
     // Notify all admins
     if (req.user.role === "user") {

@@ -1,3 +1,4 @@
+import 'package:frontend/models/attachment_model.dart';
 import 'package:frontend/models/user_model.dart';
 
 /// Ticket model — references the canonical UserModel from user_model.dart.
@@ -18,9 +19,9 @@ class TicketModel {
   final String aiSummary;
   final String suggestedReply;
 
-  final bool duplicateTicket;
+  final String? duplicateTicket;
 
-  final List<String> attachments;
+  final List<AttachmentModel> attachments;
 
   final DateTime createdAt;
   final DateTime updatedAt;
@@ -78,35 +79,45 @@ class TicketModel {
     }
 
     return TicketModel(
-      id: json["_id"]?.toString() ?? "",
-      title: json["title"] ?? "",
-      description: json["description"] ?? "",
-      category: json["category"] ?? "Other",
-      priority: json["priority"] ?? "Medium",
-      status: json["status"] ?? "Open",
-      createdBy: createdBy,
-      assignedTo: assignedTo,
-      aiSummary: json["summary"] ?? "",
-      suggestedReply: json["suggestedReply"] ?? "",
-      duplicateTicket: json["duplicateTicket"] ?? false,
-      attachments: json["attachments"] == null
-          ? []
-          : List<String>.from(json["attachments"]),
-      createdAt: json["createdAt"] != null
-          ? DateTime.tryParse(json["createdAt"]) ?? DateTime.now()
-          : DateTime.now(),
-      updatedAt: json["updatedAt"] != null
-          ? DateTime.tryParse(json["updatedAt"]) ?? DateTime.now()
-          : DateTime.now(),
-    );
+  id: json["_id"]?.toString() ?? "",
+  title: json["title"] ?? "",
+  description: json["description"] ?? "",
+  category: json["category"] ?? "Other",
+  priority: json["priority"] ?? "Medium",
+  status: json["status"] ?? "Open",
+  createdBy: createdBy,
+  assignedTo: assignedTo,
+
+  aiSummary: json["aiSummary"] ?? "",
+  suggestedReply: json["aiSuggestedReply"] ?? "",
+
+  duplicateTicket: json["duplicateTicket"]?.toString(),
+
+  attachments: json["attachments"] == null
+      ? []
+      : (json["attachments"] as List)
+            .map((e) => AttachmentModel.fromJson(e))
+            .toList(),
+
+  createdAt: json["createdAt"] != null
+      ? DateTime.tryParse(json["createdAt"]) ?? DateTime.now()
+      : DateTime.now(),
+
+  updatedAt: json["updatedAt"] != null
+      ? DateTime.tryParse(json["updatedAt"]) ?? DateTime.now()
+      : DateTime.now(),
+  );
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      "title": title,
-      "description": description,
-      "category": category,
-      "priority": priority,
-    };
-  }
+ Map<String, dynamic> toJson() {
+  return {
+    "title": title,
+    "description": description,
+    "category": category,
+    "priority": priority,
+    "summary": aiSummary,
+    "duplicateTicket": duplicateTicket,
+    "attachments": attachments.map((e) => e.toJson()).toList(),
+  };
+}
 }

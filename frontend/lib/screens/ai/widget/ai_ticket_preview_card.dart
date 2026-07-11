@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/controllers/ai_chat_controller.dart';
+import 'package:frontend/controllers/ticket_controller.dart';
 import 'package:get/get.dart';
 
 
@@ -12,6 +13,7 @@ class AITicketPreviewCard
     return Obx(() {
 
       final ai = controller.lastResponse.value;
+      final ticketController = Get.find<TicketController>();
 
       if (ai == null || !ai.createTicket) {
         return const SizedBox();
@@ -47,16 +49,16 @@ class AITicketPreviewCard
               const SizedBox(height: 10),
 
               Text(
-                ai.summary,
+                ai.aiSummary,
               ),
 
               const SizedBox(height: 18),
 
               FilledButton.icon(
-                onPressed: () {
-                  // Next step:
-                  // call TicketController
-                  // createTicket()
+                onPressed: () async {
+                  
+                await ticketController.createTicket();
+                  
                 },
                 icon:
                     const Icon(Icons.add),

@@ -2,7 +2,7 @@ class AIChatModel {
   final String reply;
   final String category;
   final String priority;
-  final String summary;
+  final String aiSummary;
   final bool duplicate;
   final bool createTicket;
   final List<dynamic> articles;
@@ -11,7 +11,7 @@ class AIChatModel {
     required this.reply,
     required this.category,
     required this.priority,
-    required this.summary,
+    required this.aiSummary,
     required this.duplicate,
     required this.createTicket,
     required this.articles,
@@ -23,7 +23,7 @@ class AIChatModel {
       reply: json["reply"] ?? "",
       category: json["category"] ?? "",
       priority: json["priority"] ?? "",
-      summary: json["summary"] ?? "",
+      aiSummary: json["aiSummary"] ?? "",
       duplicate: json["duplicate"] ?? false,
       createTicket: json["createTicket"] ?? false,
       articles: json["articles"] ?? [],

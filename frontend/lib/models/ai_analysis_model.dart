@@ -1,14 +1,14 @@
 class AiAnalysisModel {
   final String category;
   final String priority;
-  final String summary;
+  final String aiSummary;
   final bool duplicate;
   final DuplicateTicket? duplicateTicket;
 
   const AiAnalysisModel({
     required this.category,
     required this.priority,
-    required this.summary,
+    required this.aiSummary,
     required this.duplicate,
     this.duplicateTicket,
   });
@@ -17,7 +17,7 @@ class AiAnalysisModel {
     return AiAnalysisModel(
       category: json["category"] ?? "Other",
       priority: json["priority"] ?? "Medium",
-      summary: json["summary"] ?? "",
+      aiSummary: json["aiSummary"] ?? "",
       duplicate: json["duplicate"] ?? false,
       duplicateTicket: json["duplicateTicket"] != null
           ? DuplicateTicket.fromJson(json["duplicateTicket"])
@@ -29,7 +29,7 @@ class AiAnalysisModel {
     return {
       "category": category,
       "priority": priority,
-      "summary": summary,
+      "aiSummary": aiSummary,
       "duplicate": duplicate,
       "duplicateTicket": duplicateTicket?.toJson(),
     };

@@ -59,7 +59,7 @@ class AISolutionCard extends StatelessWidget {
             const SizedBox(height: 18),
 
             Text(
-              response.summary,
+              response.aiSummary,
             ),
 
             const SizedBox(height: 20),

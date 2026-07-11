@@ -265,7 +265,7 @@ Future<void> createTicket() async {
           categoryController.text.trim(),
       priority: analysis?.priority ??
           priorityController.text.trim(),
-      summary: analysis?.summary ??
+      summary: analysis?.aiSummary ??
           summaryController.text.trim(),
       duplicateTicket:
           analysis?.duplicate ?? false,
