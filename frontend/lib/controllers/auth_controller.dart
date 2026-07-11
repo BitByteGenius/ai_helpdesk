@@ -31,10 +31,12 @@ class AuthController extends GetxController {
   }
 
   Future<void> logout() async {
-  await StorageService.clear();
-
-  update();
-}
+    await StorageService.clear();
+    _user = null;
+    _isLoggedIn = false;
+    _errorMessage = "";
+    update();
+  }
 
   // ─── User Login ───────────────────────────────────────────────────────
   Future<bool> login({required String email, required String password}) async {

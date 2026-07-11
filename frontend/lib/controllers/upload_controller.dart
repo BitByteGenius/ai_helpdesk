@@ -6,7 +6,9 @@ import 'package:get/get.dart';
 import '../models/upload_model.dart';
 
 class UploadController extends GetxController {
-  final UploadService _service = UploadService();
+  final UploadService _service;
+
+  UploadController(this._service);
 
   /// Uploaded files
   final RxList<UploadModel> uploads = <UploadModel>[].obs;
@@ -21,67 +23,67 @@ class UploadController extends GetxController {
   final RxString error = "".obs;
 
   /// Upload File
- Future<UploadModel?> pickAndUpload() async {
-  try {
-    error.value = "";
+  Future<UploadModel?> pickAndUpload() async {
+    try {
+      error.value = "";
 
-    final result = await FilePicker.pickFiles(
-      allowMultiple: false,
-      type: FileType.custom,
-      allowedExtensions: [
-        "jpg",
-        "jpeg",
-        "png",
-        "webp",
-        "pdf",
-        "doc",
-        "docx",
-      ],
-    );
+      final result = await FilePicker.pickFiles(
+        allowMultiple: false,
+        type: FileType.custom,
+        allowedExtensions: [
+          "jpg",
+          "jpeg",
+          "png",
+          "webp",
+          "pdf",
+          "doc",
+          "docx",
+        ],
+      );
 
-    if (result == null) {
+      if (result == null) {
+        return null;
+      }
+
+      final file = result.files.single;
+
+      isUploading.value = true;
+      progress.value = 0;
+
+      final upload = await _service.uploadPlatformFile(
+        file,
+        onSendProgress: (sent, total) {
+          if (total > 0) {
+            progress.value = sent / total;
+          }
+        },
+      );
+
+      uploads.insert(0, upload);
+
+      progress.value = 1;
+
+      Get.snackbar(
+        "Success",
+        "File uploaded successfully.",
+        snackPosition: SnackPosition.BOTTOM,
+      );
+
+      return upload;
+    } catch (e) {
+      error.value = e.toString();
+
+      Get.snackbar(
+        "Upload Failed",
+        error.value,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+
       return null;
+    } finally {
+      isUploading.value = false;
     }
-
-    final file = result.files.single;
-
-    isUploading.value = true;
-    progress.value = 0;
-
-    final upload = await _service.uploadPlatformFile(
-      file,
-      onSendProgress: (sent, total) {
-        if (total > 0) {
-          progress.value = sent / total;
-        }
-      },
-    );
-
-    uploads.insert(0, upload);
-
-    progress.value = 1;
-
-    Get.snackbar(
-      "Success",
-      "File uploaded successfully.",
-      snackPosition: SnackPosition.BOTTOM,
-    );
-
-    return upload;
-  } catch (e) {
-    error.value = e.toString();
-
-    Get.snackbar(
-      "Upload Failed",
-      error.value,
-      snackPosition: SnackPosition.BOTTOM,
-    );
-
-    return null;
-  } finally {
-    isUploading.value = false;
   }
-}
 
   /// Delete Upload
   Future<void> deleteUpload(String id) async {

@@ -1,12 +1,13 @@
 import bcrypt from "bcryptjs";
 import User from "../models/user.model.js";
+import { createAudit } from "../services/audit.service.js";
 
 //
 // GET /api/users/profile
 //
 export const getProfile = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).select("-password");
+    const user = await User.findById(req.user.userId).select("-password");
 
     if (!user) {
       return res.status(404).json({
@@ -43,7 +44,7 @@ export const updateProfile = async (req, res) => {
       profileImage,
     } = req.body;
 
-    const user = await User.findById(req.user.id);
+    const user = await User.findById(req.user.userId);
 
     if (!user) {
       return res.status(404).json({
@@ -51,6 +52,15 @@ export const updateProfile = async (req, res) => {
         message: "User not found",
       });
     }
+
+    const oldData = {
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      city: user.city,
+      gender: user.gender,
+      profileImage: user.profileImage,
+    };
 
     // Check email uniqueness
     if (email && email !== user.email) {
@@ -81,17 +91,28 @@ export const updateProfile = async (req, res) => {
 
     const updatedUser = await User.findById(user._id).select("-password");
 
-    await createAudit({
-  user: req.user.id,
-  action: "PROFILE_UPDATE",
-  entity: "PROFILE",
-  entityId: req.user.id,
-  description: "Updated profile information",
-  oldData,
-  newData,
-  ipAddress: req.ip,
-  userAgent: req.headers["user-agent"],
-});
+    try {
+      await createAudit({
+        user: req.user.userId,
+        action: "PROFILE_UPDATE",
+        entity: "PROFILE",
+        entityId: req.user.userId,
+        description: "Updated profile information",
+        oldData,
+        newData: {
+          name: updatedUser.name,
+          email: updatedUser.email,
+          phone: updatedUser.phone,
+          city: updatedUser.city,
+          gender: updatedUser.gender,
+          profileImage: updatedUser.profileImage,
+        },
+        ipAddress: req.ip,
+        userAgent: req.headers["user-agent"],
+      });
+    } catch (auditError) {
+      console.warn("Profile audit failed (non-fatal):", auditError.message);
+    }
 
     res.status(200).json({
       success: true,
@@ -126,7 +147,7 @@ export const changePassword = async (req, res) => {
       });
     }
 
-    const user = await User.findById(req.user.id).select("+password");
+    const user = await User.findById(req.user.userId).select("+password");
 
     if (!user) {
       return res.status(404).json({

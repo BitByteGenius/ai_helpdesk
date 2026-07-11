@@ -15,7 +15,6 @@ class AdminDashboard extends GetView<DashboardController> {
       title: 'Admin Dashboard',
       child: LayoutBuilder(
         builder: (context, constraints) {
-          final isDesktop = constraints.maxWidth >= 1200;
           final horizontalPadding = constraints.maxWidth >= 1200 ? 28.0 : 16.0;
 
           final content = Obx(() {

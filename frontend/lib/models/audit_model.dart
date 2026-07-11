@@ -58,9 +58,10 @@ class AuditModel {
       userAgent:
           json["userAgent"] ?? "",
 
-      createdAt: DateTime.parse(
-        json["createdAt"],
-      ),
+      createdAt: DateTime.tryParse(
+            json["createdAt"]?.toString() ?? "",
+          ) ??
+          DateTime.now(),
     );
   }
 }

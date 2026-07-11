@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/controllers/auth_controller.dart';
 import 'package:frontend/controllers/navigation_controller.dart';
 import 'package:frontend/core/routes/app_routes.dart';
 import 'package:frontend/models/sidebar_menu.dart';
@@ -12,8 +13,6 @@ class DashboardSidebar extends StatelessWidget {
   });
 
   final bool compact;
-
-  final RxInt selectedIndex = 0.obs;
 
   final List<SidebarMenu> menus = [
     SidebarMenu(
@@ -85,12 +84,14 @@ class DashboardSidebar extends StatelessWidget {
             const SizedBox(height: 35),
 
             Expanded(
-              child: ListView.builder(
+              child: Obx(() {
+                final selectedRoute = navCtrl.currentRoute.value;
+
+                return ListView.builder(
                   itemCount: menus.length,
                   itemBuilder: (_, index) {
                     final menu = menus[index];
-
-                    final selected = navCtrl.currentRoute.value == menu.route;
+                    final selected = selectedRoute == menu.route;
 
                     return InkWell(
                       onTap: () {
@@ -98,13 +99,10 @@ class DashboardSidebar extends StatelessWidget {
                           Navigator.of(context).pop();
                         }
 
-                        /// Navigate
                         Get.offNamed(menu.route);
                       },
                       child: AnimatedContainer(
-                        duration: const Duration(
-                          milliseconds: 250,
-                        ),
+                        duration: const Duration(milliseconds: 250),
                         margin: const EdgeInsets.symmetric(
                           horizontal: 10,
                           vertical: 5,
@@ -114,8 +112,7 @@ class DashboardSidebar extends StatelessWidget {
                           vertical: 14,
                         ),
                         decoration: BoxDecoration(
-                          borderRadius:
-                              BorderRadius.circular(14),
+                          borderRadius: BorderRadius.circular(14),
                           color: selected
                               ? Colors.white12
                               : Colors.transparent,
@@ -126,18 +123,14 @@ class DashboardSidebar extends StatelessWidget {
                               menu.icon,
                               color: Colors.white,
                             ),
-
                             if (!compact) ...[
                               const SizedBox(width: 16),
-
                               Expanded(
                                 child: Text(
                                   menu.title,
-                                  style:
-                                      const TextStyle(
+                                  style: const TextStyle(
                                     color: Colors.white,
-                                    fontWeight:
-                                        FontWeight.w600,
+                                    fontWeight: FontWeight.w600,
                                   ),
                                 ),
                               ),
@@ -147,7 +140,8 @@ class DashboardSidebar extends StatelessWidget {
                       ),
                     );
                   },
-                ),
+                );
+              }),
             ),
 
             const Divider(
@@ -156,26 +150,34 @@ class DashboardSidebar extends StatelessWidget {
 
             Material(
               color: Colors.transparent,
-              child: ListTile(
-                leading: const CircleAvatar(
-                  child: Icon(Icons.person),
-                ),
-                title: compact
-                    ? null
-                    : const Text(
-                        "Administrator",
-                        style: TextStyle(
-                          color: Colors.white,
-                        ),
-                      ),
-                subtitle: compact
-                    ? null
-                    : const Text(
-                        "admin@gmail.com",
-                        style: TextStyle(
-                          color: Colors.white70,
-                        ),
-                      ),
+              child: GetBuilder<AuthController>(
+                builder: (authCtrl) {
+                  final user = authCtrl.user;
+                  final displayName =
+                      user?.name.isNotEmpty == true ? user!.name : "Admin";
+
+                  return ListTile(
+                    leading: const CircleAvatar(
+                      child: Icon(Icons.person),
+                    ),
+                    title: compact
+                        ? null
+                        : Text(
+                            displayName,
+                            style: const TextStyle(
+                              color: Colors.white,
+                            ),
+                          ),
+                    subtitle: compact
+                        ? null
+                        : Text(
+                            user?.email ?? "",
+                            style: const TextStyle(
+                              color: Colors.white70,
+                            ),
+                          ),
+                  );
+                },
               ),
             ),
 
@@ -194,10 +196,9 @@ class DashboardSidebar extends StatelessWidget {
                           color: Colors.red,
                         ),
                       ),
-                onTap: () {
-                  Get.offAllNamed(
-                    AppRoutes.login,
-                  );
+                onTap: () async {
+                  await Get.find<AuthController>().logout();
+                  Get.offAllNamed(AppRoutes.login);
                 },
               ),
             ),

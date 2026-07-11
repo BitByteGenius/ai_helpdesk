@@ -1,12 +1,11 @@
 import 'package:dio/dio.dart';
 import 'package:frontend/models/ai_model/ai_chat_model.dart';
+import 'package:frontend/servicies/api_service.dart';
 
 
 
 class AIChatService {
-  final Dio _dio;
-
-  AIChatService(this._dio);
+  final Dio _dio = ApiService.instance.dio;
 
   Future<AIChatModel> chat({
     required String message,

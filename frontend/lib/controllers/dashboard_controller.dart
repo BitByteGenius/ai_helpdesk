@@ -2,9 +2,11 @@ import 'package:frontend/models/darshboard_model.dart';
 import 'package:frontend/servicies/dashboard_service.dart';
 import 'package:get/get.dart';
 
-
 class DashboardController extends GetxController {
-  final DashboardService _service = Get.find();
+  final DashboardService _service;
+
+  /// Accept DashboardService via constructor for proper DI timing.
+  DashboardController(this._service);
 
   final RxBool isLoading = false.obs;
 
@@ -24,6 +26,7 @@ class DashboardController extends GetxController {
     try {
       isLoading.value = true;
       hasError.value = false;
+      errorMessage.value = "";
 
       dashboard.value = await _service.getDashboard();
     } catch (e) {

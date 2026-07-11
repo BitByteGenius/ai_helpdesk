@@ -22,11 +22,8 @@ export const createNotification = async ({
     referenceModel,
 });
 
-sendToUser(
-    user,
-    "notification",
-    notification,
-);
+    sendToUser(user, "notification:new", notification);
+    sendToUser(user, "notification", notification);
 
 
     return notification;

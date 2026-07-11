@@ -1,7 +1,6 @@
 import { validationResult } from "express-validator";
-
 import Ticket from "../models/ticket.model.js";
-
+import { createAudit } from "../services/audit.service.js";
 import {
   categorizeTicket,
   predictPriority,
@@ -169,69 +168,51 @@ export const duplicateController = async (req, res) => {
 /**
  * POST /api/ai/analyze-ticket
  */
-export const analyzeTicketController =
-async (req,res)=>{
+export const analyzeTicketController = async (req, res) => {
+  try {
+    if (!handleValidation(req, res)) return;
 
-try{
+    const { title, description } = req.body;
 
-if(!handleValidation(req,res))
-return;
+    const tickets = await Ticket.find(
+      { isDeleted: false },
+      "title description status priority"
+    ).limit(50);
 
-const {title,description}=req.body;
+    const result = await analyzeTicket(title, description, tickets);
 
-const tickets =
-await Ticket.find(
-{
-isDeleted:false,
-},
-"title description status priority",
-).limit(50);
+    // Safely log audit — failure here should not crash the response
+    try {
+      if (req.user?.userId) {
+        await createAudit({
+          user: req.user.userId,
+          action: "AI_ANALYSIS",
+          entity: "AI",
+          entityId: null,
+          description: `AI analyzed ticket: "${title}"`,
+          newData: {
+            category: result?.category,
+            priority: result?.priority,
+            summary: result?.summary,
+          },
+          ipAddress: req.ip,
+          userAgent: req.headers["user-agent"],
+        });
+      }
+    } catch (auditErr) {
+      console.warn("Audit log failed (non-fatal):", auditErr.message);
+    }
 
-const result =
-await analyzeTicket(
-title,
-description,
-tickets,
-);
+    res.status(200).json({
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    console.error("ANALYZE TICKET ERROR:", error);
 
-await createAudit({
-  user: req.user.id,
-  action: "AI_ANALYSIS",
-  entity: "AI",
-  entityId: ticketId,
-  description: "AI analyzed ticket",
-
-  newData: {
-    category,
-    priority,
-    summary,
-  },
-
-  ipAddress: req.ip,
-  userAgent: req.headers["user-agent"],
-});
-
-res.status(200).json({
-
-success:true,
-
-data:result,
-
-});
-
-}
-catch(error){
-
-console.error(error);
-
-res.status(500).json({
-
-success:false,
-
-message:error.message,
-
-});
-
-}
-
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 };

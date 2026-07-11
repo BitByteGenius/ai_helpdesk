@@ -90,8 +90,24 @@ class CommentController extends GetxController {
 
   /// Socket Event
   void _receiveComment(dynamic data) {
-    final comment =
-        CommentModel.fromJson(data);
+    final payload = data is Map<String, dynamic>
+        ? data
+        : Map<String, dynamic>.from(data as Map);
+
+    final action = payload["action"]?.toString();
+    if (action == "deleted") {
+      final deletedId = payload["commentId"]?.toString();
+      if (deletedId != null && deletedId.isNotEmpty) {
+        comments.removeWhere((e) => e.id == deletedId);
+      }
+      return;
+    }
+
+    final commentJson = payload["comment"] is Map
+        ? Map<String, dynamic>.from(payload["comment"] as Map)
+        : payload;
+
+    final comment = CommentModel.fromJson(commentJson);
 
     if (comment.ticketId != ticketId.value) {
       return;
@@ -141,6 +157,8 @@ class CommentController extends GetxController {
 
   @override
   void onClose() {
+    socket.remove("comment:update");
+    socket.remove("comment:new");
     socket.remove("comment-added");
 
     messageController.dispose();

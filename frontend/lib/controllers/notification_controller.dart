@@ -47,8 +47,9 @@ class NotificationController extends GetxController {
 
   /// Socket Event
   void _receiveNotification(dynamic data) {
-    final notification =
-        NotificationModel.fromJson(data);
+    final notification = NotificationModel.fromJson(
+      Map<String, dynamic>.from(data as Map),
+    );
 
     notifications.insert(0, notification);
 
@@ -123,6 +124,7 @@ class NotificationController extends GetxController {
 
   @override
   void onClose() {
+    socket.remove("notification:new");
     socket.remove("notification");
     super.onClose();
   }

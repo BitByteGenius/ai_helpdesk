@@ -5,7 +5,9 @@ import 'package:get/get.dart';
 import '../models/ai_analysis_model.dart';
 
 class AiController extends GetxController {
-  final AiService _service = AiService();
+  final AiService _service;
+
+  AiController(this._service);
 
   /// Loading
   final RxBool isLoading = false.obs;

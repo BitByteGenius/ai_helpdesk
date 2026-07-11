@@ -20,7 +20,9 @@ class MyApp extends StatelessWidget {
       initialRoute: AppRoutes.splash,
       getPages: AppRouter.pages,
       routingCallback: (routing) {
-        Get.find<NavigationController>().updateRoute(routing?.current);
+        if (Get.isRegistered<NavigationController>()) {
+          Get.find<NavigationController>().updateRoute(routing?.current);
+        }
       },
       unknownRoute: GetPage(
         name: '/not-found',

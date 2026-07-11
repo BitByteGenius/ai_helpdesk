@@ -1,4 +1,11 @@
-import model from "../config/ai.config.js";
+import model, { isGeminiConfigured } from "../config/ai.config.js";
+import {
+  fallbackCategory,
+  fallbackPriority,
+  fallbackReply,
+  fallbackSummary,
+  fallbackDuplicateDetection,
+} from "./ai.fallback.js";
 
 import {
   CATEGORY_PROMPT,
@@ -13,6 +20,10 @@ import {
  * Generate AI Response
  */
 const generateResponse = async (prompt) => {
+  if (!isGeminiConfigured || !model) {
+    throw new Error("Gemini API key is not configured.");
+  }
+
   try {
     const result = await model.generateContent(prompt);
 
@@ -38,7 +49,13 @@ Ticket:
 ${description}
 `;
 
-  const category = await generateResponse(prompt);
+  let category;
+
+  try {
+    category = await generateResponse(prompt);
+  } catch {
+    category = fallbackCategory(description);
+  }
 
   return {
     category,
@@ -57,7 +74,13 @@ Ticket:
 ${description}
 `;
 
-  const priority = await generateResponse(prompt);
+  let priority;
+
+  try {
+    priority = await generateResponse(prompt);
+  } catch {
+    priority = fallbackPriority(description);
+  }
 
   return {
     priority,
@@ -76,7 +99,13 @@ Ticket:
 ${description}
 `;
 
-  const summary = await generateResponse(prompt);
+  let summary;
+
+  try {
+    summary = await generateResponse(prompt);
+  } catch {
+    summary = fallbackSummary(description);
+  }
 
   return {
     summary,
@@ -103,7 +132,13 @@ Priority:
 ${ticket.priority}
 `;
 
-  const reply = await generateResponse(prompt);
+  let reply;
+
+  try {
+    reply = await generateResponse(prompt);
+  } catch {
+    reply = fallbackReply(ticket);
+  }
 
   return {
     reply,
@@ -117,10 +152,20 @@ export const detectDuplicate = async (
   newTicket,
   existingTickets
 ) => {
+  if (!isGeminiConfigured || !model) {
+    const fallback = fallbackDuplicateDetection(
+      newTicket,
+      existingTickets
+    );
+
+    return fallback;
+  }
+
   let bestMatch = null;
 
-  for (const ticket of existingTickets) {
-    const prompt = `
+  try {
+    for (const ticket of existingTickets) {
+      const prompt = `
 ${DUPLICATE_PROMPT}
 
 Ticket A
@@ -142,12 +187,15 @@ Description:
 ${ticket.description}
 `;
 
-    const response = await generateResponse(prompt);
+      const response = await generateResponse(prompt);
 
-    if (response.toUpperCase().includes("YES")) {
-      bestMatch = ticket;
-      break;
+      if (response.toUpperCase().includes("YES")) {
+        bestMatch = ticket;
+        break;
+      }
     }
+  } catch {
+    return fallbackDuplicateDetection(newTicket, existingTickets);
   }
 
   return {
@@ -175,8 +223,32 @@ Description:
 ${description}
 `;
 
-  const response =
-      await generateResponse(prompt);
+  let response;
+
+  try {
+    response = await generateResponse(prompt);
+  } catch {
+    const fallback = {
+      category: fallbackCategory(`${title} ${description}`),
+      priority: fallbackPriority(`${title} ${description}`),
+      summary: fallbackSummary(description),
+    };
+
+    const duplicate =
+      fallbackDuplicateDetection(
+        {
+          title,
+          description,
+        },
+        existingTickets,
+      );
+
+    return {
+      ...fallback,
+      duplicate: duplicate.duplicate,
+      duplicateTicket: duplicate.ticket,
+    };
+  }
 
   let aiResult;
 

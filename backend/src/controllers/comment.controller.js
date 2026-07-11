@@ -1,6 +1,10 @@
 import mongoose from "mongoose";
 import Ticket from "../models/ticket.model.js";
 import { createNotification } from "../services/notification.service.js";
+import {
+  broadcastToAdmins,
+  sendToTicketRoom,
+} from "../../socket/socket.js";
 
 import {
   createCommentService,
@@ -50,16 +54,29 @@ const notificationMessage =
     ? "An administrator replied to your ticket."
     : "A user replied to the ticket.";
 
-if (ticket.createdBy.toString() !== req.user.userId) {
-  await createNotification({
-    user: ticket.createdBy,
-    title: "New Comment",
-    message: notificationMessage,
+    if (ticket.createdBy.toString() !== req.user.userId) {
+      await createNotification({
+        user: ticket.createdBy,
+        title: "New Comment",
+        message: notificationMessage,
     type: "comment",
     referenceId: ticket._id,
-    referenceModel: "Ticket",
-  });
-}
+        referenceModel: "Ticket",
+      });
+    }
+
+    sendToTicketRoom(id, "comment:update", {
+      action: "created",
+      comment,
+    });
+    sendToTicketRoom(id, "comment:new", comment);
+    broadcastToAdmins("dashboard:update", {
+      type: "comment",
+      action: "created",
+      ticketId: id,
+      commentId: comment._id,
+    });
+
     return res.status(201).json({
       success: true,
       message: "Comment added successfully",
@@ -141,6 +158,17 @@ export const updateComment = async (req, res) => {
       message
     );
 
+    sendToTicketRoom(comment.ticket._id.toString(), "comment:update", {
+      action: "updated",
+      comment: updatedComment,
+    });
+    broadcastToAdmins("dashboard:update", {
+      type: "comment",
+      action: "updated",
+      ticketId: comment.ticket._id.toString(),
+      commentId: updatedComment._id,
+    });
+
     return res.status(200).json({
       success: true,
       message: "Comment updated successfully",
@@ -185,6 +213,17 @@ export const deleteComment = async (req, res) => {
     }
 
     await deleteCommentService(comment);
+
+    sendToTicketRoom(comment.ticket._id.toString(), "comment:update", {
+      action: "deleted",
+      commentId: comment._id,
+    });
+    broadcastToAdmins("dashboard:update", {
+      type: "comment",
+      action: "deleted",
+      ticketId: comment.ticket._id.toString(),
+      commentId: comment._id,
+    });
 
     return res.status(200).json({
       success: true,

@@ -1,11 +1,16 @@
+import "./env.js";
+
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const genAI = new GoogleGenerativeAI(
-  process.env.GEMINI_API_KEY
-);
+const apiKey = process.env.GEMINI_API_KEY?.trim();
 
-const model = genAI.getGenerativeModel({
-  model: "gemini-2.5-flash",
-});
+const isGeminiConfigured = Boolean(apiKey);
+
+const model = isGeminiConfigured
+  ? new GoogleGenerativeAI(apiKey).getGenerativeModel({
+      model: "gemini-2.5-flash",
+    })
+  : null;
 
 export default model;
+export { isGeminiConfigured };

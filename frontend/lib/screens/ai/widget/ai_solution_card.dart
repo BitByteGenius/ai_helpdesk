@@ -13,7 +13,7 @@ class AISolutionCard extends StatelessWidget {
   Widget buildChip(String label, Color color) {
     return Chip(
       label: Text(label),
-      backgroundColor: color.withOpacity(.15),
+      backgroundColor: color.withValues(alpha: 0.15),
     );
   }
 

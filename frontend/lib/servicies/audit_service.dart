@@ -1,11 +1,12 @@
 import 'package:dio/dio.dart';
+import 'package:frontend/servicies/api_service.dart';
 
 import '../models/audit_model.dart';
 
 class AuditService {
   final Dio _dio;
 
-  AuditService(this._dio);
+  AuditService([Dio? dio]) : _dio = dio ?? ApiService.instance.dio;
 
   /// Get Audit Logs
   Future<List<AuditModel>> getAudits({

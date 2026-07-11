@@ -1,3 +1,9 @@
+import 'package:frontend/models/user_model.dart';
+
+/// Ticket model — references the canonical UserModel from user_model.dart.
+///
+/// NOTE: The inner UserModel class that previously lived here has been
+/// removed to eliminate the duplicate-class conflict with user_model.dart.
 class TicketModel {
   final String id;
   final String title;
@@ -37,48 +43,61 @@ class TicketModel {
   });
 
   factory TicketModel.fromJson(Map<String, dynamic> json) {
+    // createdBy may arrive as a populated object or a bare string ID
+    final createdByRaw = json["createdBy"];
+    final UserModel createdBy;
+    if (createdByRaw is Map<String, dynamic>) {
+      createdBy = UserModel.fromJson(createdByRaw);
+    } else {
+      createdBy = UserModel(
+        id: createdByRaw?.toString() ?? "",
+        name: "",
+        email: "",
+        phone: "",
+        role: "user",
+        profileImage: "",
+      );
+    }
+
+    // assignedTo may be null, a string ID, or a populated object
+    final assignedToRaw = json["assignedTo"];
+    final UserModel? assignedTo;
+    if (assignedToRaw == null) {
+      assignedTo = null;
+    } else if (assignedToRaw is Map<String, dynamic>) {
+      assignedTo = UserModel.fromJson(assignedToRaw);
+    } else {
+      assignedTo = UserModel(
+        id: assignedToRaw.toString(),
+        name: "",
+        email: "",
+        phone: "",
+        role: "user",
+        profileImage: "",
+      );
+    }
+
     return TicketModel(
-      id: json["_id"] ?? "",
-
+      id: json["_id"]?.toString() ?? "",
       title: json["title"] ?? "",
-
       description: json["description"] ?? "",
-
       category: json["category"] ?? "Other",
-
       priority: json["priority"] ?? "Medium",
-
       status: json["status"] ?? "Open",
-
-      createdBy: UserModel.fromJson(
-        json["createdBy"] ?? {},
-      ),
-
-      assignedTo: json["assignedTo"] != null
-          ? UserModel.fromJson(json["assignedTo"])
-          : null,
-
+      createdBy: createdBy,
+      assignedTo: assignedTo,
       aiSummary: json["summary"] ?? "",
-
       suggestedReply: json["suggestedReply"] ?? "",
-
-      duplicateTicket:
-          json["duplicateTicket"] ?? false,
-
-      attachments:
-          json["attachments"] == null
-              ? []
-              : List<String>.from(
-                  json["attachments"],
-                ),
-
-      createdAt: DateTime.parse(
-        json["createdAt"],
-      ),
-
-      updatedAt: DateTime.parse(
-        json["updatedAt"],
-      ),
+      duplicateTicket: json["duplicateTicket"] ?? false,
+      attachments: json["attachments"] == null
+          ? []
+          : List<String>.from(json["attachments"]),
+      createdAt: json["createdAt"] != null
+          ? DateTime.tryParse(json["createdAt"]) ?? DateTime.now()
+          : DateTime.now(),
+      updatedAt: json["updatedAt"] != null
+          ? DateTime.tryParse(json["updatedAt"]) ?? DateTime.now()
+          : DateTime.now(),
     );
   }
 
@@ -89,33 +108,5 @@ class TicketModel {
       "category": category,
       "priority": priority,
     };
-  }
-}
-
-class UserModel {
-  final String id;
-  final String name;
-  final String email;
-  final String profileImage;
-
-  UserModel({
-    required this.id,
-    required this.name,
-    required this.email,
-    required this.profileImage,
-  });
-
-  factory UserModel.fromJson(
-      Map<String, dynamic> json) {
-    return UserModel(
-      id: json["_id"] ?? "",
-
-      name: json["name"] ?? "",
-
-      email: json["email"] ?? "",
-
-      profileImage:
-          json["profileImage"] ?? "",
-    );
   }
 }

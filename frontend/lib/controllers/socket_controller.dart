@@ -1,15 +1,17 @@
 import 'package:frontend/servicies/socket_service.dart';
 import 'package:get/get.dart';
 
-
 class SocketController extends GetxController {
   final SocketService _socket = SocketService.instance;
 
-  /// Connection Status
+  /// Whether the socket is currently connected
   final RxBool isConnected = false.obs;
 
-  /// Current User ID
+  /// The current user ID (used to rejoin after reconnection)
   final RxString currentUserId = "".obs;
+
+  /// Whether the current user is an admin
+  final RxBool isAdmin = false.obs;
 
   @override
   void onInit() {
@@ -17,21 +19,23 @@ class SocketController extends GetxController {
     _listenConnection();
   }
 
-  /// Connect Socket
-  void connect(String userId) {
+  /// Connect socket and join personal room
+  void connect(String userId, {bool admin = false}) {
     currentUserId.value = userId;
+    isAdmin.value = admin;
 
     _socket.connect();
 
-    Future.delayed(
-      const Duration(milliseconds: 500),
-      () {
-        join(userId);
-      },
-    );
+    // Join after a brief delay to ensure connection is established
+    Future.delayed(const Duration(milliseconds: 500), () {
+      join(userId);
+      if (admin) {
+        _socket.joinAdminRoom();
+      }
+    });
   }
 
-  /// Join User
+  /// Join personal notification room
   void join(String userId) {
     _socket.join(userId);
   }
@@ -39,107 +43,81 @@ class SocketController extends GetxController {
   /// Disconnect
   void disconnect() {
     _socket.disconnect();
-
     isConnected.value = false;
   }
 
-  /// Connection Events
+  /// Join a ticket room (for real-time comment updates)
+  void joinTicketRoom(String ticketId) {
+    _socket.joinTicketRoom(ticketId);
+  }
+
+  /// Leave a ticket room
+  void leaveTicketRoom(String ticketId) {
+    _socket.leaveTicketRoom(ticketId);
+  }
+
+  // ── Connection Lifecycle ─────────────────────────────────────────────────
+
   void _listenConnection() {
-    _socket.listen(
-      "connect",
-      (_) {
-        isConnected.value = true;
-
-        if (currentUserId.isNotEmpty) {
-          join(currentUserId.value);
+    _socket.listen("connect", (_) {
+      isConnected.value = true;
+      // Rejoin rooms after reconnection
+      if (currentUserId.isNotEmpty) {
+        join(currentUserId.value);
+        if (isAdmin.value) {
+          _socket.joinAdminRoom();
         }
-      },
-    );
+      }
+    });
 
-    _socket.listen(
-      "disconnect",
-      (_) {
-        isConnected.value = false;
-      },
-    );
+    _socket.listen("disconnect", (_) {
+      isConnected.value = false;
+    });
   }
 
-  /// Notification Event
-  void onNotification(
-    Function(dynamic data) callback,
-  ) {
-    _socket.listen(
-      "notification",
-      callback,
-    );
+  // ── Event Subscriptions ──────────────────────────────────────────────────
+
+  /// Real-time notification — backend emits "notification:new"
+  void onNotification(Function(dynamic data) callback) {
+    _socket.listen("notification:new", callback);
+    _socket.listen("notification", callback);
   }
 
-  /// Ticket Created
-  void onTicketCreated(
-    Function(dynamic data) callback,
-  ) {
-    _socket.listen(
-      "ticket-created",
-      callback,
-    );
+  /// Ticket created event
+  void onTicketCreated(Function(dynamic data) callback) {
+    _socket.listen("ticket:created", callback);
   }
 
-  /// Ticket Updated
-  void onTicketUpdated(
-    Function(dynamic data) callback,
-  ) {
-    _socket.listen(
-      "ticket-updated",
-      callback,
-    );
+  /// Ticket updated event (status, assignment, etc.)
+  void onTicketUpdated(Function(dynamic data) callback) {
+    _socket.listen("ticket:update", callback);
+    _socket.listen("ticket:updated", callback);
   }
 
-  /// Ticket Assigned
-  void onTicketAssigned(
-    Function(dynamic data) callback,
-  ) {
-    _socket.listen(
-      "ticket-assigned",
-      callback,
-    );
+  /// Ticket assigned event
+  void onTicketAssigned(Function(dynamic data) callback) {
+    _socket.listen("ticket:assigned", callback);
   }
 
-  /// Ticket Status
-  void onTicketStatus(
-    Function(dynamic data) callback,
-  ) {
-    _socket.listen(
-      "ticket-status",
-      callback,
-    );
+  /// Comment added to a ticket room
+  void onCommentAdded(Function(dynamic data) callback) {
+    _socket.listen("comment:update", callback);
+    _socket.listen("comment:new", callback);
+    _socket.listen("comment-added", callback);
   }
 
-  /// Comment Added
-  void onCommentAdded(
-    Function(dynamic data) callback,
-  ) {
-    _socket.listen(
-      "comment-added",
-      callback,
-    );
+  /// Dashboard updated (admin room)
+  void onDashboardUpdated(Function(dynamic data) callback) {
+    _socket.listen("dashboard:update", callback);
+    _socket.listen("dashboard:updated", callback);
   }
 
-  /// Dashboard Updated
-  void onDashboardUpdated(
-    Function(dynamic data) callback,
-  ) {
-    _socket.listen(
-      "dashboard-updated",
-      callback,
-    );
-  }
-
-  /// Remove Listener
+  /// Remove a specific event listener
   void remove(String event) {
     _socket.remove(event);
   }
 
-  /// Remove All Listeners
+  /// Remove all event listeners
   void removeAll() {
     _socket.removeAll();
   }

@@ -8,51 +8,66 @@ import 'package:frontend/controllers/profile_controller.dart';
 import 'package:frontend/controllers/socket_controller.dart';
 import 'package:frontend/controllers/upload_controller.dart';
 import 'package:frontend/servicies/ai_chat_service.dart';
-
+import 'package:frontend/servicies/ai_service.dart';
 import 'package:frontend/servicies/audit_service.dart';
 import 'package:frontend/servicies/comment_service.dart';
 import 'package:frontend/servicies/notification_service.dart';
 import 'package:frontend/servicies/profile_service.dart';
 import 'package:frontend/servicies/ticket_service.dart';
+import 'package:frontend/servicies/upload_service.dart';
 import 'package:get/get.dart';
 
 import '../controllers/auth_controller.dart';
 import '../controllers/dashboard_controller.dart';
 import '../controllers/ticket_controller.dart';
-
 import '../servicies/dashboard_service.dart';
-
-import 'package:dio/dio.dart';
 
 class InitialBinding extends Bindings {
   @override
   void dependencies() {
-    /// Dio
-    Get.lazyPut<Dio>(
-      () => Dio(),
+    // ── Navigation ────────────────────────────────────────────────────────
+    Get.lazyPut<NavigationController>(
+      () => NavigationController(),
       fenix: true,
     );
 
-    /// Auth
+    // ── Auth ──────────────────────────────────────────────────────────────
     Get.lazyPut<AuthController>(
       () => AuthController(),
       fenix: true,
     );
 
-    /// Dashboard
+    // ── Socket ────────────────────────────────────────────────────────────
+    Get.lazyPut<SocketController>(
+      () => SocketController(),
+      fenix: true,
+    );
+
+    // ── Dashboard ─────────────────────────────────────────────────────────
+    Get.lazyPut<AiService>(
+      () => AiService(),
+      fenix: true,
+    );
+
+    Get.lazyPut<UploadService>(
+      () => UploadService(),
+      fenix: true,
+    );
+
     Get.lazyPut<DashboardService>(
       () => DashboardService(),
       fenix: true,
     );
 
     Get.lazyPut<DashboardController>(
-      () => DashboardController(),
+      () => DashboardController(Get.find<DashboardService>()),
       fenix: true,
     );
 
-    /// Ticket
+    // ── Ticket ────────────────────────────────────────────────────────────
+    // TicketService now uses ApiService.instance.dio internally — no Dio arg.
     Get.lazyPut<TicketService>(
-      () => TicketService(Get.find<Dio>()),
+      () => TicketService(),
       fenix: true,
     );
 
@@ -61,87 +76,75 @@ class InitialBinding extends Bindings {
       fenix: true,
     );
 
+    // ── Upload ────────────────────────────────────────────────────────────
     Get.lazyPut<UploadController>(
-  () => UploadController(),
-  fenix: true,
-);
+      () => UploadController(Get.find<UploadService>()),
+      fenix: true,
+    );
 
-Get.lazyPut<AiController>(
-  () => AiController(),
-  fenix: true,
-);
+    // ── AI ────────────────────────────────────────────────────────────────
+    Get.lazyPut<AiController>(
+      () => AiController(Get.find<AiService>()),
+      fenix: true,
+    );
 
-Get.lazyPut<SocketController>(
-  () => SocketController(),
-  fenix: true,
-);
+    // ── Notification ──────────────────────────────────────────────────────
+    // NotificationService now uses ApiService.instance.dio — no Dio arg.
+    Get.lazyPut<NotificationService>(
+      () => NotificationService(),
+      fenix: true,
+    );
 
+    Get.lazyPut<NotificationController>(
+      () => NotificationController(Get.find<NotificationService>()),
+      fenix: true,
+    );
 
-Get.lazyPut<NotificationService>(
-  () => NotificationService(Get.find()),
-  fenix: true,
-);
+    // ── Profile ───────────────────────────────────────────────────────────
+    // ProfileService now uses ApiService.instance.dio — no Dio arg.
+    Get.lazyPut<ProfileService>(
+      () => ProfileService(),
+      fenix: true,
+    );
 
-Get.lazyPut<NotificationController>(
-  () => NotificationController(
-    Get.find<NotificationService>(),
-  ),
-  fenix: true,
-);
-Get.lazyPut<ProfileService>(
-  () => ProfileService(Get.find()),
-  fenix: true,
-);
+    Get.lazyPut<ProfileController>(
+      () => ProfileController(Get.find<ProfileService>()),
+      fenix: true,
+    );
 
-Get.lazyPut<ProfileController>(
-  () => ProfileController(
-    Get.find<ProfileService>(),
-  ),
-  fenix: true,
-);
-Get.lazyPut<CommentService>(
-  () => CommentService(Get.find()),
-  fenix: true,
-);
+    // ── Comment ───────────────────────────────────────────────────────────
+    // CommentService now uses ApiService.instance.dio — no Dio arg.
+    Get.lazyPut<CommentService>(
+      () => CommentService(),
+      fenix: true,
+    );
 
-Get.lazyPut<CommentController>(
-  () => CommentController(
-    Get.find<CommentService>(),
-  ),
-  fenix: true,
-);
+    Get.lazyPut<CommentController>(
+      () => CommentController(Get.find<CommentService>()),
+      fenix: true,
+    );
 
+    // ── Audit ─────────────────────────────────────────────────────────────
+    // AuditService now uses ApiService.instance.dio — no Dio arg.
+    Get.lazyPut<AuditService>(
+      () => AuditService(),
+      fenix: true,
+    );
 
+    Get.lazyPut<AuditController>(
+      () => AuditController(Get.find<AuditService>()),
+      fenix: true,
+    );
 
-Get.lazyPut<AuditService>(
-  () => AuditService(Get.find()),
-  fenix: true,
-);
+    // ── AI Chat ───────────────────────────────────────────────────────────
+    Get.lazyPut<AIChatService>(
+      () => AIChatService(),
+      fenix: true,
+    );
 
-Get.lazyPut<AuditController>(
-  () => AuditController(
-    Get.find<AuditService>(),
-  ),
-  fenix: true,
-);
-
-Get.lazyPut<NavigationController>(
-  () => NavigationController(),
-  fenix: true,
-);
-
-Get.lazyPut<AIChatService>(
-  () => AIChatService(Get.find<Dio>()),
-  fenix: true,
-);
-
-Get.lazyPut<AIChatController>(
-  () => AIChatController(
-    Get.find<AIChatService>(),
-  ),
-  fenix: true,
-);
-
-
+    Get.lazyPut<AIChatController>(
+      () => AIChatController(Get.find<AIChatService>()),
+      fenix: true,
+    );
   }
 }

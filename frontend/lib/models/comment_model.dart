@@ -18,13 +18,19 @@ class CommentModel {
 
   factory CommentModel.fromJson(
       Map<String, dynamic> json) {
+    final ticketRaw = json["ticket"];
+    final ticketId = ticketRaw is Map
+        ? (ticketRaw["_id"] ?? ticketRaw["id"] ?? "")
+        : ticketRaw ?? "";
+
     return CommentModel(
       id: json["_id"] ?? "",
-      ticketId: json["ticket"] ?? "",
+      ticketId: ticketId.toString(),
       message: json["message"] ?? "",
-      createdAt: DateTime.parse(
-        json["createdAt"],
-      ),
+      createdAt: DateTime.tryParse(
+            json["createdAt"]?.toString() ?? "",
+          ) ??
+          DateTime.now(),
       user: CommentUser.fromJson(
         json["user"] ?? {},
       ),

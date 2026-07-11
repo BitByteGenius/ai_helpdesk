@@ -37,15 +37,6 @@ class DashboardHeader extends StatelessWidget {
 
               SizedBox(height: 6),
 
-              Text(
-                "Rahul",
-                style: TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-
-              SizedBox(height: 5),
 
               Text(
                 "Manage your support tickets efficiently.",
@@ -57,40 +48,7 @@ class DashboardHeader extends StatelessWidget {
           ),
         ),
 
-        IconButton(
-          onPressed: () {},
-
-          icon: Stack(
-            children: [
-
-              const Icon(
-                Icons.notifications_none,
-                
-                size: 30,
-              ),
-
-              Positioned(
-                right: 0,
-                top: 0,
-                child: Container(
-                  width: 10,
-                  height: 10,
-                  decoration: const BoxDecoration(
-                    color: Colors.red,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-              )
-            ],
-          ),
-        ),
-
-        const SizedBox(width: 15),
-
-        const CircleAvatar(
-          radius: 24,
-          child: Icon(Icons.person),
-        ),
+        
       ],
     );
   }

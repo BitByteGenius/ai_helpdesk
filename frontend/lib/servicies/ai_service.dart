@@ -1,52 +1,29 @@
 import 'package:dio/dio.dart';
-import 'package:frontend/core/constant/api_constant.dart';
-import 'package:get_storage/get_storage.dart';
-
+import 'package:frontend/servicies/api_service.dart';
 import '../models/ai_analysis_model.dart';
 
+/// AI service — uses the singleton ApiService Dio so auth token
+/// from SharedPreferences is automatically injected on every request.
 class AiService {
-  final Dio _dio = Dio();
-  final GetStorage _storage = GetStorage();
+  final Dio _dio = ApiService.instance.dio;
 
-  AiService() {
-    _dio.options.baseUrl = ApiConstants.baseUrl;
-    _dio.options.connectTimeout = ApiConstants.timeout;
-    _dio.options.receiveTimeout = ApiConstants.timeout;
-
-    _dio.interceptors.add(
-      InterceptorsWrapper(
-        onRequest: (options, handler) {
-          final token = _storage.read("token");
-
-          if (token != null) {
-            options.headers["Authorization"] = "Bearer $token";
-          }
-
-          return handler.next(options);
-        },
-      ),
-    );
-  }
-
-  /// Analyze Ticket
+  /// Analyze Ticket — returns category, priority, summary, duplicate flag
   Future<AiAnalysisModel> analyzeTicket({
     required String title,
     required String description,
   }) async {
     final response = await _dio.post(
-      "/ai/analyze-ticket",
+      "ai/analyze-ticket",
       data: {
         "title": title,
         "description": description,
       },
     );
 
-    return AiAnalysisModel.fromJson(
-      response.data["data"],
-    );
+    return AiAnalysisModel.fromJson(response.data["data"]);
   }
 
-  /// Generate Reply
+  /// Generate a suggested reply for a ticket
   Future<String> generateReply({
     required String title,
     required String description,
@@ -54,7 +31,7 @@ class AiService {
     required String priority,
   }) async {
     final response = await _dio.post(
-      "/ai/reply",
+      "ai/reply",
       data: {
         "title": title,
         "description": description,
@@ -63,48 +40,36 @@ class AiService {
       },
     );
 
-    return response.data["data"]["reply"];
+    return response.data["data"]["reply"] as String? ?? "";
   }
 
-  /// Regenerate Summary
-  Future<String> summarize(
-    String description,
-  ) async {
+  /// Summarize a ticket description
+  Future<String> summarize(String description) async {
     final response = await _dio.post(
-      "/ai/summary",
-      data: {
-        "description": description,
-      },
+      "ai/summary",
+      data: {"description": description},
     );
 
-    return response.data["data"]["summary"];
+    return response.data["data"]["summary"] as String? ?? "";
   }
 
-  /// Predict Category
-  Future<String> category(
-    String description,
-  ) async {
+  /// Predict category from description
+  Future<String> category(String description) async {
     final response = await _dio.post(
-      "/ai/category",
-      data: {
-        "description": description,
-      },
+      "ai/category",
+      data: {"description": description},
     );
 
-    return response.data["data"]["category"];
+    return response.data["data"]["category"] as String? ?? "";
   }
 
-  /// Predict Priority
-  Future<String> priority(
-    String description,
-  ) async {
+  /// Predict priority from description
+  Future<String> priority(String description) async {
     final response = await _dio.post(
-      "/ai/priority",
-      data: {
-        "description": description,
-      },
+      "ai/priority",
+      data: {"description": description},
     );
 
-    return response.data["data"]["priority"];
+    return response.data["data"]["priority"] as String? ?? "";
   }
 }

@@ -45,19 +45,22 @@ class _TicketSearchState extends State<TicketSearch> {
         hintText: "Search tickets...",
         prefixIcon: const Icon(Icons.search),
 
-        suffixIcon: Obx(() {
-          if (controller.searchController.text.isEmpty) {
-            return const SizedBox.shrink();
-          }
+        suffixIcon: ValueListenableBuilder<TextEditingValue>(
+          valueListenable: controller.searchController,
+          builder: (context, value, _) {
+            if (value.text.isEmpty) {
+              return const SizedBox.shrink();
+            }
 
-          return IconButton(
-            icon: const Icon(Icons.close),
-            onPressed: () {
-              controller.searchController.clear();
-              controller.searchTickets("");
-            },
-          );
-        }),
+            return IconButton(
+              icon: const Icon(Icons.close),
+              onPressed: () {
+                controller.searchController.clear();
+                controller.searchTickets("");
+              },
+            );
+          },
+        ),
 
         filled: true,
         fillColor: Colors.grey.shade100,

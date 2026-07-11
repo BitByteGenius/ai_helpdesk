@@ -1,12 +1,12 @@
+import 'package:frontend/servicies/api_service.dart';
 import 'package:dio/dio.dart';
-import 'package:frontend/models/ticket_model.dart';
+import '../models/ticket_model.dart';
 
 class TicketService {
-  final Dio _dio;
+  // Use the singleton ApiService Dio — it has baseUrl, auth interceptor, timeouts.
+  final Dio _dio = ApiService.instance.dio;
 
-  TicketService(this._dio);
-
-  /// Get All Tickets
+  /// Get All Tickets (Admin → all; User → own)
   Future<List<TicketModel>> getTickets({
     int page = 1,
     int limit = 10,
@@ -21,22 +21,19 @@ class TicketService {
         queryParameters: {
           "page": page,
           "limit": limit,
-          "search": search,
-          "status": ?status,
-          "priority": ?priority,
-          "category": ?category,
+          if (search.isNotEmpty) "search": search,
+          if (status != null && status.isNotEmpty) "status": status,
+          if (priority != null && priority.isNotEmpty) "priority": priority,
+          if (category != null && category.isNotEmpty) "category": category,
         },
       );
 
       final List data = response.data["data"];
 
-      return data
-          .map((e) => TicketModel.fromJson(e))
-          .toList();
+      return data.map((e) => TicketModel.fromJson(e)).toList();
     } on DioException catch (e) {
       throw Exception(
-        e.response?.data["message"] ??
-            "Unable to fetch tickets",
+        e.response?.data["message"] ?? "Unable to fetch tickets",
       );
     }
   }
@@ -44,55 +41,47 @@ class TicketService {
   /// Get Ticket Details
   Future<TicketModel> getTicket(String id) async {
     try {
-      final response = await _dio.get(
-        "tickets/$id",
-      );
+      final response = await _dio.get("tickets/$id");
 
-      return TicketModel.fromJson(
-        response.data["data"],
-      );
+      return TicketModel.fromJson(response.data["data"]);
     } on DioException catch (e) {
       throw Exception(
-        e.response?.data["message"] ??
-            "Unable to fetch ticket",
+        e.response?.data["message"] ?? "Unable to fetch ticket",
       );
     }
   }
 
   /// Create Ticket
   Future<TicketModel> createTicket({
-  required String title,
-  required String description,
-  required String category,
-  required String priority,
-  String summary = "",
-  bool duplicateTicket = false,
-  List<String> attachments = const [],
-}) async {
-  try {
-    final response = await _dio.post(
-      "tickets",
-      data: {
-        "title": title,
-        "description": description,
-        "category": category,
-        "priority": priority,
-        "summary": summary,
-        "duplicateTicket": duplicateTicket,
-        "attachments": attachments,
-      },
-    );
+    required String title,
+    required String description,
+    required String category,
+    required String priority,
+    String summary = "",
+    bool duplicateTicket = false,
+    List<String> attachments = const [],
+  }) async {
+    try {
+      final response = await _dio.post(
+        "tickets",
+        data: {
+          "title": title,
+          "description": description,
+          "category": category,
+          "priority": priority,
+          "summary": summary,
+          "duplicateTicket": duplicateTicket,
+          "attachments": attachments,
+        },
+      );
 
-    return TicketModel.fromJson(
-      response.data["data"],
-    );
-  } on DioException catch (e) {
-    throw Exception(
-      e.response?.data["message"] ??
-          "Unable to create ticket",
-    );
+      return TicketModel.fromJson(response.data["data"]);
+    } on DioException catch (e) {
+      throw Exception(
+        e.response?.data["message"] ?? "Unable to create ticket",
+      );
+    }
   }
-}
 
   /// Update Ticket
   Future<TicketModel> updateTicket({
@@ -100,18 +89,12 @@ class TicketService {
     required Map<String, dynamic> data,
   }) async {
     try {
-      final response = await _dio.put(
-        "tickets/$id",
-        data: data,
-      );
+      final response = await _dio.put("tickets/$id", data: data);
 
-      return TicketModel.fromJson(
-        response.data["data"],
-      );
+      return TicketModel.fromJson(response.data["data"]);
     } on DioException catch (e) {
       throw Exception(
-        e.response?.data["message"] ??
-            "Unable to update ticket",
+        e.response?.data["message"] ?? "Unable to update ticket",
       );
     }
   }
@@ -119,13 +102,10 @@ class TicketService {
   /// Delete Ticket
   Future<void> deleteTicket(String id) async {
     try {
-      await _dio.delete(
-        "tickets/$id",
-      );
+      await _dio.delete("tickets/$id");
     } on DioException catch (e) {
       throw Exception(
-        e.response?.data["message"] ??
-            "Unable to delete ticket",
+        e.response?.data["message"] ?? "Unable to delete ticket",
       );
     }
   }
@@ -138,18 +118,13 @@ class TicketService {
     try {
       final response = await _dio.put(
         "tickets/$ticketId/assign",
-        data: {
-          "assignedTo": assignedTo,
-        },
+        data: {"assignedTo": assignedTo},
       );
 
-      return TicketModel.fromJson(
-        response.data["data"],
-      );
+      return TicketModel.fromJson(response.data["data"]);
     } on DioException catch (e) {
       throw Exception(
-        e.response?.data["message"] ??
-            "Unable to assign ticket",
+        e.response?.data["message"] ?? "Unable to assign ticket",
       );
     }
   }
@@ -162,57 +137,30 @@ class TicketService {
     try {
       final response = await _dio.put(
         "tickets/$ticketId/status",
-        data: {
-          "status": status,
-        },
+        data: {"status": status},
       );
 
-      return TicketModel.fromJson(
-        response.data["data"],
-      );
+      return TicketModel.fromJson(response.data["data"]);
     } on DioException catch (e) {
       throw Exception(
-        e.response?.data["message"] ??
-            "Unable to update status",
+        e.response?.data["message"] ?? "Unable to update status",
       );
     }
   }
 
-  Future<TicketModel> closeTicket(
-  String ticketId,
-) async {
-  final response = await _dio.put(
-    "tickets/$ticketId/status",
-    data: {
-      "status": "Closed",
-    },
-  );
+  /// Close Ticket
+  Future<TicketModel> closeTicket(String ticketId) async {
+    return updateStatus(ticketId: ticketId, status: "Closed");
+  }
 
-  return TicketModel.fromJson(
-    response.data["data"],
-  );
-}
+  /// Reopen Ticket
+  Future<TicketModel> reopenTicket(String ticketId) async {
+    return updateStatus(ticketId: ticketId, status: "Open");
+  }
 
-Future<TicketModel> reopenTicket(
-  String ticketId,
-) async {
-  final response = await _dio.put(
-    "tickets/$ticketId/status",
-    data: {
-      "status": "Open",
-    },
-  );
-
-  return TicketModel.fromJson(
-    response.data["data"],
-  );
-}
-
-Future<Map<String, dynamic>> dashboard() async {
-  final response = await _dio.get(
-    "dashboard",
-  );
-
-  return response.data["data"];
-}
+  /// Dashboard Summary (kept for backward compat)
+  Future<Map<String, dynamic>> dashboard() async {
+    final response = await _dio.get("dashboard");
+    return response.data["data"];
+  }
 }

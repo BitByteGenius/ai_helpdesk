@@ -21,19 +21,23 @@ export const aiChat = async (req, res) => {
     });
 
     // Audit Log
-    if (req.user) {
-      await createAudit({
-        user: req.user.id,
-        action: "AI_ANALYSIS",
-        entity: "AI",
-        description: "User interacted with AI Copilot",
-        newData: {
-          prompt: message,
-          response,
-        },
-        ipAddress: req.ip,
-        userAgent: req.headers["user-agent"],
-      });
+    try {
+      if (req.user?.userId) {
+        await createAudit({
+          user: req.user.userId,
+          action: "AI_CHAT",
+          entity: "AI",
+          description: "User interacted with AI Copilot",
+          newData: {
+            prompt: message,
+            response,
+          },
+          ipAddress: req.ip,
+          userAgent: req.headers["user-agent"],
+        });
+      }
+    } catch (auditError) {
+      console.warn("AI chat audit failed (non-fatal):", auditError.message);
     }
 
     return res.status(200).json({

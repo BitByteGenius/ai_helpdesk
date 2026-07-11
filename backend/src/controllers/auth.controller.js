@@ -97,20 +97,24 @@ export const authCreateController = async (req, res) => {
     const token = generateToken(user);
 
     
-    await createAudit({
-  user: user._id,
-  action: "REGISTER",
-  entity: "AUTH",
-  entityId: user._id,
-  description: "New user registered",
-  newData: {
-    name: user.name,
-    email: user.email,
-    role: user.role,
-  },
-  ipAddress: req.ip,
-  userAgent: req.headers["user-agent"],
-});
+    try {
+      await createAudit({
+        user: user._id,
+        action: "REGISTER",
+        entity: "AUTH",
+        entityId: user._id,
+        description: "New user registered",
+        newData: {
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        },
+        ipAddress: req.ip,
+        userAgent: req.headers["user-agent"],
+      });
+    } catch (auditError) {
+      console.warn("Register audit failed (non-fatal):", auditError.message);
+    }
 
     return res.status(201).json({
       success: true,
@@ -165,14 +169,18 @@ export const authLoginController = async (req, res) => {
     }
 
     const token = generateToken(user);
-    await createAudit({
-  user: user._id,
-  action: "LOGIN",
-  entity: "AUTH",
-  description: `${user.name} logged into the system`,
-  ipAddress: req.ip,
-  userAgent: req.headers["user-agent"],
-});
+    try {
+      await createAudit({
+        user: user._id,
+        action: "LOGIN",
+        entity: "AUTH",
+        description: `${user.name} logged into the system`,
+        ipAddress: req.ip,
+        userAgent: req.headers["user-agent"],
+      });
+    } catch (auditError) {
+      console.warn("Login audit failed (non-fatal):", auditError.message);
+    }
 
     return res.status(200).json({
       success: true,

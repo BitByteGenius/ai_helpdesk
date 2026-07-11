@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/models/ai_model/ai_chat_model.dart';
 import 'package:frontend/models/ai_model/ai_message_model.dart';
-import 'package:get/get_rx/src/rx_types/rx_types.dart';
-import 'package:get/get_state_manager/src/simple/get_controllers.dart';
-
-
+import 'package:get/get.dart';
 import '../servicies/ai_chat_service.dart';
 
 class AIChatController extends GetxController {
@@ -66,5 +63,11 @@ class AIChatController extends GetxController {
     }
 
     isTyping.value = false;
+  }
+
+  @override
+  void onClose() {
+    inputController.dispose();
+    super.onClose();
   }
 }

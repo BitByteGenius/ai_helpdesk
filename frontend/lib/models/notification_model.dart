@@ -30,7 +30,8 @@ class NotificationModel {
       referenceId: json["referenceId"],
       referenceModel: json["referenceModel"],
       createdAt: json["createdAt"] != null
-          ? DateTime.parse(json["createdAt"])
+          ? DateTime.tryParse(json["createdAt"].toString()) ??
+              DateTime.now()
           : DateTime.now(),
     );
   }

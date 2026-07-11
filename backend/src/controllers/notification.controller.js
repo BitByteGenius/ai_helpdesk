@@ -7,11 +7,13 @@ import {
 
 /**
  * GET /api/notifications
+ * Returns all notifications for the logged-in user (most recent first).
  */
 export const getNotifications = async (req, res) => {
   try {
+    // JWT payload uses `userId` (set in auth.controller.js generateToken)
     const notifications = await Notification.find({
-      user: req.user.id,
+      user: req.user.userId,
     })
       .sort({ createdAt: -1 })
       .limit(100);
@@ -36,7 +38,7 @@ export const getNotifications = async (req, res) => {
 export const getUnreadCount = async (req, res) => {
   try {
     const count = await Notification.countDocuments({
-      user: req.user.id,
+      user: req.user.userId,
       isRead: false,
     });
 
@@ -63,7 +65,7 @@ export const readNotification = async (req, res) => {
   try {
     const notification = await Notification.findOne({
       _id: req.params.id,
-      user: req.user.id,
+      user: req.user.userId,
     });
 
     if (!notification) {
@@ -95,7 +97,7 @@ export const readNotification = async (req, res) => {
  */
 export const readAllNotifications = async (req, res) => {
   try {
-    await markAllAsRead(req.user.id);
+    await markAllAsRead(req.user.userId);
 
     res.status(200).json({
       success: true,
@@ -118,7 +120,7 @@ export const removeNotification = async (req, res) => {
   try {
     const notification = await Notification.findOne({
       _id: req.params.id,
-      user: req.user.id,
+      user: req.user.userId,
     });
 
     if (!notification) {

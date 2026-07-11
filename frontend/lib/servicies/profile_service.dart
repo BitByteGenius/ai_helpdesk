@@ -1,31 +1,26 @@
 import 'package:dio/dio.dart';
-
+import 'package:frontend/servicies/api_service.dart';
 import '../models/profile_model.dart';
 
+/// Profile service — uses the singleton ApiService Dio so auth token
+/// from SharedPreferences is automatically injected on every request.
 class ProfileService {
-  final Dio _dio;
+  final Dio _dio = ApiService.instance.dio;
 
-  ProfileService(this._dio);
-
-  /// Get Profile
+  /// Get current user profile
   Future<ProfileModel> getProfile() async {
     try {
-      final response = await _dio.get(
-        "users/profile",
-      );
+      final response = await _dio.get("users/profile");
 
-      return ProfileModel.fromJson(
-        response.data["data"],
-      );
+      return ProfileModel.fromJson(response.data["data"]);
     } on DioException catch (e) {
       throw Exception(
-        e.response?.data["message"] ??
-            "Unable to fetch profile",
+        e.response?.data["message"] ?? "Unable to fetch profile",
       );
     }
   }
 
-  /// Update Profile
+  /// Update profile details
   Future<ProfileModel> updateProfile({
     required String name,
     required String email,
@@ -39,22 +34,21 @@ class ProfileService {
           "name": name,
           "email": email,
           "phone": phone,
-          "profileImage": ?profileImage,
+          ...?(profileImage != null
+              ? {"profileImage": profileImage}
+              : null),
         },
       );
 
-      return ProfileModel.fromJson(
-        response.data["data"],
-      );
+      return ProfileModel.fromJson(response.data["data"]);
     } on DioException catch (e) {
       throw Exception(
-        e.response?.data["message"] ??
-            "Unable to update profile",
+        e.response?.data["message"] ?? "Unable to update profile",
       );
     }
   }
 
-  /// Change Password
+  /// Change password
   Future<void> changePassword({
     required String currentPassword,
     required String newPassword,
@@ -69,8 +63,7 @@ class ProfileService {
       );
     } on DioException catch (e) {
       throw Exception(
-        e.response?.data["message"] ??
-            "Unable to change password",
+        e.response?.data["message"] ?? "Unable to change password",
       );
     }
   }
