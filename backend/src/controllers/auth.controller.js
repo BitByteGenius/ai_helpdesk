@@ -173,7 +173,17 @@ export const authLoginController = async (req, res) => {
 // ──────────────────────────────────────────────────────────────────────────
 export const adminLoginController = async (req, res) => {
   try {
-    const { email, password } = req.body;
+   /* const { email, password } = req.body;*/
+   if (!req.body) {
+  return res.status(400).json({
+    success: false,
+    message: "Request body is missing",
+  });
+}
+
+const { email, password } = req.body;
+
+///////////////////////////
 
     if (!email || !password) {
       return res.status(400).json({
