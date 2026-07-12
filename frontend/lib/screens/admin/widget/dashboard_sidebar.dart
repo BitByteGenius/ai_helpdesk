@@ -25,16 +25,16 @@ class DashboardSidebar extends StatelessWidget {
       icon: Icons.confirmation_number_rounded,
       route: AppRoutes.tickets,
     ),
-    SidebarMenu(
-      title: "Users",
-      icon: Icons.people_alt_rounded,
-      route: AppRoutes.users,
-    ),
-    SidebarMenu(
-      title: "Analytics",
-      icon: Icons.analytics_rounded,
-      route: AppRoutes.analytics,
-    ),
+    // SidebarMenu(
+    //   title: "Users",
+    //   icon: Icons.people_alt_rounded,
+    //   route: AppRoutes.users,
+    // ),
+    // SidebarMenu(
+    //   title: "Analytics",
+    //   icon: Icons.analytics_rounded,
+    //   route: AppRoutes.analytics,
+    // ),
     SidebarMenu(
       title: "Settings",
       icon: Icons.settings_rounded,

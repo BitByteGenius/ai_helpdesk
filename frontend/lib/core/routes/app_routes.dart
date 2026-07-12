@@ -110,7 +110,7 @@ class AppRouter {
     // ── Admin ─────────────────────────────────────────────────────────────
     GetPage(
       name: AppRoutes.dashboard,
-      page: () => const AdminDashboard(),
+      page: () =>  const AdminDashboard(),
     ),
 
     GetPage(
