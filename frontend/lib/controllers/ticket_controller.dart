@@ -261,10 +261,16 @@ Future<void> createTicket() async {
     final ticket = await _service.createTicket(
       title: titleController.text.trim(),
       description: descriptionController.text.trim(),
-      category: analysis?.category ??
-          categoryController.text.trim(),
-      priority: analysis?.priority ??
-          priorityController.text.trim(),
+      category: (analysis?.category.isNotEmpty == true
+              ? analysis!.category
+              : categoryController.text.trim().isNotEmpty
+                  ? categoryController.text.trim()
+                  : "Other"),
+      priority: (analysis?.priority.isNotEmpty == true
+              ? analysis!.priority
+              : priorityController.text.trim().isNotEmpty
+                  ? priorityController.text.trim()
+                  : "Medium"),
       summary: analysis?.aiSummary ??
           summaryController.text.trim(),
       duplicateTicket:

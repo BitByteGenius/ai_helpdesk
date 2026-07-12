@@ -146,5 +146,9 @@ class InitialBinding extends Bindings {
       () => AIChatController(Get.find<AIChatService>()),
       fenix: true,
     );
+
+
+
+    Get.lazyPut(() => TicketController(Get.find()));
   }
 }

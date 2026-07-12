@@ -1,6 +1,3 @@
-
-
-
 import 'package:flutter/material.dart';
 import 'package:frontend/controllers/ai_controller.dart';
 import 'package:frontend/controllers/ticket_controller.dart';
@@ -18,36 +15,32 @@ class CreateTicketScreen extends StatefulWidget {
 }
 
 class _CreateTicketScreenState extends State<CreateTicketScreen> {
-  final _title = TextEditingController();
-  final _description = TextEditingController();
-  final _category = TextEditingController();
-  final _priority = TextEditingController();
-  final _summary = TextEditingController();
-  final ticketController = Get.find<TicketController>();
-
-  final ai = Get.find<AiController>();
-  final upload = Get.find<UploadController>();
+  // Use the controller's own TextEditingControllers so that
+  // ticketController.createTicket() can read the values the user typed.
+  late final TicketController ticketController;
+  late final AiController ai;
+  late final UploadController upload;
 
   @override
   void initState() {
     super.initState();
-    // Safely update form fields whenever the AI updates its analysis results
+    ticketController = Get.find<TicketController>();
+    ai = Get.find<AiController>();
+    upload = Get.find<UploadController>();
+
+    // Sync AI analysis results into the controller's own category/priority/summary
+    // controllers so they are included in ticket submission.
     ever(ai.analysis, (result) {
       if (result != null) {
-        _category.text = result.category;
-        _priority.text = result.priority;
-        _summary.text = result.aiSummary;
+        ticketController.categoryController.text = result.category;
+        ticketController.priorityController.text = result.priority;
+        ticketController.summaryController.text = result.aiSummary;
       }
     });
   }
 
   @override
   void dispose() {
-    _title.dispose();
-    _description.dispose();
-    _category.dispose();
-    _priority.dispose();
-    _summary.dispose();
     super.dispose();
   }
 
@@ -92,7 +85,7 @@ class _CreateTicketScreenState extends State<CreateTicketScreen> {
                     icon: Icons.assignment_outlined,
                     children: [
                       TextField(
-                        controller: _title,
+                        controller: ticketController.titleController,
                         decoration: const InputDecoration(
                           labelText: "Title",
                           hintText: "Briefly describe the issue",
@@ -102,7 +95,7 @@ class _CreateTicketScreenState extends State<CreateTicketScreen> {
                       ),
                       const SizedBox(height: 20),
                       TextField(
-                        controller: _description,
+                        controller: ticketController.descriptionController,
                         maxLines: 5,
                         decoration: const InputDecoration(
                           labelText: "Description",
@@ -143,8 +136,8 @@ class _CreateTicketScreenState extends State<CreateTicketScreen> {
                           ? null
                           : () {
                               ai.analyzeTicket(
-                                title: _title.text,
-                                description: _description.text,
+                                title: ticketController.titleController.text,
+                                description: ticketController.descriptionController.text,
                               );
                             },
                     ),
@@ -182,19 +175,19 @@ class _CreateTicketScreenState extends State<CreateTicketScreen> {
                         if (isDesktop)
                           Row(
                             children: [
-                              Expanded(child: _buildMetaField("Category", _category, Icons.category_outlined)),
+                              Expanded(child: _buildMetaField("Category", ticketController.categoryController, Icons.category_outlined)),
                               const SizedBox(width: 20),
-                              Expanded(child: _buildMetaField("Priority", _priority, Icons.outlined_flag)),
+                              Expanded(child: _buildMetaField("Priority", ticketController.priorityController, Icons.outlined_flag)),
                             ],
                           )
                         else ...[
-                          _buildMetaField("Category", _category, Icons.category_outlined),
+                          _buildMetaField("Category", ticketController.categoryController, Icons.category_outlined),
                           const SizedBox(height: 20),
-                          _buildMetaField("Priority", _priority, Icons.outlined_flag),
+                          _buildMetaField("Priority", ticketController.priorityController, Icons.outlined_flag),
                         ],
                         const SizedBox(height: 20),
                         TextField(
-                          controller: _summary,
+                          controller: ticketController.summaryController,
                           maxLines: 3,
                           readOnly: true,
                           decoration: InputDecoration(
@@ -247,9 +240,28 @@ class _CreateTicketScreenState extends State<CreateTicketScreen> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      onPressed: ()async {
-                        await ticketController.createTicket();
-                      },
+                      onPressed: ticketController.isLoading.value
+                          ? null
+                          : () async {
+                              // Basic validation
+                              if (ticketController.titleController.text.trim().isEmpty) {
+                                Get.snackbar(
+                                  'Validation Error',
+                                  'Please enter a ticket title.',
+                                  snackPosition: SnackPosition.BOTTOM,
+                                );
+                                return;
+                              }
+                              if (ticketController.descriptionController.text.trim().isEmpty) {
+                                Get.snackbar(
+                                  'Validation Error',
+                                  'Please enter a description.',
+                                  snackPosition: SnackPosition.BOTTOM,
+                                );
+                                return;
+                              }
+                              await ticketController.createTicket();
+                            },
                       child: const Text(
                         "Submit Ticket",
                         style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),

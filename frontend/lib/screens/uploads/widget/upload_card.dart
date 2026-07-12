@@ -43,7 +43,7 @@ class UploadCard extends StatelessWidget {
                         upload.url,
                         fit: BoxFit.cover,
                         errorBuilder:
-                            (_, _, _) =>
+                            (ctx, err, stack) =>
                                 const Icon(
                           Icons.image,
                           size: 32,
