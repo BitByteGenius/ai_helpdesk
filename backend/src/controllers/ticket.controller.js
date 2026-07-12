@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import Ticket from "../models/ticket.model.js";
 import User from "../models/user.model.js";
+import Upload from "../models/upload.model.js";
 import {
   assignTicketService,
   findTicketService,
@@ -35,6 +36,35 @@ export const createTicket = async (req, res) => {
       aiTroubleshootingAttempted = "",
     } = req.body;
 
+    const resolvedAttachments = [];
+    if (Array.isArray(attachments) && attachments.length > 0) {
+      const attachmentDocs = await Upload.find({
+        _id: { $in: attachments.filter((attachment) => mongoose.Types.ObjectId.isValid(attachment)) },
+        isDeleted: false,
+      });
+
+      const attachmentMap = new Map(
+        attachmentDocs.map((attachment) => [attachment._id.toString(), attachment])
+      );
+
+      for (const attachment of attachments) {
+        if (attachment && typeof attachment === "object") {
+          resolvedAttachments.push(attachment);
+          continue;
+        }
+
+        const matchedUpload = attachmentMap.get(String(attachment));
+        if (matchedUpload) {
+          resolvedAttachments.push({
+            url: matchedUpload.url,
+            fileName: matchedUpload.originalName,
+            fileType: matchedUpload.fileType,
+            fileSize: matchedUpload.fileSize,
+          });
+        }
+      }
+    }
+
     if (!title || !description) {
       return res.status(400).json({
         success: false,
@@ -64,7 +94,7 @@ export const createTicket = async (req, res) => {
               ? duplicateTicket
               : null,
 
-      attachments,
+      attachments: resolvedAttachments,
     });
 
     // Notify all admins
