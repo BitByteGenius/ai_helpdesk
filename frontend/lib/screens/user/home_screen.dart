@@ -67,7 +67,7 @@ class UserDashboard extends GetView<TicketController> {
                           : 1,
                   crossAxisSpacing: 20,
                   mainAxisSpacing: 20,
-                  childAspectRatio: 2.2,
+                  childAspectRatio: 2.0,
                 ),
                 itemCount: controller.tickets.length,
                 itemBuilder: (_, index) {

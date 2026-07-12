@@ -23,6 +23,24 @@ class AuditController extends GetxController {
   final RxInt page = 1.obs;
   final RxInt limit = 20.obs;
 
+  final RxList<AuditModel> ticketAudits = <AuditModel>[].obs;
+  final RxBool isLoadingTicketAudits = false.obs;
+
+  Future<void> fetchTicketAudits(String ticketId) async {
+    try {
+      isLoadingTicketAudits.value = true;
+      final logs = await _service.getEntityAudit(
+        entity: "TICKET",
+        entityId: ticketId,
+      );
+      ticketAudits.assignAll(logs);
+    } catch (e) {
+      print("Failed to fetch ticket audits: $e");
+    } finally {
+      isLoadingTicketAudits.value = false;
+    }
+  }
+
   @override
   void onInit() {
     super.onInit();

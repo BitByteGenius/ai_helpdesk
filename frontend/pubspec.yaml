@@ -28,6 +28,7 @@ dependencies:
 
   # State Management
   get: ^4.6.6
+  flutter_markdown: ^0.7.3
   file_picker: ^11.0.2
   open_filex: ^4.7.0
   mime: ^2.0.0

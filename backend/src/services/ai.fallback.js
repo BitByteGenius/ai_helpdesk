@@ -285,24 +285,83 @@ export const fallbackChatResponse = ({
   history = [],
   duplicateTicket = null,
 }) => {
-  const category = fallbackCategory(message);
-  const priority = fallbackPriority(message);
-  const summary = fallbackSummary(message);
+  const normalized = normalizeText(message).toLowerCase();
+  const isGreeting = /^(hi|hello|hey|good morning|good afternoon|good evening)\b/.test(
+    normalized
+  );
+  const isJokeRequest =
+    normalized.includes("joke") || normalized.includes("make me laugh");
+  const isCasualQuestion =
+    normalized.includes("what are you doing") ||
+    normalized.includes("who are you") ||
+    normalized.includes("how are you");
+  const isExplicitTrouble =
+    containsAny(normalized, [
+      "not working",
+      "error",
+      "issue",
+      "problem",
+      "can't",
+      "cannot",
+      "offline",
+      "failed",
+      "failure",
+      "broken",
+      "stuck",
+      "crash",
+      "printer",
+      "wifi",
+      "password",
+      "login",
+      "email",
+      "server",
+      "network",
+    ]);
 
-  const reply = fallbackReply({
-    title: message,
-    description: message,
-    category,
-    priority,
-  });
+  let reply;
+  let canCreateTicket = false;
+
+  if (isGreeting) {
+    reply = "Hello! 👋 How can I help you today?";
+  } else if (isJokeRequest) {
+    reply = "Why did the computer go to the doctor? Because it had a virus. 😄";
+  } else if (isCasualQuestion) {
+    reply = "Just here to help with whatever you need — questions, explanations, troubleshooting, or even a joke.";
+  } else if (isExplicitTrouble) {
+    const category = fallbackCategory(message);
+    const priority = fallbackPriority(message);
+    const summary = fallbackSummary(message);
+
+    reply = [
+      `Thanks for the details — this looks like a ${category.toLowerCase()} issue.`,
+      fallbackReply({
+        title: message,
+        description: message,
+        category,
+        priority,
+      }),
+      `Summary: ${summary}`,
+    ].join(" ");
+  } else {
+    reply = "Absolutely — what would you like help with?";
+  }
+
+  if (
+    normalized.includes("create a ticket") ||
+    normalized.includes("raise a ticket") ||
+    normalized.includes("contact support") ||
+    normalized.includes("human support")
+  ) {
+    canCreateTicket = true;
+  }
 
   return {
     reply,
-    category,
-    priority,
-    summary,
-    ticketSuggested: true,
-    createTicket: true,
+    category: isExplicitTrouble ? fallbackCategory(message) : null,
+    priority: isExplicitTrouble ? fallbackPriority(message) : null,
+    summary: isExplicitTrouble ? fallbackSummary(message) : null,
+    ticketSuggested: canCreateTicket,
+    createTicket: canCreateTicket,
     duplicate: Boolean(duplicateTicket),
     duplicateTicket: duplicateTicket
       ? {

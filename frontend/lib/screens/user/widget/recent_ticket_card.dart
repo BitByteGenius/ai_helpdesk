@@ -29,13 +29,14 @@ class RecentTicketCard extends StatelessWidget {
           if (ticket != null) {
             Get.toNamed(
               AppRoutes.ticketDetails,
-              arguments: ticket,
+              arguments: ticket!.id,
             );
           }
         },
         child: Padding(
-          padding: const EdgeInsets.all(18),
+          padding: const EdgeInsets.all(14),
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment:
                 CrossAxisAlignment.start,
             children: [
@@ -64,16 +65,13 @@ class RecentTicketCard extends StatelessWidget {
 
               const SizedBox(height: 12),
 
-              Expanded(
-                child: Text(
-                  ticket?.description ??
-                      "User cannot login after password reset.",
-                  maxLines: 3,
-                  overflow:
-                      TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    color: Colors.grey,
-                  ),
+              Text(
+                ticket?.description ??
+                    "User cannot login after password reset.",
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  color: Colors.grey,
                 ),
               ),
 

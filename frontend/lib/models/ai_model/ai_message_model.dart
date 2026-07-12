@@ -1,11 +1,3 @@
-class AIMessageModel {
-  final String message;
-  final bool isUser;
-  final DateTime time;
+import 'chat_message_model.dart';
 
-  AIMessageModel({
-    required this.message,
-    required this.isUser,
-    required this.time,
-  });
-}
+typedef AIMessageModel = ChatMessageModel;

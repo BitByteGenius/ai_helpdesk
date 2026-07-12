@@ -60,6 +60,11 @@ class TicketService {
     String summary = "",
     bool duplicateTicket = false,
     List<String> attachments = const [],
+    String aiConversationTranscript = "",
+    String aiConfidence = "Medium",
+    String aiSuggestedRootCause = "",
+    String aiTroubleshootingAttempted = "",
+    String aiSuggestedReply = "",
   }) async {
     try {
       final response = await _dio.post(
@@ -72,6 +77,11 @@ class TicketService {
           "summary": summary,
           "duplicateTicket": duplicateTicket,
           "attachments": attachments,
+          "aiConversationTranscript": aiConversationTranscript,
+          "aiConfidence": aiConfidence,
+          "aiSuggestedRootCause": aiSuggestedRootCause,
+          "aiTroubleshootingAttempted": aiTroubleshootingAttempted,
+          "suggestedReply": aiSuggestedReply,
         },
       );
 

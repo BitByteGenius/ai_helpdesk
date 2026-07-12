@@ -21,15 +21,19 @@ import {
 export const createTicket = async (req, res) => {
   try {
     const {
-  title,
-  description,
-  category,
-  priority,
-  summary,
-  suggestedReply,
-  duplicateTicket,
-  attachments = [],
-} = req.body;
+      title,
+      description,
+      category,
+      priority,
+      summary,
+      suggestedReply,
+      duplicateTicket,
+      attachments = [],
+      aiConversationTranscript = "",
+      aiConfidence = "Medium",
+      aiSuggestedRootCause = "",
+      aiTroubleshootingAttempted = "",
+    } = req.body;
 
     if (!title || !description) {
       return res.status(400).json({
@@ -39,25 +43,29 @@ export const createTicket = async (req, res) => {
     }
 
     const ticket = await Ticket.create({
-  title: title.trim(),
-  description: description.trim(),
+      title: title.trim(),
+      description: description.trim(),
 
-  category: category || "Other",
-  priority: priority || "Medium",
+      category: category || "Other",
+      priority: priority || "Medium",
 
-  createdBy: req.user.userId,
+      createdBy: req.user.userId,
 
-  aiSummary: summary || "",
-  aiSuggestedReply: suggestedReply || "",
+      aiSummary: summary || "",
+      aiSuggestedReply: suggestedReply || "",
+      aiConversationTranscript,
+      aiConfidence,
+      aiSuggestedRootCause,
+      aiTroubleshootingAttempted,
 
-  duplicateTicket:
-      typeof duplicateTicket === "string" &&
-      mongoose.Types.ObjectId.isValid(duplicateTicket)
-          ? duplicateTicket
-          : null,
+      duplicateTicket:
+          typeof duplicateTicket === "string" &&
+          mongoose.Types.ObjectId.isValid(duplicateTicket)
+              ? duplicateTicket
+              : null,
 
-  attachments,
-});
+      attachments,
+    });
 
     // Notify all admins
     if (req.user.role === "user") {

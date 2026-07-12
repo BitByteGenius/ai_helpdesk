@@ -18,6 +18,10 @@ class TicketModel {
 
   final String aiSummary;
   final String suggestedReply;
+  final String aiConversationTranscript;
+  final String aiConfidence;
+  final String aiSuggestedRootCause;
+  final String aiTroubleshootingAttempted;
 
   final String? duplicateTicket;
 
@@ -37,6 +41,10 @@ class TicketModel {
     this.assignedTo,
     required this.aiSummary,
     required this.suggestedReply,
+    required this.aiConversationTranscript,
+    required this.aiConfidence,
+    required this.aiSuggestedRootCause,
+    required this.aiTroubleshootingAttempted,
     required this.duplicateTicket,
     required this.attachments,
     required this.createdAt,
@@ -90,6 +98,10 @@ class TicketModel {
 
   aiSummary: json["aiSummary"] ?? "",
   suggestedReply: json["aiSuggestedReply"] ?? "",
+  aiConversationTranscript: json["aiConversationTranscript"] ?? "",
+  aiConfidence: json["aiConfidence"] ?? "Medium",
+  aiSuggestedRootCause: json["aiSuggestedRootCause"] ?? "",
+  aiTroubleshootingAttempted: json["aiTroubleshootingAttempted"] ?? "",
 
   duplicateTicket: json["duplicateTicket"]?.toString(),
 
@@ -116,6 +128,11 @@ class TicketModel {
     "category": category,
     "priority": priority,
     "summary": aiSummary,
+    "aiSuggestedReply": suggestedReply,
+    "aiConversationTranscript": aiConversationTranscript,
+    "aiConfidence": aiConfidence,
+    "aiSuggestedRootCause": aiSuggestedRootCause,
+    "aiTroubleshootingAttempted": aiTroubleshootingAttempted,
     "duplicateTicket": duplicateTicket,
     "attachments": attachments.map((e) => e.toJson()).toList(),
   };
