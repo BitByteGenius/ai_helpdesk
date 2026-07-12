@@ -10,7 +10,7 @@ class CommentService {
   /// Get all comments for a ticket
   Future<List<CommentModel>> getComments(String ticketId) async {
     try {
-      final response = await _dio.get("comments/$ticketId");
+      final response = await _dio.get("tickets/$ticketId/comments");
 
       return (response.data["data"] as List)
           .map((e) => CommentModel.fromJson(e))
@@ -29,7 +29,7 @@ class CommentService {
   }) async {
     try {
       final response = await _dio.post(
-        "comments/$ticketId",
+        "tickets/$ticketId/comments",
         data: {"message": message},
       );
 

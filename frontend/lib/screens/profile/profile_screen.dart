@@ -50,7 +50,7 @@ class ProfileScreen extends GetView<ProfileController> {
                 elevation: 0,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(24),
-                  side: BorderSide(color: theme.colorScheme.outlineVariant.withOpacity(0.4)),
+                  side: BorderSide(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.4)),
                 ),
                 child: Padding(
                   padding: EdgeInsets.all(isDesktop ? 40 : 24),
@@ -233,14 +233,14 @@ class ProfileScreen extends GetView<ProfileController> {
       decoration: BoxDecoration(
         color: theme.colorScheme.surfaceContainerLow,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: theme.colorScheme.outlineVariant.withOpacity(0.3)),
+        border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.3)),
       ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: (iconColor ?? theme.colorScheme.primary).withOpacity(0.1),
+              color: (iconColor ?? theme.colorScheme.primary).withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(icon, size: 20, color: iconColor ?? theme.colorScheme.primary),

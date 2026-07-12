@@ -63,7 +63,7 @@ class AIMessageBubble extends GetView<AIChatController> {
                     border: isUser
                         ? null
                         : Border.all(
-                            color: theme.colorScheme.outlineVariant.withOpacity(0.5),
+                            color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
                           ),
                   ),
                   child: isUser
@@ -92,7 +92,7 @@ class AIMessageBubble extends GetView<AIChatController> {
                               color: theme.colorScheme.surfaceContainerLowest,
                               borderRadius: BorderRadius.circular(8),
                               border: Border.all(
-                                color: theme.colorScheme.outlineVariant.withOpacity(0.3),
+                                color: theme.colorScheme.outlineVariant.withValues(alpha: 0.3),
                               ),
                             ),
                           ),

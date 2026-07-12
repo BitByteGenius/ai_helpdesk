@@ -15,7 +15,7 @@ class AIChatService {
         "ai/chat",
         data: {
           "message": message,
-          if (conversationId != null) "conversationId": conversationId,
+          "conversationId": conversationId,
         },
       );
       return response.data;
@@ -80,9 +80,9 @@ class AIChatService {
       final response = await _dio.put(
         "ai/conversations/$id",
         data: {
-          if (title != null) "title": title,
-          if (isPinned != null) "isPinned": isPinned,
-          if (messages != null) "messages": messages,
+          "title": title,
+          "isPinned": isPinned,
+          "messages": messages,
         },
       );
       return AIConversationModel.fromJson(response.data["data"]);
@@ -112,5 +112,4 @@ Future<AIConversationModel> getConversation(String id) async {
   }
 }
 }
-
 

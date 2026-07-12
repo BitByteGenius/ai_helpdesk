@@ -9,6 +9,7 @@ import 'package:frontend/controllers/auth_controller.dart';
 import 'package:frontend/controllers/comment_controller.dart';
 import 'package:frontend/controllers/ticket_controller.dart';
 import 'package:frontend/controllers/audit_controller.dart';
+import 'package:frontend/controllers/socket_controller.dart';
 import 'package:frontend/models/ticket_model.dart';
 import 'package:frontend/models/ai_model/chat_message_model.dart';
 import 'package:get/get.dart';
@@ -30,6 +31,7 @@ class _TicketDetailsScreenState extends State<TicketDetailsScreen> {
   late final CommentController _commentController;
   late final TicketController _ticketController;
   late final AuthController _authController;
+  late final SocketController _socketController;
 
   @override
   void initState() {
@@ -37,14 +39,31 @@ class _TicketDetailsScreenState extends State<TicketDetailsScreen> {
     _commentController = Get.find<CommentController>();
     _ticketController = Get.find<TicketController>();
     _authController = Get.find<AuthController>();
+    _socketController = Get.find<SocketController>();
 
     // Fetch ticket details and comment thread on init
     _commentController.loadComments(widget.ticketId);
     _ticketController.getTicket(widget.ticketId);
 
+    _socketController.onTicketUpdated(_handleTicketUpdated);
+
     // Fetch audits if current user is admin
     if (_authController.user?.role == 'admin') {
       Get.find<AuditController>().fetchTicketAudits(widget.ticketId);
+    }
+  }
+
+  void _handleTicketUpdated(dynamic data) {
+    final payload = data is Map<String, dynamic>
+        ? data
+        : Map<String, dynamic>.from(data as Map);
+
+    if (payload["ticketId"]?.toString() == widget.ticketId) {
+      _ticketController.getTicket(widget.ticketId);
+
+      if (_authController.user?.role == 'admin') {
+        Get.find<AuditController>().fetchTicketAudits(widget.ticketId);
+      }
     }
   }
 
@@ -74,6 +93,10 @@ class _TicketDetailsScreenState extends State<TicketDetailsScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _buildTicketDetailsHeader(ticket, theme),
+                    if (isAdmin) ...[
+                      const SizedBox(height: 16),
+                      _buildAdminActions(ticket, theme),
+                    ],
                     _buildAttachmentsSection(ticket, theme),
                     const SizedBox(height: 16),
                     if (isAdmin) ...[
@@ -117,7 +140,7 @@ class _TicketDetailsScreenState extends State<TicketDetailsScreen> {
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: theme.colorScheme.outlineVariant.withOpacity(0.4)),
+        side: BorderSide(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.4)),
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -217,7 +240,7 @@ class _TicketDetailsScreenState extends State<TicketDetailsScreen> {
                 decoration: BoxDecoration(
                   color: theme.colorScheme.surfaceContainer,
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: theme.colorScheme.outlineVariant.withOpacity(0.3)),
+                  border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.3)),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -245,13 +268,100 @@ class _TicketDetailsScreenState extends State<TicketDetailsScreen> {
     );
   }
 
+  Widget _buildAdminActions(TicketModel ticket, ThemeData theme) {
+    final isClosed = ticket.status == "Closed";
+    final isResolved = ticket.status == "Resolved";
+
+    return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(
+          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.4),
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.admin_panel_settings, color: theme.colorScheme.primary),
+                const SizedBox(width: 8),
+                Text(
+                  "Admin Actions",
+                  style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 12,
+              runSpacing: 12,
+              children: [
+                OutlinedButton.icon(
+                  onPressed: ticket.status == "Open"
+                      ? () => _ticketController.updateStatus(
+                            ticketId: ticket.id,
+                            status: "Assigned",
+                          )
+                      : null,
+                  icon: const Icon(Icons.assignment_ind_outlined),
+                  label: const Text("Assign / Take"),
+                ),
+                OutlinedButton.icon(
+                  onPressed: isClosed
+                      ? null
+                      : () => _ticketController.updateStatus(
+                            ticketId: ticket.id,
+                            status: "In Progress",
+                          ),
+                  icon: const Icon(Icons.play_arrow_outlined),
+                  label: const Text("Start Work"),
+                ),
+                FilledButton.icon(
+                  onPressed: isResolved
+                      ? null
+                      : () => _ticketController.updateStatus(
+                            ticketId: ticket.id,
+                            status: "Resolved",
+                          ),
+                  icon: const Icon(Icons.check_circle_outline),
+                  label: const Text("Mark Resolved"),
+                ),
+                OutlinedButton.icon(
+                  onPressed: isClosed
+                      ? null
+                      : () => _ticketController.updateStatus(
+                            ticketId: ticket.id,
+                            status: "Closed",
+                          ),
+                  icon: const Icon(Icons.lock_outline),
+                  label: const Text("Close Ticket"),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              "Once resolved or closed, the updated status is sent to the user automatically.",
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildChip(String label, Color color) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.12),
+        color: color.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withOpacity(0.5)),
+        border: Border.all(color: color.withValues(alpha: 0.5)),
       ),
       child: Text(
         label,
@@ -349,10 +459,10 @@ class _TicketDetailsScreenState extends State<TicketDetailsScreen> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
         side: BorderSide(
-          color: theme.colorScheme.primary.withOpacity(0.2),
+          color: theme.colorScheme.primary.withValues(alpha: 0.2),
         ),
       ),
-      color: theme.colorScheme.primaryContainer.withOpacity(0.2),
+      color: theme.colorScheme.primaryContainer.withValues(alpha: 0.2),
       child: ExpansionTile(
         leading: Icon(Icons.auto_awesome, color: theme.colorScheme.primary),
         title: Text(
@@ -436,7 +546,7 @@ class _TicketDetailsScreenState extends State<TicketDetailsScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
-              color: _getConfidenceColor(value).withOpacity(0.15),
+              color: _getConfidenceColor(value).withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(12),
               border: Border.all(color: _getConfidenceColor(value)),
             ),

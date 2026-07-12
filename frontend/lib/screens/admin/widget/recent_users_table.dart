@@ -65,7 +65,7 @@ class RecentUsersTable extends StatelessWidget {
                   width: 52,
                   height: 52,
                   decoration: BoxDecoration(
-                    color: Colors.blue.withOpacity(.08),
+                    color: Colors.blue.withValues(alpha: .08),
                     borderRadius: BorderRadius.circular(14),
                   ),
                   child: const Icon(
@@ -270,7 +270,7 @@ class _UserTile extends StatelessWidget {
                       ),
                       decoration: BoxDecoration(
                         color:
-                            roleColor.withOpacity(.12),
+                            roleColor.withValues(alpha: .12),
                         borderRadius:
                             BorderRadius.circular(30),
                       ),

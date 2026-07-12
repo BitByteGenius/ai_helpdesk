@@ -91,7 +91,7 @@ class NotificationScreen extends GetView<NotificationController> {
                 Icon(
                   Icons.notifications_off_outlined,
                   size: 64,
-                  color: theme.colorScheme.onSurfaceVariant.withOpacity(0.4),
+                  color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
                 ),
                 const SizedBox(height: 16),
                 Text(

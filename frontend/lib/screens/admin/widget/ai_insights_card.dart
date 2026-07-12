@@ -18,7 +18,7 @@ class AiInsightsCard extends StatelessWidget {
     return Expanded(
       child: Card(
         elevation: 0,
-        color: color.withOpacity(.08),
+        color: color.withValues(alpha: .08),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(14),
         ),
@@ -28,7 +28,7 @@ class AiInsightsCard extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 24,
-                backgroundColor: color.withOpacity(.15),
+                backgroundColor: color.withValues(alpha: .15),
                 child: Icon(
                   icon,
                   color: color,

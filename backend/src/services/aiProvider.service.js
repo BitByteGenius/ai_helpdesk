@@ -7,6 +7,24 @@ import {
   fallbackChatResponse,
 } from "./ai.fallback.js";
 
+const stripCodeFences = (text) =>
+  String(text ?? "")
+    .replace(/```json\s*/gi, "")
+    .replace(/```\s*/g, "")
+    .trim();
+
+const extractJsonObject = (text) => {
+  const cleaned = stripCodeFences(text);
+  const firstBrace = cleaned.indexOf("{");
+  const lastBrace = cleaned.lastIndexOf("}");
+
+  if (firstBrace === -1 || lastBrace === -1 || lastBrace <= firstBrace) {
+    return null;
+  }
+
+  return cleaned.slice(firstBrace, lastBrace + 1);
+};
+
 // Abstract Base Class
 class AIProvider {
   async chat(conversation) {
@@ -31,9 +49,9 @@ class GeminiProvider extends AIProvider {
     }
 
     const prompt = `
-You are a helpful, friendly conversational AI assistant like ChatGPT or Gemini.
+You are a helpful, friendly conversational AI assistant like Gemini.
 Your first job is to respond naturally to the user's message.
-Only act like an IT support assistant when the user is clearly describing a technical problem.
+Only switch into IT support mode when the user is clearly describing a real technical issue.
 
 Rules:
 1. For greetings, jokes, general knowledge, writing help, coding help, math, science, career advice, and casual conversation, respond naturally and helpfully.
@@ -43,8 +61,9 @@ Rules:
    - the user explicitly asks to create a ticket, or
    - the user says the previous troubleshooting did not work / the issue is still unresolved, or
    - the problem is clearly not solvable in chat and needs human support.
-5. When the user is describing a technical issue, provide short, practical troubleshooting steps first.
-6. Output ONLY a valid JSON object. Do not include markdown code fences. The response must match this schema:
+5. For general conversation, keep "canCreateTicket" false.
+6. When the user is describing a technical issue, provide short, practical troubleshooting steps first.
+7. Output ONLY a valid JSON object. Do not include markdown code fences. The response must match this schema:
 {
   "reply": "your response to the user here (in Markdown format if formatting is helpful)",
   "canCreateTicket": true or false
@@ -55,16 +74,36 @@ ${JSON.stringify(conversation, null, 2)}
 `;
 
     try {
+      console.log("GeminiProvider.chat prompt:", prompt);
       const result = await model.generateContent(prompt);
       const text = result?.response?.text?.() ?? "";
-      const cleanText = text.replace(/```json|```/g, "").trim();
-      const parsed = JSON.parse(cleanText);
-      return {
-        reply: parsed.reply || "",
-        canCreateTicket: typeof parsed.canCreateTicket === "boolean"
-          ? parsed.canCreateTicket
-          : false,
-      };
+      console.log("GeminiProvider.chat raw response:", text);
+
+      const jsonText = extractJsonObject(text);
+      if (!jsonText) {
+        return {
+          reply: stripCodeFences(text) || "",
+          canCreateTicket: false,
+        };
+      }
+
+      try {
+        const parsed = JSON.parse(jsonText);
+        return {
+          reply: typeof parsed.reply === "string" && parsed.reply.trim()
+            ? parsed.reply.trim()
+            : stripCodeFences(text) || "",
+          canCreateTicket: typeof parsed.canCreateTicket === "boolean"
+            ? parsed.canCreateTicket
+            : false,
+        };
+      } catch (parseError) {
+        console.error("GeminiProvider.chat JSON parse error:", parseError.message);
+        return {
+          reply: stripCodeFences(text) || "",
+          canCreateTicket: false,
+        };
+      }
     } catch (error) {
       console.error("GeminiProvider chat error:", error);
       return new LocalFallbackProvider().chat(conversation);
@@ -94,9 +133,11 @@ Description: ${description}
 `;
 
     try {
+      console.log("GeminiProvider.analyzeTicket prompt:", prompt);
       const result = await model.generateContent(prompt);
       const text = result?.response?.text?.() ?? "";
-      const cleanText = text.replace(/```json|```/g, "").trim();
+      console.log("GeminiProvider.analyzeTicket raw response:", text);
+      const cleanText = extractJsonObject(text) ?? stripCodeFences(text);
       const parsed = JSON.parse(cleanText);
       return {
         category: parsed.category || "Other",
@@ -174,9 +215,11 @@ ${JSON.stringify(conversation, null, 2)}
 `;
 
     try {
+      console.log("GeminiProvider.analyzeConversationForTicket prompt:", prompt);
       const result = await model.generateContent(prompt);
       const text = result?.response?.text?.() ?? "";
-      const cleanText = text.replace(/```json|```/g, "").trim();
+      console.log("GeminiProvider.analyzeConversationForTicket raw response:", text);
+      const cleanText = extractJsonObject(text) ?? stripCodeFences(text);
       const parsed = JSON.parse(cleanText);
       return {
         title: parsed.title || "Support ticket from chat",
@@ -252,7 +295,7 @@ class LocalFallbackProvider extends AIProvider {
       priority: priority,
       category: category,
       suggestedReply: fallbackReply({ category, priority, description: fullText }),
-      possibleRootCause: "Local check suggested " + category + " breakdown.",
+      possibleRootCause: "Potential issue identified from chat context.",
       recommendedAssignmentTeam: category + " Support Team",
       confidence: "Low (Fallback)",
       troubleshootingAttempted: "Basic system reboot / checking power status.",

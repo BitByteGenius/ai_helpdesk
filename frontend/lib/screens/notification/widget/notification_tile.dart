@@ -132,12 +132,12 @@ class NotificationTile extends StatelessWidget {
         decoration: BoxDecoration(
           color: notification.isRead
               ? theme.colorScheme.surface
-              : theme.colorScheme.primaryContainer.withOpacity(0.15),
+              : theme.colorScheme.primaryContainer.withValues(alpha: 0.15),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: notification.isRead
-                ? theme.colorScheme.outlineVariant.withOpacity(0.4)
-                : theme.colorScheme.primary.withOpacity(0.2),
+                ? theme.colorScheme.outlineVariant.withValues(alpha: 0.4)
+                : theme.colorScheme.primary.withValues(alpha: 0.2),
           ),
         ),
         child: ClipRRect(
@@ -162,7 +162,7 @@ class NotificationTile extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color: typeColor.withOpacity(0.1),
+                        color: typeColor.withValues(alpha: 0.1),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(_getIcon(), size: 22, color: typeColor),
@@ -198,7 +198,7 @@ class NotificationTile extends StatelessWidget {
                       icon: Icon(
                         Icons.clear_rounded,
                         size: 20,
-                        color: theme.colorScheme.onSurfaceVariant.withOpacity(0.6),
+                        color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
                       ),
                       tooltip: "Dismiss Alert",
                       onPressed: onDelete,

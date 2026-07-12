@@ -30,6 +30,7 @@ class UploadController extends GetxController {
       // file_picker v11 requires FilePicker.platform.pickFiles (instance API)
       final result = await FilePicker.pickFiles(
         allowMultiple: false,
+        withData: true,
         type: FileType.custom,
         allowedExtensions: [
           "jpg",

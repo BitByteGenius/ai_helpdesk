@@ -11,6 +11,8 @@ const model = isGeminiConfigured
       model: "gemini-2.5-flash",
     })
   : null;
+console.log("Gemini configured:", isGeminiConfigured);
+console.log("API key exists:", !!apiKey);
 
 export default model;
 export { isGeminiConfigured };

@@ -38,9 +38,9 @@ class TicketListScreen extends GetView<TicketController> {
                   constraints: const BoxConstraints(maxWidth: 400),
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.errorContainer.withOpacity(0.2),
+                    color: theme.colorScheme.errorContainer.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: theme.colorScheme.error.withOpacity(0.3)),
+                    border: Border.all(color: theme.colorScheme.error.withValues(alpha: 0.3)),
                   ),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -101,7 +101,7 @@ class TicketListScreen extends GetView<TicketController> {
                             borderRadius: BorderRadius.circular(12),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.03),
+                                color: Colors.black.withValues(alpha: 0.03),
                                 blurRadius: 10,
                                 offset: const Offset(0, 4),
                               ),
@@ -128,7 +128,7 @@ class TicketListScreen extends GetView<TicketController> {
                                   Icon(
                                     Icons.confirmation_number_outlined,
                                     size: 64,
-                                    color: theme.disabledColor.withOpacity(0.5),
+                                    color: theme.disabledColor.withValues(alpha: 0.5),
                                   ),
                                   const SizedBox(height: 16),
                                   Text(
@@ -148,7 +148,7 @@ class TicketListScreen extends GetView<TicketController> {
                             decoration: BoxDecoration(
                               color: theme.cardColor,
                               borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: theme.dividerColor.withOpacity(0.5)),
+                              border: Border.all(color: theme.dividerColor.withValues(alpha: 0.5)),
                             ),
                             clipBehavior: Clip.antiAlias,
                             child: TicketTable(
@@ -165,7 +165,7 @@ class TicketListScreen extends GetView<TicketController> {
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
                             itemCount: controller.tickets.length,
-                            separatorBuilder: (_, __) => const SizedBox(height: 12),
+                            separatorBuilder: (_, _) => const SizedBox(height: 12),
                             itemBuilder: (_, index) {
                               final ticket = controller.tickets[index];
                               return TicketCard(

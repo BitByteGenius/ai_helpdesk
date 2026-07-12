@@ -127,6 +127,10 @@ export const getDashboard = async (req, res, next) => {
       data: dashboard,
     });
   } catch (error) {
-    next(error);
+    console.error("DASHBOARD ERROR:", error);
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Failed to load dashboard",
+    });
   }
 };

@@ -165,7 +165,7 @@ export const fallbackCategory = (text) => {
     return "Hardware";
   }
 
-  return "Software";
+  return "Other";
 };
 
 export const fallbackPriority = (text) => {
@@ -286,88 +286,93 @@ export const fallbackChatResponse = ({
   duplicateTicket = null,
 }) => {
   const normalized = normalizeText(message).toLowerCase();
-  const isGreeting = /^(hi|hello|hey|good morning|good afternoon|good evening)\b/.test(
-    normalized
-  );
-  const isJokeRequest =
-    normalized.includes("joke") || normalized.includes("make me laugh");
-  const isCasualQuestion =
-    normalized.includes("what are you doing") ||
-    normalized.includes("who are you") ||
-    normalized.includes("how are you");
-  const isExplicitTrouble =
+
+  const greetings = [
+    "hi",
+    "hello",
+    "hey",
+    "good morning",
+    "good afternoon",
+    "good evening",
+  ];
+
+  const greeting = greetings.some((g) => normalized.startsWith(g));
+
+  const joke =
+    normalized.includes("joke") ||
+    normalized.includes("funny");
+
+  const ticketRequest =
+    normalized.includes("create ticket") ||
+    normalized.includes("create a ticket") ||
+    normalized.includes("raise ticket") ||
+    normalized.includes("open ticket") ||
+    normalized.includes("contact support") ||
+    normalized.includes("human support") ||
+    normalized.includes("talk to human");
+
+  const troubleshooting =
     containsAny(normalized, [
       "not working",
-      "error",
       "issue",
       "problem",
-      "can't",
-      "cannot",
-      "offline",
+      "error",
       "failed",
       "failure",
-      "broken",
-      "stuck",
+      "offline",
       "crash",
+      "broken",
       "printer",
       "wifi",
-      "password",
       "login",
+      "password",
+      "network",
       "email",
       "server",
-      "network",
     ]);
 
-  let reply;
+  let reply = "";
   let canCreateTicket = false;
 
-  if (isGreeting) {
-    reply = "Hello! 👋 How can I help you today?";
-  } else if (isJokeRequest) {
-    reply = "Why did the computer go to the doctor? Because it had a virus. 😄";
-  } else if (isCasualQuestion) {
-    reply = "Just here to help with whatever you need — questions, explanations, troubleshooting, or even a joke.";
-  } else if (isExplicitTrouble) {
+  if (greeting) {
+    reply =
+      "Hello! 👋 I'm your AI assistant. Ask me anything—coding, recipes, writing, technology, travel, study, troubleshooting, or general knowledge.";
+  } else if (joke) {
+    reply =
+      "😂 Why do programmers prefer dark mode? Because light attracts bugs.";
+  } else if (ticketRequest) {
+    canCreateTicket = true;
+
+    reply =
+      "Sure. I can create a support ticket using this conversation. Before doing that, would you like to add any more details?";
+  } else if (troubleshooting) {
     const category = fallbackCategory(message);
     const priority = fallbackPriority(message);
-    const summary = fallbackSummary(message);
 
-    reply = [
-      `Thanks for the details — this looks like a ${category.toLowerCase()} issue.`,
-      fallbackReply({
-        title: message,
-        description: message,
-        category,
-        priority,
-      }),
-      `Summary: ${summary}`,
-    ].join(" ");
+    reply = fallbackReply({
+      title: message,
+      description: message,
+      category,
+      priority,
+    });
   } else {
-    reply = "Absolutely — what would you like help with?";
-  }
-
-  if (
-    normalized.includes("create a ticket") ||
-    normalized.includes("raise a ticket") ||
-    normalized.includes("contact support") ||
-    normalized.includes("human support")
-  ) {
-    canCreateTicket = true;
+    reply =
+      "I'm currently running in offline fallback mode, so I can't answer general knowledge questions. Once Gemini/OpenAI is available, I'll respond like ChatGPT. Right now I can still help with troubleshooting and ticket creation.";
   }
 
   return {
     reply,
-    category: isExplicitTrouble ? fallbackCategory(message) : null,
-    priority: isExplicitTrouble ? fallbackPriority(message) : null,
-    summary: isExplicitTrouble ? fallbackSummary(message) : null,
+    category: troubleshooting ? fallbackCategory(message) : null,
+    priority: troubleshooting ? fallbackPriority(message) : null,
+    summary: troubleshooting ? fallbackSummary(message) : null,
     ticketSuggested: canCreateTicket,
     createTicket: canCreateTicket,
     duplicate: Boolean(duplicateTicket),
     duplicateTicket: duplicateTicket
       ? {
           id: duplicateTicket._id ?? duplicateTicket.id ?? null,
-          title: duplicateTicket.title ?? "",
-          status: duplicateTicket.status ?? "",
+          title: duplicateTicket.title,
+          status: duplicateTicket.status,
         }
       : null,
     articles: [],

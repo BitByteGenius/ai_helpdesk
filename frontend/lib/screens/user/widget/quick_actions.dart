@@ -35,8 +35,8 @@ class QuickActions extends StatelessWidget {
           physics: const NeverScrollableScrollPhysics(),
           crossAxisCount: crossAxisCount,
           crossAxisSpacing: 20,
-          mainAxisSpacing: 20,
-          childAspectRatio: 2.2,
+          mainAxisSpacing: 16,
+          childAspectRatio: width > 900 ? 2.5 : 2.2,
           children: const [
 
             _ActionCard(
@@ -105,44 +105,49 @@ class _ActionCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(18),
         ),
         child: Padding(
-          padding: const EdgeInsets.all(18),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           child: Row(
             children: [
 
               CircleAvatar(
-                radius: 26,
+                radius: 20,
                 backgroundColor: color.withValues(alpha: .12),
                 child: Icon(
                   icon,
+                  size: 20,
                   color: color,
                 ),
               ),
 
-              const SizedBox(width: 16),
+              const SizedBox(width: 10),
 
               Expanded(
                 child: Column(
-                  mainAxisAlignment:
-                      MainAxisAlignment.center,
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
 
                     Text(
                       title,
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: 17,
+                        fontSize: 15,
                       ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
 
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 2),
 
                     Text(
                       subtitle,
                       style: const TextStyle(
                         color: Colors.grey,
+                        fontSize: 12,
                       ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ),

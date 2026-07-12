@@ -53,9 +53,11 @@ export const chatWithAICopilot = async ({
     "raise a ticket",
     "create a ticket",
     "create ticket",
+    "open a ticket",
+    "submit a ticket",
+    "generate a ticket",
     "talk to human",
     "contact support",
-    "agent",
     "human support",
   ];
   const isEscalation = escalationCues.some((cue) => lowerMsg.includes(cue));

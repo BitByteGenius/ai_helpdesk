@@ -20,6 +20,7 @@ class _CreateTicketScreenState extends State<CreateTicketScreen> {
   late final TicketController ticketController;
   late final AiController ai;
   late final UploadController upload;
+  late final Worker _analysisWorker;
 
   @override
   void initState() {
@@ -30,8 +31,9 @@ class _CreateTicketScreenState extends State<CreateTicketScreen> {
 
     // Sync AI analysis results into the controller's own category/priority/summary
     // controllers so they are included in ticket submission.
-    ever(ai.analysis, (result) {
+    _analysisWorker = ever(ai.analysis, (result) {
       if (result != null) {
+        if (!mounted) return;
         ticketController.categoryController.text = result.category;
         ticketController.priorityController.text = result.priority;
         ticketController.summaryController.text = result.aiSummary;
@@ -41,6 +43,7 @@ class _CreateTicketScreenState extends State<CreateTicketScreen> {
 
   @override
   void dispose() {
+    _analysisWorker.dispose();
     super.dispose();
   }
 
@@ -193,7 +196,7 @@ class _CreateTicketScreenState extends State<CreateTicketScreen> {
                           decoration: InputDecoration(
                             labelText: "AI Generated Summary",
                             filled: true,
-                            fillColor: theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                            fillColor: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                             border: const OutlineInputBorder(),
                           ),
                         ),
@@ -286,7 +289,7 @@ class _CreateTicketScreenState extends State<CreateTicketScreen> {
         borderRadius: BorderRadius.circular(16),
         // ✅ Fixed
 border: Border.all(
-  color: theme.colorScheme.outlineVariant.withOpacity(0.5),
+  color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
 ),
       ),
       child: Column(
@@ -324,7 +327,7 @@ border: Border.all(
         prefixIcon: Icon(icon),
         border: const OutlineInputBorder(),
         filled: true,
-        fillColor: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.1),
+        fillColor: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.1),
       ),
     );
   }

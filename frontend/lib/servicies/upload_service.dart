@@ -21,12 +21,14 @@ class UploadService {
         file.bytes!,
         filename: file.name,
       );
-    } else {
+    } else if (file.path != null) {
       // Android / iOS / Desktop — file.path is available
       multipartFile = await MultipartFile.fromFile(
         file.path!,
         filename: file.name,
       );
+    } else {
+      throw Exception("Unable to read selected file. Please try again.");
     }
 
     final formData = FormData.fromMap({"file": multipartFile});

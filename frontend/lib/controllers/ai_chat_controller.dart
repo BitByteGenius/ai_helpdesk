@@ -116,11 +116,7 @@ class AIChatController extends GetxController {
 
          messages.assignAll(fullConv.messages);
 
-      // If the last message is from assistant, check if we can escalate
-      if (messages.isNotEmpty && messages.last.role == "assistant") {
-        // We allow ticket escalation on loaded support conversations
-        canCreateTicket.value = true;
-      }
+      canCreateTicket.value = false;
 
       scrollToBottom();
       Get.back(); // Close mobile drawer if open

@@ -194,8 +194,8 @@ class _AITicketPreviewDialogState extends State<AITicketPreviewDialog> {
                         margin: const EdgeInsets.only(bottom: 20),
                         padding: const EdgeInsets.all(14),
                         decoration: BoxDecoration(
-                          color: theme.colorScheme.errorContainer.withOpacity(0.3),
-                          border: Border.all(color: theme.colorScheme.error.withOpacity(0.5)),
+                          color: theme.colorScheme.errorContainer.withValues(alpha: 0.3),
+                          border: Border.all(color: theme.colorScheme.error.withValues(alpha: 0.5)),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Row(
@@ -218,7 +218,7 @@ class _AITicketPreviewDialogState extends State<AITicketPreviewDialog> {
                                     widget.draft["duplicateTicket"]?["title"] ??
                                         "Similar ticket is active on dashboard.",
                                     style: TextStyle(
-                                      color: theme.colorScheme.onErrorContainer.withOpacity(0.8),
+                                      color: theme.colorScheme.onErrorContainer.withValues(alpha: 0.8),
                                     ),
                                   ),
                                 ],
@@ -234,9 +234,9 @@ class _AITicketPreviewDialogState extends State<AITicketPreviewDialog> {
                       margin: const EdgeInsets.only(bottom: 20),
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: theme.colorScheme.outlineVariant.withOpacity(0.3)),
+                        border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.3)),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -404,7 +404,7 @@ class _AITicketPreviewDialogState extends State<AITicketPreviewDialog> {
 
   Widget _buildCategoryDropdown() {
     return DropdownButtonFormField<String>(
-      value: _selectedCategory,
+      initialValue: _selectedCategory,
       decoration: const InputDecoration(
         labelText: "Category",
         border: OutlineInputBorder(),
@@ -425,7 +425,7 @@ class _AITicketPreviewDialogState extends State<AITicketPreviewDialog> {
 
   Widget _buildPriorityDropdown() {
     return DropdownButtonFormField<String>(
-      value: _selectedPriority,
+      initialValue: _selectedPriority,
       decoration: const InputDecoration(
         labelText: "Priority",
         border: OutlineInputBorder(),

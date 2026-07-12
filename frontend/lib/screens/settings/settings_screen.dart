@@ -189,7 +189,7 @@ class SettingsScreen extends StatelessWidget {
             color: theme.colorScheme.surfaceContainerLow,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: theme.colorScheme.outlineVariant.withOpacity(0.4),
+              color: theme.colorScheme.outlineVariant.withValues(alpha: 0.4),
             ),
           ),
           child: ListView.separated(
@@ -199,7 +199,7 @@ class SettingsScreen extends StatelessWidget {
             separatorBuilder: (context, index) => Divider(
               height: 1,
               indent: 56,
-              color: theme.colorScheme.outlineVariant.withOpacity(0.4),
+              color: theme.colorScheme.outlineVariant.withValues(alpha: 0.4),
             ),
             itemBuilder: (context, index) => tiles[index],
           ),
@@ -224,7 +224,7 @@ class SettingsScreen extends StatelessWidget {
       leading: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: theme.colorScheme.primary.withOpacity(0.08),
+          color: theme.colorScheme.primary.withValues(alpha: 0.08),
           shape: BoxShape.circle,
         ),
         child: Icon(
@@ -248,7 +248,7 @@ class SettingsScreen extends StatelessWidget {
       ),
       trailing: Icon(
         Icons.chevron_right_rounded,
-        color: theme.colorScheme.onSurfaceVariant.withOpacity(0.7),
+        color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
       ),
     );
   }

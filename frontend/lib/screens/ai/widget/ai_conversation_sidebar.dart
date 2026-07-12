@@ -82,7 +82,7 @@ class AIConversationSidebar extends GetView<AIChatController> {
                   child: Text(
                     "No conversations found",
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant.withOpacity(0.6),
+                      color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
                     ),
                   ),
                 );
@@ -142,16 +142,15 @@ class AIConversationSidebar extends GetView<AIChatController> {
     final isActive = controller.currentConversationId.value == chat.id;
 
     final tileColor = isActive
-        ? theme.colorScheme.primary.withOpacity(0.08)
+        ? theme.colorScheme.primary.withValues(alpha: 0.08)
         : Colors.transparent;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 2.0),
-      child: Container(
-        decoration: BoxDecoration(
-          color: tileColor,
-          borderRadius: BorderRadius.circular(10),
-        ),
+      child: Material(
+        color: tileColor,
+        borderRadius: BorderRadius.circular(10),
+        clipBehavior: Clip.antiAlias,
         child: ListTile(
           contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
           leading: Icon(
@@ -172,7 +171,7 @@ class AIConversationSidebar extends GetView<AIChatController> {
             DateFormat('MMM dd, hh:mm a').format(chat.updatedAt),
             style: theme.textTheme.bodySmall?.copyWith(
               fontSize: 11,
-              color: theme.colorScheme.onSurfaceVariant.withOpacity(0.6),
+              color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
             ),
           ),
           trailing: isActive ? _buildItemActions(context, chat) : null,
