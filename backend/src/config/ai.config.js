@@ -1,18 +1,26 @@
 import "./env.js";
-
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const apiKey = process.env.GEMINI_API_KEY?.trim();
+const apiKey = process.env.GEMINI_API_KEY?.trim() || "";
 
-const isGeminiConfigured = Boolean(apiKey);
+export const isGeminiConfigured = apiKey.length > 0;
 
-const model = isGeminiConfigured
-  ? new GoogleGenerativeAI(apiKey).getGenerativeModel({
+let model = null;
+
+if (isGeminiConfigured) {
+  try {
+    const genAI = new GoogleGenerativeAI(apiKey);
+
+    model = genAI.getGenerativeModel({
       model: "gemini-2.5-flash",
-    })
-  : null;
-console.log("Gemini configured:", isGeminiConfigured);
-console.log("API key exists:", !!apiKey);
+    });
+
+    console.log("✅ Gemini configured");
+  } catch (e) {
+    console.error("Failed to initialize Gemini:", e.message);
+  }
+} else {
+  console.warn("⚠ GEMINI_API_KEY not configured");
+}
 
 export default model;
-export { isGeminiConfigured };

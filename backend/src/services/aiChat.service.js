@@ -1,7 +1,6 @@
 import AIConversation from "../models/aiConversation.model.js";
 import { aiProvider } from "./aiProvider.service.js";
-import model, { isGeminiConfigured } from "../config/ai.config.js";
-
+import model from "../config/ai.config.js";
 /**
  * Persisted AI Copilot Conversation Handler
  */
@@ -22,7 +21,10 @@ export const chatWithAICopilot = async ({
 
   // If no conversation found or ID not provided, start a new one
   if (!conversationDoc) {
-    const defaultTitle = safeMessage.substring(0, 40) + (safeMessage.length > 40 ? "..." : "");
+   const defaultTitle =
+  safeMessage.length > 40
+      ? "${safeMessage.substring(0, 40)}..."
+      : safeMessage;
     conversationDoc = new AIConversation({
       userId,
       title: defaultTitle,
@@ -48,44 +50,53 @@ export const chatWithAICopilot = async ({
 
   // 3. Smart Escalation Cue Detection
   const lowerMsg = safeMessage.toLowerCase();
-  const escalationCues = [
-    "connect me to support",
-    "raise a ticket",
-    "create a ticket",
-    "create ticket",
-    "open a ticket",
-    "submit a ticket",
-    "generate a ticket",
-    "talk to human",
-    "contact support",
-    "human support",
-  ];
-  const isEscalation = escalationCues.some((cue) => lowerMsg.includes(cue));
 
-  let reply = "";
-  let canCreateTicket = false;
+const ticketKeywords = [
+  "create ticket",
+  "create a ticket",
+  "raise ticket",
+  "raise a ticket",
+  "open ticket",
+  "open a ticket",
+  "submit ticket",
+  "submit a ticket",
+  "generate ticket",
+  "contact support",
+  "connect me to support",
+  "talk to support",
+  "talk to human",
+  "human support",
+];
 
-  if (isEscalation) {
-    reply = "It looks like this issue couldn't be resolved here.\nWould you like me to create a support ticket using this conversation?";
-    canCreateTicket = true;
-  } else {
-    // Call the AI provider abstraction
-    const aiResult = await aiProvider.chat(formattedHistory);
-    reply = aiResult.reply;
-    canCreateTicket = aiResult.canCreateTicket;
-  }
+const canCreateTicket = ticketKeywords.some((keyword) =>
+  lowerMsg.includes(keyword),
+);
+
+let reply;
+
+if (canCreateTicket) {
+  reply = `I can create a support ticket from this conversation.
+
+Please review the conversation once, and when you're ready press **Create Ticket**.`;
+} else {
+  const aiResult = await aiProvider.chat(formattedHistory);
+  reply = aiResult.reply;
+}
 
   // 4. Append Assistant Message
   conversationDoc.messages.push({
-    role: "assistant",
-    message: reply,
-    timestamp: new Date(),
-  });
+  role: "assistant",
+  message: reply.trim(),
+  timestamp: new Date(),
+});
 
   // 5. AI-generated Title renaming (on first assistant reply / 2nd total message)
-  if (conversationDoc.messages.length === 2 && isGeminiConfigured && model) {
+  if (conversationDoc.messages.length === 2 && model) {
     try {
-      const titlePrompt = `Analyze the user's issue and return a very short, summarized conversation title (max 5 words) representing the issue. Do NOT use quotes, code blocks, or extra comments. Just output the clean title.\n\nIssue: ${safeMessage}`;
+      const defaultTitle =
+  safeMessage.length > 40
+      ? "${safeMessage.substring(0, 40)}..."
+      : safeMessage;
       const titleResult = await model.generateContent(titlePrompt);
       const titleText = titleResult?.response?.text?.() ?? "";
       const cleanedTitle = titleText.trim().replace(/^["']|["']$/g, "");
@@ -103,7 +114,7 @@ export const chatWithAICopilot = async ({
     conversationId: conversationDoc._id,
     title: conversationDoc.title,
     isPinned: conversationDoc.isPinned,
-    reply,
+    reply: reply.trim(),
     canCreateTicket,
     messages: conversationDoc.messages,
   };

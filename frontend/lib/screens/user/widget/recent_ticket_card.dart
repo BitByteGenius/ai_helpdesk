@@ -65,13 +65,15 @@ class RecentTicketCard extends StatelessWidget {
 
               const SizedBox(height: 12),
 
-              Text(
-                ticket?.description ??
-                    "User cannot login after password reset.",
-                maxLines: 3,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  color: Colors.grey,
+              Expanded(
+                child: Text(
+                  ticket?.description ??
+                      "User cannot login after password reset.",
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: Colors.grey,
+                  ),
                 ),
               ),
 

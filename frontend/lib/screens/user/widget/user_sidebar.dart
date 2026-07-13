@@ -310,15 +310,15 @@ class UserSidebar extends StatelessWidget {
             const SizedBox(height: 6),
 
             // ── Logout ───────────────────────────────────────────────────
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 10,
-                vertical: 8,
-              ),
-              child: _LogoutTile(
-                onTap: () => _logout(context),
-              ),
-            ),
+            // Padding(
+            //   padding: const EdgeInsets.symmetric(
+            //     horizontal: 10,
+            //     vertical: 8,
+            //   ),
+            //   child: _LogoutTile(
+            //     onTap: () => _logout(context),
+            //   ),
+            // ),
           ],
         ),
       ),

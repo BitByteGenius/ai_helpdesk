@@ -86,13 +86,16 @@ class TicketController extends GetxController {
   }
 @override
 void onClose() {
-  searchController.dispose();
-
-  titleController.dispose();
-  descriptionController.dispose();
-  categoryController.dispose();
-  priorityController.dispose();
-  summaryController.dispose();
+  // Dispose of controllers that are tied to the lifecycle of this controller.
+  // The form TextEditingControllers are used across screens and should remain alive.
+  // Commenting out disposals to prevent "used after being disposed" errors.
+  // searchController.dispose(); // keep if not needed globally
+  // titleController.dispose();
+  // descriptionController.dispose();
+  // descriptionController.dispose();
+  // categoryController.dispose();
+  // priorityController.dispose();
+  // summaryController.dispose();
 
   super.onClose();
 }

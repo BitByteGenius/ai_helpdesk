@@ -28,10 +28,11 @@ class DashboardHeader extends StatelessWidget {
             children: const [
 
               Text(
-                "Welcome Back 👋",
+                "Welcome Back ",
                 style: TextStyle(
+                  fontWeight: FontWeight.bold,
                   fontSize: 18,
-                  color: Colors.grey,
+                  color: Colors.black,
                 ),
               ),
 
@@ -41,7 +42,7 @@ class DashboardHeader extends StatelessWidget {
               Text(
                 "Manage your support tickets efficiently.",
                 style: TextStyle(
-                  color: Colors.grey,
+                  color: Colors.black,
                 ),
               ),
             ],
