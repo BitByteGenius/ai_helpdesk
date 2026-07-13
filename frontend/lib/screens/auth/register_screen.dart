@@ -56,7 +56,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
       );
 
       Get.offAllNamed(
-        auth.user?.isAdmin == true ? AppRoutes.admin : AppRoutes.home,
+        auth.user?.isAdmin == true ? AppRoutes.dashboard : AppRoutes.home,
+
       );
     } else {
       Get.snackbar(

@@ -1,4 +1,5 @@
 import User from "../models/user.model.js";
+import { createAudit } from "../services/audit.service.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 
@@ -14,11 +15,11 @@ const generateToken = (user) => {
   );
 };
 
-// ─── Helper: Generate JWT for admin (never stored in DB) ─────────────────
-const generateAdminToken = () => {
+// ─── Helper: Generate JWT for admin (stored in DB) ─────────────────
+const generateAdminToken = (userId) => {
   return jwt.sign(
     {
-      userId: "admin",
+      userId: userId,
       role: "admin",
     },
     process.env.JWT_SECRET,
@@ -95,6 +96,26 @@ export const authCreateController = async (req, res) => {
 
     const token = generateToken(user);
 
+    
+    try {
+      await createAudit({
+        user: user._id,
+        action: "REGISTER",
+        entity: "AUTH",
+        entityId: user._id,
+        description: "New user registered",
+        newData: {
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        },
+        ipAddress: req.ip,
+        userAgent: req.headers["user-agent"],
+      });
+    } catch (auditError) {
+      console.warn("Register audit failed (non-fatal):", auditError.message);
+    }
+
     return res.status(201).json({
       success: true,
       user: safeUser(user),
@@ -148,6 +169,18 @@ export const authLoginController = async (req, res) => {
     }
 
     const token = generateToken(user);
+    try {
+      await createAudit({
+        user: user._id,
+        action: "LOGIN",
+        entity: "AUTH",
+        description: `${user.name} logged into the system`,
+        ipAddress: req.ip,
+        userAgent: req.headers["user-agent"],
+      });
+    } catch (auditError) {
+      console.warn("Login audit failed (non-fatal):", auditError.message);
+    }
 
     return res.status(200).json({
       success: true,
@@ -205,18 +238,31 @@ const { email, password } = req.body;
       });
     }
 
-    // Admin is never in MongoDB — synthesise the response object
-    const token = generateAdminToken();
+    // Ensure Admin is stored in MongoDB to prevent ObjectId cast errors elsewhere
+    let adminUser = await User.findOne({ email: adminEmail, role: "admin" });
+    if (!adminUser) {
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(adminPassword, salt);
+      adminUser = await User.create({
+        name: "Administrator",
+        email: adminEmail,
+        password: hashedPassword,
+        role: "admin",
+        isVerified: true,
+      });
+    }
+
+    const token = generateAdminToken(adminUser._id);
 
     return res.status(200).json({
       success: true,
       user: {
-        _id:   "admin",
-        name:  "Administrator",
-        email: adminEmail,
-        phone: "",
+        _id:   adminUser._id,
+        name:  adminUser.name,
+        email: adminUser.email,
+        phone: adminUser.phone || "",
         role:  "admin",
-        profileImage: "",
+        profileImage: adminUser.profileImage || "",
       },
       token,
     });

@@ -77,6 +77,25 @@ export const validateUpdateTicket = [
     ])
     .withMessage("Invalid category"),
 
+    body("summary")
+  .optional()
+  .isString()
+  .isLength({ max: 5000 })
+  .withMessage("Summary is too long"),
+
+body("duplicateTicket")
+  .optional()
+  .custom((value) => {
+    if (typeof value === "boolean") return true;
+    if (mongoose.Types.ObjectId.isValid(value)) return true;
+    throw new Error("Invalid duplicate ticket");
+  }),
+
+body("attachments")
+  .optional()
+  .isArray()
+  .withMessage("Attachments must be an array"),
+
   body("priority")
     .optional()
     .isIn(["Low", "Medium", "High", "Critical"])

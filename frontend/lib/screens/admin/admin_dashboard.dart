@@ -1,51 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/controllers/dashboard_controller.dart';
-import 'package:frontend/models/darshboard_model.dart';
-import 'package:frontend/screens/admin/widget/dashboard_sidebar.dart';
+import 'package:frontend/layouts/admin_layout.dart';
+import 'package:frontend/models/dashboard_model.dart';
+import 'package:frontend/screens/admin/widget/ai_insights_card.dart';
+import 'package:frontend/screens/admin/widget/priority_chart.dart';
+import 'package:frontend/screens/admin/widget/recent_tickets_table.dart';
+import 'package:frontend/screens/admin/widget/recent_users_table.dart';
 import 'package:frontend/screens/admin/widget/stat_card.dart';
+import 'package:frontend/screens/admin/widget/ticket_status_chart.dart';
 import 'package:get/get.dart';
 
 
 class AdminDashboard extends GetView<DashboardController> {
   const AdminDashboard({super.key});
 
+
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        title: const Text(
-          "Admin Dashboard",
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        centerTitle: false,
-        automaticallyImplyLeading: false,
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.notifications_none),
-          ),
-          const SizedBox(width: 8),
-          const CircleAvatar(
-            child: Icon(Icons.person),
-          ),
-          const SizedBox(width: 16),
-        ],
-      ),
-      drawer: LayoutBuilder(
+    return AdminLayout(
+      title: 'Admin Dashboard',
+      child: LayoutBuilder(
         builder: (context, constraints) {
-          return constraints.maxWidth < 1200
-              ? Drawer(
-                  child: DashboardSidebar(
-                    compact: false,
-                  ),
-                )
-              : const SizedBox.shrink();
-        },
-      ),
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          final isDesktop = constraints.maxWidth >= 1200;
           final horizontalPadding = constraints.maxWidth >= 1200 ? 28.0 : 16.0;
 
           final content = Obx(() {
@@ -85,7 +61,7 @@ class AdminDashboard extends GetView<DashboardController> {
                     _HeaderBlock(
                       title: "Overview",
                       subtitle:
-                          ".",
+                          "Monitor tickets, users, AI insights and support activity in real time.",
                     ),
                     const SizedBox(height: 20),
                     LayoutBuilder(
@@ -123,78 +99,141 @@ class AdminDashboard extends GetView<DashboardController> {
                       },
                     ),
                     const SizedBox(height: 28),
-                    LayoutBuilder(
-                      builder: (context, constraints) {
-                        final isWide = constraints.maxWidth >= 900;
-                        if (isWide) {
-                          return Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Expanded(
-                                child: _PlaceholderCard(
-                                  title: "Ticket Status Chart",
-                                  height: 320,
-                                ),
-                              ),
-                              const SizedBox(width: 16),
-                              Expanded(
-                                child: _PlaceholderCard(
-                                  title: "Priority Chart",
-                                  height: 320,
-                                ),
-                              ),
-                            ],
-                          );
-                        }
+      //               LayoutBuilder(
+      //                 builder: (context, constraints) {
+      //                   final isWide = constraints.maxWidth >= 900;
+      //                   if (isWide) {
+      //                     return Row(
+      //                       crossAxisAlignment: CrossAxisAlignment.start,
+      //                       children: [
+      //                         Expanded(
+      //                           child: _PlaceholderCard(
+      //                             title: "Ticket Status Chart",
+      //                             height: 320,
+      //                           ),
+      //                         ),
+      //                         const SizedBox(width: 16),
+      //                         Expanded(
+      //                           child: _PlaceholderCard(
+      //                             title: "Priority Chart",
+      //                             height: 320,
+      //                           ),
+      //                         ),
+      //                       ],
+      //                     );
+      //                   }
 
-                        return Column(
-                          children: const [
-                            _PlaceholderCard(
-                              title: "Ticket Status Chart",
-                              height: 300,
-                            ),
-                            SizedBox(height: 16),
-                            _PlaceholderCard(
-                              title: "Priority Chart",
-                              height: 300,
-                            ),
-                          ],
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    const _PlaceholderCard(
-                      title: "Recent Tickets",
-                      height: 340,
-                    ),
-                    const SizedBox(height: 16),
-                    const _PlaceholderCard(
-                      title: "Recent Users",
-                      height: 340,
-                    ),
-                    const SizedBox(height: 16),
-                    const _PlaceholderCard(
-                      title: "AI Insights",
-                      height: 220,
-                    ),
-                  ],
-                ),
+      //                   return Column(
+      //                     children: const [
+      //                       _PlaceholderCard(
+      //                         title: "Ticket Status Chart",
+      //                         height: 300,
+      //                       ),
+      //                       SizedBox(height: 16),
+      //                       _PlaceholderCard(
+      //                         title: "Priority Chart",
+      //                         height: 300,
+      //                       ),
+      //                     ],
+      //                   );
+      //                 },
+      //               ),
+      //               const SizedBox(height: 16),
+      //               const _PlaceholderCard(
+      //                 title: "Recent Tickets",
+      //                 height: 340,
+      //               ),
+      //               const SizedBox(height: 16),
+      //               const _PlaceholderCard(
+      //                 title: "Recent Users",
+      //                 height: 340,
+      //               ),
+      //               const SizedBox(height: 16),
+      //               const _PlaceholderCard(
+      //                 title: "AI Insights",
+      //                 height: 220,
+      //               ),
+      //             ],
+      //           ),
+      //         ),
+      //       );
+      //     });
+      //     return content;
+      //   },
+      // ),
+      LayoutBuilder(
+  builder: (context, constraints) {
+    final isWide = constraints.maxWidth >= 900;
+
+    if (isWide) {
+      return Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+  child: SizedBox(
+    height: 320,
+    child: TicketStatusChart(
+      statusData: dashboard.ticketStatus,
+    ),
+  ),
+),
+          const SizedBox(width: 16),
+          Expanded(
+  child: SizedBox(
+    height: 320,
+    child: PriorityChart(
+      priorityData: dashboard.priority,
+    ),
+  ),
+),
+        ],
+      );
+    }
+
+    return Column(
+      children: [
+        SizedBox(
+  height: 300,
+  child: TicketStatusChart(
+    statusData: dashboard.ticketStatus,
+  ),
+),
+        const SizedBox(height: 16),
+        SizedBox(
+  height: 300,
+  child: PriorityChart(
+    priorityData: dashboard.priority,
+  ),
+),
+      ],
+    );
+  },
+),
+
+const SizedBox(height: 16),
+
+RecentTicketsTable(
+  tickets: dashboard.recentTickets
+),
+
+const SizedBox(height: 16),
+
+RecentUsersTable(
+  
+  users: dashboard.recentUsers
+),
+
+const SizedBox(height: 16),
+
+AiInsightsCard(
+  insights: dashboard.aiInsights,
+),
+
+                  ]
               ),
+              )
             );
           });
-
-          if (isDesktop) {
-            return Row(
-              children: [
-                SizedBox(
-                  width: 280,
-                  child: DashboardSidebar(),
-                ),
-                Expanded(child: content),
-              ],
-            );
-          }
-
           return content;
         },
       ),
@@ -225,13 +264,12 @@ const List<Color> _statColors = [
 
 List<String> _statValues(DashboardModel dashboard) {
   return [
-    dashboard.users.total.toString(),
-    dashboard.tickets.total.toString(),
-    dashboard.status.open.toString(),
-    dashboard.status.resolved.toString(),
+    dashboard.stats.users.toString(),
+    dashboard.stats.totalTickets.toString(),
+    dashboard.stats.open.toString(),
+    dashboard.stats.resolved.toString(),
   ];
 }
-
 class _HeaderBlock extends StatelessWidget {
   final String title;
   final String subtitle;
@@ -265,36 +303,3 @@ class _HeaderBlock extends StatelessWidget {
   }
 }
 
-class _PlaceholderCard extends StatelessWidget {
-  final String title;
-  final double height;
-
-  const _PlaceholderCard({
-    required this.title,
-    required this.height,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: SizedBox(
-        height: height,
-        width: double.infinity,
-        child: Center(
-          child: Text(
-            title,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}

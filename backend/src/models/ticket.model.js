@@ -112,6 +112,26 @@ const ticketSchema = new mongoose.Schema(
       trim: true,
     },
 
+    aiConversationTranscript: {
+      type: String,
+      default: "",
+    },
+
+    aiConfidence: {
+      type: String,
+      default: "Medium",
+    },
+
+    aiSuggestedRootCause: {
+      type: String,
+      default: "",
+    },
+
+    aiTroubleshootingAttempted: {
+      type: String,
+      default: "",
+    },
+
     duplicateTicket: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Ticket",

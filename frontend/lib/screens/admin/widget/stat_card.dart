@@ -22,7 +22,6 @@ class StatCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool isDesktop = Get.width >= 1200;
-    final bool isTablet = Get.width >= 700;
 
     return InkWell(
       onTap: onTap,
@@ -38,7 +37,7 @@ class StatCard extends StatelessWidget {
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(.05),
+              color: Colors.black.withValues(alpha: .05),
               blurRadius: 12,
               offset: const Offset(0, 6),
             )
@@ -56,7 +55,7 @@ class StatCard extends StatelessWidget {
                   height: isDesktop ? 55 : 48,
                   width: isDesktop ? 55 : 48,
                   decoration: BoxDecoration(
-                    color: color.withOpacity(.12),
+                    color: color.withValues(alpha: .12),
                     borderRadius:
                         BorderRadius.circular(14),
                   ),

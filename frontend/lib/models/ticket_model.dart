@@ -1,0 +1,140 @@
+import 'package:frontend/models/attachment_model.dart';
+import 'package:frontend/models/user_model.dart';
+
+/// Ticket model — references the canonical UserModel from user_model.dart.
+///
+/// NOTE: The inner UserModel class that previously lived here has been
+/// removed to eliminate the duplicate-class conflict with user_model.dart.
+class TicketModel {
+  final String id;
+  final String title;
+  final String description;
+  final String category;
+  final String priority;
+  final String status;
+
+  final UserModel createdBy;
+  final UserModel? assignedTo;
+
+  final String aiSummary;
+  final String suggestedReply;
+  final String aiConversationTranscript;
+  final String aiConfidence;
+  final String aiSuggestedRootCause;
+  final String aiTroubleshootingAttempted;
+
+  final String? duplicateTicket;
+
+  final List<AttachmentModel> attachments;
+
+  final DateTime createdAt;
+  final DateTime updatedAt;
+
+  TicketModel({
+    required this.id,
+    required this.title,
+    required this.description,
+    required this.category,
+    required this.priority,
+    required this.status,
+    required this.createdBy,
+    this.assignedTo,
+    required this.aiSummary,
+    required this.suggestedReply,
+    required this.aiConversationTranscript,
+    required this.aiConfidence,
+    required this.aiSuggestedRootCause,
+    required this.aiTroubleshootingAttempted,
+    required this.duplicateTicket,
+    required this.attachments,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+
+  factory TicketModel.fromJson(Map<String, dynamic> json) {
+    // createdBy may arrive as a populated object or a bare string ID
+    final createdByRaw = json["createdBy"];
+    final UserModel createdBy;
+    if (createdByRaw is Map<String, dynamic>) {
+      createdBy = UserModel.fromJson(createdByRaw);
+    } else {
+      createdBy = UserModel(
+        id: createdByRaw?.toString() ?? "",
+        name: "",
+        email: "",
+        phone: "",
+        role: "user",
+        profileImage: "",
+      );
+    }
+
+    // assignedTo may be null, a string ID, or a populated object
+    final assignedToRaw = json["assignedTo"];
+    final UserModel? assignedTo;
+    if (assignedToRaw == null) {
+      assignedTo = null;
+    } else if (assignedToRaw is Map<String, dynamic>) {
+      assignedTo = UserModel.fromJson(assignedToRaw);
+    } else {
+      assignedTo = UserModel(
+        id: assignedToRaw.toString(),
+        name: "",
+        email: "",
+        phone: "",
+        role: "user",
+        profileImage: "",
+      );
+    }
+
+    return TicketModel(
+  id: json["_id"]?.toString() ?? "",
+  title: json["title"] ?? "",
+  description: json["description"] ?? "",
+  category: json["category"] ?? "Other",
+  priority: json["priority"] ?? "Medium",
+  status: json["status"] ?? "Open",
+  createdBy: createdBy,
+  assignedTo: assignedTo,
+
+  aiSummary: json["aiSummary"] ?? "",
+  suggestedReply: json["aiSuggestedReply"] ?? "",
+  aiConversationTranscript: json["aiConversationTranscript"] ?? "",
+  aiConfidence: json["aiConfidence"] ?? "Medium",
+  aiSuggestedRootCause: json["aiSuggestedRootCause"] ?? "",
+  aiTroubleshootingAttempted: json["aiTroubleshootingAttempted"] ?? "",
+
+  duplicateTicket: json["duplicateTicket"]?.toString(),
+
+  attachments: json["attachments"] == null
+      ? []
+      : (json["attachments"] as List)
+            .map((e) => AttachmentModel.fromJson(e))
+            .toList(),
+
+  createdAt: json["createdAt"] != null
+      ? DateTime.tryParse(json["createdAt"]) ?? DateTime.now()
+      : DateTime.now(),
+
+  updatedAt: json["updatedAt"] != null
+      ? DateTime.tryParse(json["updatedAt"]) ?? DateTime.now()
+      : DateTime.now(),
+  );
+  }
+
+ Map<String, dynamic> toJson() {
+  return {
+    "title": title,
+    "description": description,
+    "category": category,
+    "priority": priority,
+    "summary": aiSummary,
+    "aiSuggestedReply": suggestedReply,
+    "aiConversationTranscript": aiConversationTranscript,
+    "aiConfidence": aiConfidence,
+    "aiSuggestedRootCause": aiSuggestedRootCause,
+    "aiTroubleshootingAttempted": aiTroubleshootingAttempted,
+    "duplicateTicket": duplicateTicket,
+    "attachments": attachments.map((e) => e.toJson()).toList(),
+  };
+}
+}
