@@ -9,6 +9,7 @@ import 'package:frontend/screens/tickets/user_d/create_ticket_screen.dart';
 import 'package:frontend/screens/uploads/upload_screen.dart';
 import 'package:frontend/screens/user/widget/my_tickets_screen.dart';
 import 'package:get/get.dart';
+import 'package:flutter/material.dart';
 
 import 'package:frontend/screens/admin/admin_dashboard.dart';
 import 'package:frontend/screens/admin/admin_ai_screen.dart';
@@ -82,7 +83,15 @@ class AppRouter {
     GetPage(
       name: AppRoutes.ticketDetails,
       page: () {
-        final id = Get.arguments as String;
+        final args = Get.arguments;
+        if (args == null || args is! String) {
+          return Scaffold(
+            body: Center(
+              child: Text('Invalid ticket ID'),
+            ),
+          );
+        }
+        final id = args as String;
         return TicketDetailsScreen(ticketId: id);
       },
     ),

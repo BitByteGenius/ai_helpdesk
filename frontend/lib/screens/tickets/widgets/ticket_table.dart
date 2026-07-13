@@ -71,7 +71,9 @@ class TicketTable extends StatelessWidget {
                       child:
                           ticket.createdBy.profileImage.isEmpty
                               ? Text(
-                                  ticket.createdBy.name[0],
+                                  ticket.createdBy.name.isNotEmpty
+                                      ? ticket.createdBy.name[0]
+                                      : "?",
                                 )
                               : null,
                     ),
@@ -105,7 +107,9 @@ class TicketTable extends StatelessWidget {
                                     .profileImage
                                     .isEmpty
                                 ? Text(
-                                    ticket.assignedTo!.name[0],
+                                    ticket.assignedTo!.name.isNotEmpty
+                                        ? ticket.assignedTo!.name[0]
+                                        : "?",
                                   )
                                 : null,
                           ),

@@ -9,11 +9,13 @@ import 'package:frontend/screens/user/widget/user_sidebar.dart';
 class UserLayout extends StatelessWidget {
   final Widget child;
   final String title;
+  final EdgeInsetsGeometry? padding;
 
   const UserLayout({
     super.key,
     required this.child,
     required this.title,
+    this.padding,
   });
 
   @override
@@ -43,7 +45,7 @@ class UserLayout extends StatelessWidget {
 
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.all(24),
+                padding: padding ?? const EdgeInsets.all(24),
                 child: child,
               ),
             ),

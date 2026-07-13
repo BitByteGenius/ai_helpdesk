@@ -49,6 +49,22 @@ class TicketController extends GetxController {
   final RxInt page = 1.obs;
   final RxInt limit = 10.obs;
 
+  void _showSnackbarSafe(
+    String title,
+    String message, {
+    SnackPosition snackPosition = SnackPosition.BOTTOM,
+  }) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (Get.context != null) {
+        Get.snackbar(
+          title,
+          message,
+          snackPosition: snackPosition,
+        );
+      }
+    });
+  }
+
   @override
   void onInit() {
     super.onInit();
@@ -144,10 +160,7 @@ void onClose() {
       selectedTicket.value =
           await _service.getTicket(id);
     } catch (e) {
-      Get.snackbar(
-        "Error",
-        e.toString(),
-      );
+      _showSnackbarSafe("Error", e.toString());
     } finally {
       isLoading.value = false;
     }
@@ -162,15 +175,9 @@ void onClose() {
         (e) => e.id == id,
       );
 
-      Get.snackbar(
-        "Success",
-        "Ticket deleted successfully",
-      );
+      _showSnackbarSafe("Success", "Ticket deleted successfully");
     } catch (e) {
-      Get.snackbar(
-        "Error",
-        e.toString(),
-      );
+      _showSnackbarSafe("Error", e.toString());
     }
   }
 
@@ -197,15 +204,9 @@ void onClose() {
 
       selectedTicket.value = updated;
 
-      Get.snackbar(
-        "Success",
-        "Ticket assigned successfully",
-      );
+      _showSnackbarSafe("Success", "Ticket assigned successfully");
     } catch (e) {
-      Get.snackbar(
-        "Error",
-        e.toString(),
-      );
+      _showSnackbarSafe("Error", e.toString());
     }
   }
 
@@ -232,15 +233,9 @@ void onClose() {
 
       selectedTicket.value = updated;
 
-      Get.snackbar(
-        "Success",
-        "Status updated successfully",
-      );
+      _showSnackbarSafe("Success", "Status updated successfully");
     } catch (e) {
-      Get.snackbar(
-        "Error",
-        e.toString(),
-      );
+      _showSnackbarSafe("Error", e.toString());
     }
   }
 
@@ -289,10 +284,9 @@ Future<void> createTicket() async {
     upload.clearUploads();
     ai.clearAnalysis();
 
-    Get.snackbar(
+    _showSnackbarSafe(
       "Success",
       "Ticket created successfully",
-      snackPosition: SnackPosition.BOTTOM,
     );
 
     Get.back();
