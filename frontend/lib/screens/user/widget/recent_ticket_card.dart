@@ -28,9 +28,9 @@ class RecentTicketCard extends StatelessWidget {
         onTap: () {
           if (ticket != null) {
             Get.toNamed(
-              AppRoutes.ticketDetails,
-              arguments: ticket!.id,
-            );
+  AppRoutes.userTicketDetails,
+  arguments: ticket!.id,
+);
           }
         },
         child: Padding(

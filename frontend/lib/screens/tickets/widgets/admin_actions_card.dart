@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import '../../../../controllers/ticket_controller.dart';
 import '../../../../models/ticket_model.dart';
 
@@ -19,7 +18,7 @@ class AdminActionsCard extends GetView<TicketController> {
     return Card(
       elevation: 0,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(16),
         side: BorderSide(
           color: theme.colorScheme.outlineVariant.withValues(alpha: .30),
         ),
@@ -29,70 +28,102 @@ class AdminActionsCard extends GetView<TicketController> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-
-            Text(
-              "Admin Actions",
-              style: theme.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+            Row(
+              children: [
+                Icon(
+                  Icons.admin_panel_settings_outlined,
+                  color: theme.colorScheme.primary,
+                  size: 20,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  "Admin Actions",
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
             ),
-
-            const SizedBox(height: 20),
-
+            const SizedBox(height: 16),
             Wrap(
               spacing: 12,
               runSpacing: 12,
               children: [
-
-                FilledButton.icon(
-                  icon: const Icon(Icons.assignment_ind),
-                  label: const Text("Assign"),
+                // Assign to Me Button
+                ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  ),
+                  icon: const Icon(Icons.assignment_ind, size: 18),
+                  label: const Text("Assign to Me"),
                   onPressed: () {
-                    _showAssignDialog(context);
+                    controller.assignTicket(ticket.id);
                   },
                 ),
 
-                FilledButton.icon(
-                  icon: const Icon(Icons.play_arrow),
+                // In Progress Button
+                ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  ),
+                  icon: const Icon(Icons.play_circle_outline, size: 18),
                   label: const Text("In Progress"),
                   onPressed: () {
-                    controller.updateStatus(
-                      ticketId: ticket.id,
-                      status: "In Progress",
-                    );
+                    controller.updateStatus(ticket.id, "In Progress");
                   },
                 ),
 
-                FilledButton.icon(
-                  icon: const Icon(Icons.check_circle),
+                // Resolve Button
+                ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  ),
+                  icon: const Icon(Icons.check_circle_outline, size: 18),
                   label: const Text("Resolve"),
                   onPressed: () {
-                    controller.updateStatus(
-                      ticketId: ticket.id,
-                      status: "Resolved",
-                    );
+                    controller.updateStatus(ticket.id, "Resolved");
                   },
                 ),
 
-                FilledButton.icon(
-                  icon: const Icon(Icons.lock),
+                // Close Button
+                ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  ),
+                  icon: const Icon(Icons.lock_outline, size: 18),
                   label: const Text("Close"),
                   onPressed: () {
-                    controller.updateStatus(
-                      ticketId: ticket.id,
-                      status: "Closed",
-                    );
+                    controller.updateStatus(ticket.id, "Closed");
                   },
                 ),
 
-                FilledButton.icon(
-                  style: FilledButton.styleFrom(
-                    backgroundColor: Colors.red,
+                // Delete Button (Red / destructive style)
+                ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: theme.colorScheme.errorContainer,
+                    foregroundColor: theme.colorScheme.onErrorContainer,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   ),
-                  icon: const Icon(Icons.delete),
+                  icon: const Icon(Icons.delete_outline, size: 18),
                   label: const Text("Delete"),
                   onPressed: () {
-                    _deleteDialog();
+                    _confirmDelete(context);
                   },
                 ),
               ],
@@ -103,39 +134,18 @@ class AdminActionsCard extends GetView<TicketController> {
     );
   }
 
-  void _deleteDialog() {
+  void _confirmDelete(BuildContext context) {
     Get.defaultDialog(
       title: "Delete Ticket",
-      middleText:
-          "Are you sure you want to permanently delete this ticket?",
+      middleText: "Are you sure you want to permanently delete this ticket?",
       textConfirm: "Delete",
       textCancel: "Cancel",
       confirmTextColor: Colors.white,
+      buttonColor: Colors.red,
       onConfirm: () async {
-        Get.back();
-
+        Get.back(); // close dialog
         await controller.deleteTicket(ticket.id);
-
-        Get.back();
-      },
-    );
-  }
-
-  void _showAssignDialog(BuildContext context) {
-    Get.defaultDialog(
-      title: "Assign Ticket",
-      middleText:
-          "Implement your employee selection dialog here.",
-      textConfirm: "Assign",
-      textCancel: "Cancel",
-      onConfirm: () {
-        Get.back();
-
-        /// Example
-        /// controller.assignTicket(
-        ///    ticketId: ticket.id,
-        ///    userId: selectedEmployeeId,
-        /// );
+        Get.back(); // go back to ticket list screen
       },
     );
   }

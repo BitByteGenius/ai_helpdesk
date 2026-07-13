@@ -1,139 +1,157 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:frontend/models/ticket_model.dart';
+import 'package:get/get.dart';
+import '../../../../controllers/ticket_controller.dart';
+import '../../../../models/ticket_model.dart';
 
+/// Expandable card showing AI-generated insights for a ticket.
+///
+/// Reactivity is handled by the parent screen's top-level Obx, which rebuilds
+/// this component when the ticket data changes. We do not use an internal Obx
+/// here to avoid GetX improper use crashes when reading non-observable parameters.
 class AICopilotCard extends StatelessWidget {
-  final TicketModel ticket;
+  final TicketModel? ticket;
 
   const AICopilotCard({
     super.key,
-    required this.ticket,
+    this.ticket,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final ticketController = Get.find<TicketController>();
+
+    // Fallback to controller's active ticket if not passed
+    final activeTicket = ticket ?? ticketController.selectedTicket.value;
+    if (activeTicket == null) {
+      return const SizedBox.shrink();
+    }
 
     return Card(
       elevation: 0,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(16),
         side: BorderSide(
-          color: theme.colorScheme.outlineVariant.withValues(alpha: .3),
+          color: theme.colorScheme.outlineVariant.withValues(alpha: .30),
         ),
       ),
-      child: ExpansionTile(
-        leading: Icon(
-          Icons.smart_toy,
-          color: theme.colorScheme.primary,
-        ),
-        title: const Text(
-          "AI Copilot Insights",
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
+      child: Theme(
+        data: theme.copyWith(dividerColor: Colors.transparent),
+        child: ExpansionTile(
+          leading: Icon(
+            Icons.smart_toy,
+            color: theme.colorScheme.primary,
           ),
-        ),
-        childrenPadding: const EdgeInsets.all(20),
-        children: [
-
-          _item(
-            "AI Summary",
-            ticket.aiSummary,
-          ),
-
-          _item(
-            "Suggested Root Cause",
-            ticket.aiSuggestedRootCause,
-          ),
-
-          _item(
-            "Troubleshooting Attempted",
-            ticket.aiTroubleshootingAttempted,
-          ),
-
-          _confidence(),
-
-          const SizedBox(height: 20),
-
-          Row(
-            children: [
-
-              Expanded(
-                child: FilledButton.icon(
-                  icon: const Icon(Icons.copy),
-                  label: const Text("Copy Reply"),
-                  onPressed: () {
-                    Clipboard.setData(
-                      ClipboardData(
-                        text: ticket.suggestedReply,
-                      ),
-                    );
-
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text("Copied"),
-                      ),
-                    );
-                  },
-                ),
-              ),
-
-              const SizedBox(width: 12),
-
-              Expanded(
-                child: OutlinedButton.icon(
-                  icon: const Icon(Icons.chat),
-                  label: const Text("Transcript"),
-                  onPressed: () => _showTranscript(context),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _item(
-    String title,
-    String value,
-  ) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 18),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-
-          Text(
-            title,
-            style: const TextStyle(
+          title: Text(
+            "AI Copilot Insights",
+            style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.bold,
             ),
           ),
+          childrenPadding: const EdgeInsets.all(20),
+          children: [
+            _item(
+              theme,
+              "AI Summary",
+              activeTicket.aiSummary,
+            ),
+            _item(
+              theme,
+              "Suggested Root Cause",
+              activeTicket.aiSuggestedRootCause,
+            ),
+            _item(
+              theme,
+              "Troubleshooting Attempted",
+              activeTicket.aiTroubleshootingAttempted,
+            ),
+            _confidence(activeTicket),
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                Expanded(
+                  child: FilledButton.icon(
+                    style: FilledButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                    ),
+                    icon: const Icon(Icons.copy, size: 16),
+                    label: const Text("Copy Reply"),
+                    onPressed: () {
+                      Clipboard.setData(
+                        ClipboardData(
+                          text: activeTicket.suggestedReply,
+                        ),
+                      );
+                      Get.snackbar(
+                        "Copied",
+                        "AI Suggested reply copied to clipboard.",
+                        snackPosition: SnackPosition.BOTTOM,
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: OutlinedButton.icon(
+                    style: OutlinedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                    ),
+                    icon: const Icon(Icons.chat, size: 16),
+                    label: const Text("Transcript"),
+                    onPressed: () => _showTranscript(context, activeTicket),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
+  Widget _item(ThemeData theme, String title, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 18),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            title,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: theme.colorScheme.onSurface,
+            ),
+          ),
           const SizedBox(height: 6),
-
-          Text(value),
+          Text(
+            value.isNotEmpty ? value : "—",
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _confidence() {
-    final confidence =
-        (ticket.aiConfidence.toLowerCase());
-
+  Widget _confidence(TicketModel activeTicket) {
+    final confidence = activeTicket.aiConfidence.toLowerCase();
     Color color;
 
     switch (confidence) {
       case "high":
         color = Colors.green;
         break;
-
       case "medium":
         color = Colors.orange;
         break;
-
       default:
         color = Colors.red;
     }
@@ -141,31 +159,27 @@ class AICopilotCard extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-
         const Text(
           "Confidence",
           style: TextStyle(
             fontWeight: FontWeight.bold,
           ),
         ),
-
         const SizedBox(height: 10),
-
         LinearProgressIndicator(
           value: confidence == "high"
-              ? 1
+              ? 1.0
               : confidence == "medium"
                   ? .65
                   : .35,
           color: color,
+          backgroundColor: color.withValues(alpha: 0.15),
           minHeight: 8,
           borderRadius: BorderRadius.circular(20),
         ),
-
         const SizedBox(height: 6),
-
         Text(
-          ticket.aiConfidence,
+          activeTicket.aiConfidence,
           style: TextStyle(
             color: color,
             fontWeight: FontWeight.bold,
@@ -175,7 +189,7 @@ class AICopilotCard extends StatelessWidget {
     );
   }
 
-  void _showTranscript(BuildContext context) {
+  void _showTranscript(BuildContext context, TicketModel activeTicket) {
     showDialog(
       context: context,
       builder: (_) {
@@ -187,15 +201,15 @@ class AICopilotCard extends StatelessWidget {
             width: 700,
             child: SingleChildScrollView(
               child: SelectableText(
-                ticket.aiConversationTranscript,
-                ),
+                activeTicket.aiConversationTranscript.isNotEmpty
+                    ? activeTicket.aiConversationTranscript
+                    : "No transcript available.",
+              ),
             ),
           ),
           actions: [
-
             TextButton(
-              onPressed: () =>
-                  Navigator.pop(context),
+              onPressed: () => Navigator.pop(context),
               child: const Text("Close"),
             ),
           ],

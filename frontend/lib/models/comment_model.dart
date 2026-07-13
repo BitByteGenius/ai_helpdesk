@@ -32,7 +32,7 @@ class CommentModel {
           ) ??
           DateTime.now(),
       user: CommentUser.fromJson(
-        json["user"] ?? {},
+        json["user"] ?? json["author"] ?? {},
       ),
       isEdited: json["isEdited"] ?? false,
     );

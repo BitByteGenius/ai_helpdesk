@@ -38,6 +38,21 @@ class TicketService {
     }
   }
 
+  /// Get My Tickets (All user's own tickets, not paginated)
+  Future<List<TicketModel>> getMyTickets() async {
+    try {
+      final response = await _dio.get("tickets/my");
+
+      final List data = response.data["data"];
+
+      return data.map((e) => TicketModel.fromJson(e)).toList();
+    } on DioException catch (e) {
+      throw Exception(
+        e.response?.data["message"] ?? "Unable to fetch my tickets",
+      );
+    }
+  }
+
   /// Get Ticket Details
   Future<TicketModel> getTicket(String id) async {
     try {
@@ -145,7 +160,7 @@ class TicketService {
     required String status,
   }) async {
     try {
-      final response = await _dio.put(
+      final response = await _dio.patch(
         "tickets/$ticketId/status",
         data: {"status": status},
       );

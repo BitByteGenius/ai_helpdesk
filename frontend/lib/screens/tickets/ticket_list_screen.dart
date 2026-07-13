@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/layouts/admin_layout.dart';
-import 'package:frontend/screens/tickets/ticket_details_screen.dart';
+import 'package:frontend/screens/tickets/admin_d/admin_ticket_details_screen.dart';
 import 'package:frontend/screens/tickets/widgets/ticket_card.dart';
 import 'package:frontend/screens/tickets/widgets/ticket_filter.dart';
 import 'package:frontend/screens/tickets/widgets/ticket_search.dart';
@@ -145,6 +145,7 @@ class TicketListScreen extends GetView<TicketController> {
                         else if (isDesktop)
                           // Table wrapper container for professional enterprise UI
                           Container(
+                            width: double.infinity,
                             decoration: BoxDecoration(
                               color: theme.cardColor,
                               borderRadius: BorderRadius.circular(12),
@@ -154,8 +155,12 @@ class TicketListScreen extends GetView<TicketController> {
                             child: TicketTable(
                               tickets: controller.tickets,
                               onView: (ticket) {
-                                Get.to(() => TicketDetailsScreen(ticketId: ticket.id));
-                              },
+  Get.to(
+    () => AdminTicketDetailsScreen(
+      ticketId: ticket.id,
+    ),
+  );
+},
                               onDelete: (ticket) => _showDeleteDialog(context, ticket.id),
                             ),
                           )
@@ -172,8 +177,12 @@ class TicketListScreen extends GetView<TicketController> {
                                 ticket: ticket,
                                 isAdmin: true,
                                 onTap: () {
-                                  Get.to(() => TicketDetailsScreen(ticketId: ticket.id));
-                                },
+  Get.to(
+    () => AdminTicketDetailsScreen(
+      ticketId: ticket.id,
+    ),
+  );
+},
                                 onDelete: () => _showDeleteDialog(context, ticket.id),
                               );
                             },
@@ -188,24 +197,7 @@ class TicketListScreen extends GetView<TicketController> {
             );
           }),
 
-          // 4. Professional Floating Action Button Design
-          // Positioned(
-          //   right: 24,
-          //   bottom: 24,
-          //   child: FloatingActionButton.extended(
-          //     onPressed: () {
-          //       // TODO: Open Create Ticket Screen
-          //     },
-          //     elevation: 4,
-          //     backgroundColor: theme.colorScheme.primary,
-          //     foregroundColor: theme.colorScheme.onPrimary,
-          //     icon: const Icon(Icons.add, size: 22),
-          //     label: const Text(
-          //       "New Ticket",
-          //       style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 0.5),
-          //     ),
-          //   ),
-          // ),
+          
         ],
       ),
     );

@@ -15,11 +15,11 @@ const generateToken = (user) => {
   );
 };
 
-// ─── Helper: Generate JWT for admin (never stored in DB) ─────────────────
-const generateAdminToken = () => {
+// ─── Helper: Generate JWT for admin (stored in DB) ─────────────────
+const generateAdminToken = (userId) => {
   return jwt.sign(
     {
-      userId: "admin",
+      userId: userId,
       role: "admin",
     },
     process.env.JWT_SECRET,
@@ -238,18 +238,31 @@ const { email, password } = req.body;
       });
     }
 
-    // Admin is never in MongoDB — synthesise the response object
-    const token = generateAdminToken();
+    // Ensure Admin is stored in MongoDB to prevent ObjectId cast errors elsewhere
+    let adminUser = await User.findOne({ email: adminEmail, role: "admin" });
+    if (!adminUser) {
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(adminPassword, salt);
+      adminUser = await User.create({
+        name: "Administrator",
+        email: adminEmail,
+        password: hashedPassword,
+        role: "admin",
+        isVerified: true,
+      });
+    }
+
+    const token = generateAdminToken(adminUser._id);
 
     return res.status(200).json({
       success: true,
       user: {
-        _id:   "admin",
-        name:  "Administrator",
-        email: adminEmail,
-        phone: "",
+        _id:   adminUser._id,
+        name:  adminUser.name,
+        email: adminUser.email,
+        phone: adminUser.phone || "",
         role:  "admin",
-        profileImage: "",
+        profileImage: adminUser.profileImage || "",
       },
       token,
     });

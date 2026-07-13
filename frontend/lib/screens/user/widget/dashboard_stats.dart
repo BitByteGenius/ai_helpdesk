@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/controllers/ticket_controller.dart';
+import 'package:get/get.dart';
 
-class DashboardStats extends StatelessWidget {
+class DashboardStats extends GetView<TicketController> {
   const DashboardStats({super.key});
 
   @override
@@ -13,40 +15,42 @@ class DashboardStats extends StatelessWidget {
             ? 2
             : 1;
 
-    return GridView.count(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      crossAxisCount: crossAxisCount,
-      crossAxisSpacing: 20,
-      mainAxisSpacing: 20,
-      childAspectRatio: width > 700 ? 2.65 : 2.4,
-      children: const [
-        _StatCard(
-          title: "My Tickets",
-          value: "18",
-          icon: Icons.confirmation_number,
-          color: Colors.blue,
-        ),
-        _StatCard(
-          title: "Open",
-          value: "5",
-          icon: Icons.pending_actions,
-          color: Colors.orange,
-        ),
-        _StatCard(
-          title: "In Progress",
-          value: "8",
-          icon: Icons.sync,
-          color: Colors.deepPurple,
-        ),
-        _StatCard(
-          title: "Resolved",
-          value: "5",
-          icon: Icons.check_circle,
-          color: Colors.green,
-        ),
-      ],
-    );
+    return Obx(() {
+      return GridView.count(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        crossAxisCount: crossAxisCount,
+        crossAxisSpacing: 20,
+        mainAxisSpacing: 20,
+        childAspectRatio: width > 700 ? 2.65 : 2.4,
+        children: [
+          _StatCard(
+            title: "My Tickets",
+            value: controller.totalTicketsCount.toString(),
+            icon: Icons.confirmation_number,
+            color: Colors.blue,
+          ),
+          _StatCard(
+            title: "Open",
+            value: controller.openTicketsCount.toString(),
+            icon: Icons.pending_actions,
+            color: Colors.orange,
+          ),
+          _StatCard(
+            title: "In Progress",
+            value: controller.inProgressTicketsCount.toString(),
+            icon: Icons.sync,
+            color: Colors.deepPurple,
+          ),
+          _StatCard(
+            title: "Resolved",
+            value: controller.resolvedTicketsCount.toString(),
+            icon: Icons.check_circle,
+            color: Colors.green,
+          ),
+        ],
+      );
+    });
   }
 }
 

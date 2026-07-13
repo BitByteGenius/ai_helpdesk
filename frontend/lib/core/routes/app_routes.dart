@@ -3,9 +3,10 @@ import 'package:frontend/screens/audit/audit_screen.dart';
 import 'package:frontend/screens/notification/notification_screen.dart';
 import 'package:frontend/screens/profile/profile_screen.dart';
 import 'package:frontend/screens/settings/settings_screen.dart';
-import 'package:frontend/screens/tickets/ticket_details_screen.dart';
+import 'package:frontend/screens/tickets/admin_d/admin_ticket_details_screen.dart';
 import 'package:frontend/screens/tickets/ticket_list_screen.dart';
 import 'package:frontend/screens/tickets/user_d/create_ticket_screen.dart';
+import 'package:frontend/screens/tickets/user_d/user_ticket_details_screen.dart';
 import 'package:frontend/screens/uploads/upload_screen.dart';
 import 'package:frontend/screens/user/widget/my_tickets_screen.dart';
 import 'package:get/get.dart';
@@ -45,10 +46,18 @@ class AppRoutes {
   static const adminSettings = '/admin/settings';
   static const uploads = '/uploads';
   static const audit = '/audit';
+
+
+static const userTicketDetails = "/user/ticket-details";
+static const adminTicketDetails = "/admin/ticket-details";
 }
 
 class AppRouter {
   static final pages = <GetPage>[
+
+   
+
+
     GetPage(
       name: AppRoutes.splash,
       page: () => const SplashScreen(),
@@ -81,20 +90,42 @@ class AppRouter {
     ),
 
     GetPage(
-      name: AppRoutes.ticketDetails,
-      page: () {
-        final args = Get.arguments;
-        if (args == null || args is! String) {
-          return Scaffold(
-            body: Center(
-              child: Text('Invalid ticket ID'),
-            ),
-          );
-        }
-        final id = args as String;
-        return TicketDetailsScreen(ticketId: id);
-      },
-    ),
+  name: AppRoutes.userTicketDetails,
+  page: () {
+    final args = Get.arguments;
+
+    if (args == null || args is! String) {
+      return const Scaffold(
+        body: Center(
+          child: Text("Invalid Ticket ID"),
+        ),
+      );
+    }
+
+    return UserTicketDetailsScreen(
+      ticketId: args,
+    );
+  },
+),
+
+GetPage(
+  name: AppRoutes.adminTicketDetails,
+  page: () {
+    final args = Get.arguments;
+
+    if (args == null || args is! String) {
+      return const Scaffold(
+        body: Center(
+          child: Text("Invalid Ticket ID"),
+        ),
+      );
+    }
+
+    return AdminTicketDetailsScreen(
+      ticketId: args,
+    );
+  },
+),
 
     GetPage(
       name: AppRoutes.profile,

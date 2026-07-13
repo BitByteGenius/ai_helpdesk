@@ -181,27 +181,27 @@ class DashboardSidebar extends StatelessWidget {
               ),
             ),
 
-            Material(
-              color: Colors.transparent,
-              child: ListTile(
-                leading: const Icon(
-                  Icons.logout,
-                  color: Colors.red,
-                ),
-                title: compact
-                    ? null
-                    : const Text(
-                        "Logout",
-                        style: TextStyle(
-                          color: Colors.red,
-                        ),
-                      ),
-                onTap: () async {
-                  await Get.find<AuthController>().logout();
-                  Get.offAllNamed(AppRoutes.login);
-                },
-              ),
-            ),
+            // Material(
+            //   color: Colors.transparent,
+            //   child: ListTile(
+            //     leading: const Icon(
+            //       Icons.logout,
+            //       color: Colors.red,
+            //     ),
+            //     title: compact
+            //         ? null
+            //         : const Text(
+            //             "Logout",
+            //             style: TextStyle(
+            //               color: Colors.red,
+            //             ),
+            //           ),
+            //     onTap: () async {
+            //       await Get.find<AuthController>().logout();
+            //       Get.offAllNamed(AppRoutes.login);
+            //     },
+            //   ),
+            // ),
 
             const SizedBox(height: 15),
           ],

@@ -2,6 +2,7 @@ import 'package:frontend/controllers/ai_chat_controller.dart';
 import 'package:frontend/controllers/ai_controller.dart';
 import 'package:frontend/controllers/audit_controller.dart';
 import 'package:frontend/controllers/comment_controller.dart';
+import 'package:frontend/controllers/chat_controller.dart';
 import 'package:frontend/controllers/navigation_controller.dart';
 import 'package:frontend/controllers/notification_controller.dart';
 import 'package:frontend/controllers/profile_controller.dart';
@@ -124,6 +125,11 @@ class InitialBinding extends Bindings {
       fenix: true,
     );
 
+    Get.lazyPut<ChatController>(
+      () => ChatController(Get.find<CommentService>()),
+      fenix: true,
+    );
+
     // ── Audit ─────────────────────────────────────────────────────────────
     // AuditService now uses ApiService.instance.dio — no Dio arg.
     Get.lazyPut<AuditService>(
@@ -137,18 +143,14 @@ class InitialBinding extends Bindings {
     );
 
     // ── AI Chat ───────────────────────────────────────────────────────────
-    Get.lazyPut<AIChatService>(
-      () => AIChatService(),
-      fenix: true,
-    );
+Get.lazyPut<AIChatService>(
+  () => AIChatService(),
+  fenix: true,
+);
 
-    Get.lazyPut<AIChatController>(
-      () => AIChatController(Get.find<AIChatService>()),
-      fenix: true,
-    );
-
-
-
-    Get.lazyPut(() => TicketController(Get.find()));
+Get.lazyPut<AIChatController>(
+  () => AIChatController(Get.find<AIChatService>()),
+  fenix: true,
+);
   }
 }

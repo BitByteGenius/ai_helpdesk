@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/controllers/ai_controller.dart';
+import 'package:frontend/controllers/auth_controller.dart';
 import 'package:frontend/controllers/upload_controller.dart';
 import 'package:frontend/servicies/ticket_service.dart';
 import 'package:get/get.dart';
@@ -14,12 +15,24 @@ class TicketController extends GetxController {
   /// Loading
   final RxBool isLoading = false.obs;
 
+  /// Updating
+  final RxBool isUpdating = false.obs;
+
   /// Error
   final RxBool hasError = false.obs;
   final RxString errorMessage = "".obs;
 
   /// Tickets
   final RxList<TicketModel> tickets = <TicketModel>[].obs;
+
+  /// My Tickets (all own tickets, unpaginated)
+  final RxList<TicketModel> myTickets = <TicketModel>[].obs;
+
+  /// Stats Getters for User Dashboard
+  int get totalTicketsCount => myTickets.length;
+  int get openTicketsCount => myTickets.where((t) => t.status == "Open").length;
+  int get inProgressTicketsCount => myTickets.where((t) => t.status == "In Progress" || t.status == "Assigned").length;
+  int get resolvedTicketsCount => myTickets.where((t) => t.status == "Resolved").length;
 
   /// Selected Ticket
   final Rxn<TicketModel> selectedTicket = Rxn<TicketModel>();
@@ -69,6 +82,7 @@ class TicketController extends GetxController {
   void onInit() {
     super.onInit();
     fetchTickets();
+    fetchMyTickets();
   }
 @override
 void onClose() {
@@ -82,6 +96,16 @@ void onClose() {
 
   super.onClose();
 }
+
+  /// Fetch all user tickets for stats
+  Future<void> fetchMyTickets() async {
+    try {
+      final data = await _service.getMyTickets();
+      myTickets.assignAll(data);
+    } catch (e) {
+      debugPrint("Error fetching my tickets: $e");
+    }
+  }
 
   /// Fetch Tickets
   Future<void> fetchTickets() async {
@@ -115,7 +139,10 @@ void onClose() {
 
   /// Refresh
   Future<void> refreshTickets() async {
-    await fetchTickets();
+    await Future.wait([
+      fetchTickets(),
+      fetchMyTickets(),
+    ]);
   }
 
   /// Search
@@ -169,37 +196,52 @@ void onClose() {
   /// Delete Ticket
   Future<void> deleteTicket(String id) async {
     try {
+      isUpdating.value = true;
       await _service.deleteTicket(id);
 
       tickets.removeWhere(
+        (e) => e.id == id,
+      );
+      myTickets.removeWhere(
         (e) => e.id == id,
       );
 
       _showSnackbarSafe("Success", "Ticket deleted successfully");
     } catch (e) {
       _showSnackbarSafe("Error", e.toString());
+    } finally {
+      isUpdating.value = false;
     }
   }
 
   /// Assign Ticket
-  Future<void> assignTicket({
-    required String ticketId,
-    required String userId,
-  }) async {
+  Future<void> assignTicket(String ticketId, [String? userId]) async {
+    final targetUserId = userId ?? Get.find<AuthController>().user?.id;
+    if (targetUserId == null) {
+      _showSnackbarSafe("Error", "No user specified and no logged-in user found.");
+      return;
+    }
     try {
-      final updated =
-          await _service.assignTicket(
+      isUpdating.value = true;
+      final updated = await _service.assignTicket(
         ticketId: ticketId,
-        assignedTo: userId,
+        assignedTo: targetUserId,
       );
 
-      final index =
-          tickets.indexWhere(
+      final index = tickets.indexWhere(
         (e) => e.id == ticketId,
       );
 
       if (index != -1) {
         tickets[index] = updated;
+      }
+
+      final myIndex = myTickets.indexWhere(
+        (e) => e.id == ticketId,
+      );
+
+      if (myIndex != -1) {
+        myTickets[myIndex] = updated;
       }
 
       selectedTicket.value = updated;
@@ -207,23 +249,21 @@ void onClose() {
       _showSnackbarSafe("Success", "Ticket assigned successfully");
     } catch (e) {
       _showSnackbarSafe("Error", e.toString());
+    } finally {
+      isUpdating.value = false;
     }
   }
 
   /// Update Status
-  Future<void> updateStatus({
-    required String ticketId,
-    required String status,
-  }) async {
+  Future<void> updateStatus(String ticketId, String status) async {
     try {
-      final updated =
-          await _service.updateStatus(
+      isUpdating.value = true;
+      final updated = await _service.updateStatus(
         ticketId: ticketId,
         status: status,
       );
 
-      final index =
-          tickets.indexWhere(
+      final index = tickets.indexWhere(
         (e) => e.id == ticketId,
       );
 
@@ -231,36 +271,46 @@ void onClose() {
         tickets[index] = updated;
       }
 
+      final myIndex = myTickets.indexWhere(
+        (e) => e.id == ticketId,
+      );
+
+      if (myIndex != -1) {
+        myTickets[myIndex] = updated;
+      }
+
       selectedTicket.value = updated;
 
       _showSnackbarSafe("Success", "Status updated successfully");
     } catch (e) {
       _showSnackbarSafe("Error", e.toString());
+    } finally {
+      isUpdating.value = false;
     }
   }
 
   /// Create Ticket
-Future<void> createTicket() async {
-  try {
-    isLoading.value = true;
+  Future<void> createTicket() async {
+    try {
+      isLoading.value = true;
 
-    final ai = Get.find<AiController>();
-    final upload = Get.find<UploadController>();
+      final ai = Get.find<AiController>();
+      final upload = Get.find<UploadController>();
 
-    final analysis = ai.analysis.value;
+      final analysis = ai.analysis.value;
 
-    final uploadIds = upload.uploads
-        .map((e) => e.id)
-        .toList();
+      final uploadIds = upload.uploads
+          .map((e) => e.id)
+          .toList();
 
-    final ticket = await _service.createTicket(
-      title: titleController.text.trim(),
-      description: descriptionController.text.trim(),
-      category: (analysis?.category.isNotEmpty == true
-              ? analysis!.category
-              : categoryController.text.trim().isNotEmpty
-                  ? categoryController.text.trim()
-                  : "Other"),
+      final ticket = await _service.createTicket(
+        title: titleController.text.trim(),
+        description: descriptionController.text.trim(),
+        category: (analysis?.category.isNotEmpty == true
+                ? analysis!.category
+                : categoryController.text.trim().isNotEmpty
+                    ? categoryController.text.trim()
+                    : "Other"),
       priority: (analysis?.priority.isNotEmpty == true
               ? analysis!.priority
               : priorityController.text.trim().isNotEmpty
@@ -274,6 +324,7 @@ Future<void> createTicket() async {
     );
 
     tickets.insert(0, ticket);
+    myTickets.insert(0, ticket);
 
     titleController.clear();
     descriptionController.clear();

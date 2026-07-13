@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/core/routes/app_routes.dart';
 import 'package:get/get.dart';
 
 import 'package:frontend/layouts/admin_layout.dart';
@@ -142,19 +143,21 @@ class _AdminSettingsScreenState
             const SizedBox(height: 30),
 
             SizedBox(
-              width: double.infinity,
-              height: 52,
-              child: FilledButton.icon(
-                style: FilledButton.styleFrom(
-                  backgroundColor: Colors.red,
-                ),
-                icon: const Icon(Icons.logout),
-                label: const Text("Logout"),
-                onPressed: () async {
-                  await auth.logout();
-                },
-              ),
-            ),
+  width: double.infinity,
+  height: 52,
+  child: FilledButton.icon(
+    style: FilledButton.styleFrom(
+      backgroundColor: Colors.red,
+    ),
+    icon: const Icon(Icons.logout),
+    label: const Text("Logout"),
+    // Changed from onTap to onPressed
+    onPressed: () async {
+      await Get.find<AuthController>().logout();
+      Get.offAllNamed(AppRoutes.login);
+    },
+  ),
+)
           ],
         ),
       ),
