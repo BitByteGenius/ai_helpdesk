@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/controllers/ai_chat_controller.dart';
+import 'package:frontend/core/theme/app_colors.dart';
 import 'package:frontend/models/ai_model/ai_conversation_model.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -14,14 +15,12 @@ class AIConversationSidebar extends GetView<AIChatController> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final sidebarColor = theme.brightness == Brightness.dark
-        ? theme.colorScheme.surfaceContainer
-        : theme.colorScheme.surfaceContainerLowest;
-
     final content = Container(
       width: 280,
-      color: sidebarColor,
+      decoration: const BoxDecoration(
+        color: AppColors.card,
+        border: Border(right: BorderSide(color: AppColors.border)),
+      ),
       child: Column(
         children: [
           // ── Header & New Chat ──
@@ -31,18 +30,15 @@ class AIConversationSidebar extends GetView<AIChatController> {
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 children: [
-                  OutlinedButton.icon(
-                    style: OutlinedButton.styleFrom(
-                      minimumSize: const Size.fromHeight(50),
+                  FilledButton.icon(
+                    style: FilledButton.styleFrom(
+                      minimumSize: const Size.fromHeight(44),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      side: BorderSide(
-                        color: theme.colorScheme.outlineVariant,
-                      ),
                     ),
-                    icon: const Icon(Icons.add),
-                    label: const Text("New Chat"),
+                    icon: const Icon(Icons.add_rounded, size: 18),
+                    label: const Text("New Chat", style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13)),
                     onPressed: () {
                       controller.startNewChat();
                     },
@@ -53,21 +49,17 @@ class AIConversationSidebar extends GetView<AIChatController> {
                     onChanged: (val) {
                       controller.searchConversationsQuery.value = val;
                     },
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       hintText: "Search chats...",
-                      prefixIcon: const Icon(Icons.search, size: 20),
+                      prefixIcon: Icon(Icons.search_rounded, size: 18),
                       isDense: true,
-                      contentPadding: const EdgeInsets.symmetric(vertical: 10),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
                     ),
                   ),
                 ],
               ),
             ),
           ),
-          const Divider(height: 1),
+          const Divider(height: 1, color: AppColors.borderLight),
 
           // ── Conversation Lists ──
           Expanded(
@@ -78,11 +70,15 @@ class AIConversationSidebar extends GetView<AIChatController> {
 
               final filtered = controller.filteredConversations;
               if (filtered.isEmpty) {
-                return Center(
-                  child: Text(
-                    "No conversations found",
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
+                return const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(20.0),
+                    child: Text(
+                      "No conversations found",
+                      style: TextStyle(
+                        color: AppColors.textMuted,
+                        fontSize: 13,
+                      ),
                     ),
                   ),
                 );
@@ -95,27 +91,31 @@ class AIConversationSidebar extends GetView<AIChatController> {
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 children: [
                   if (pinned.isNotEmpty) ...[
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                       child: Text(
                         "PINNED",
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: theme.colorScheme.primary,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w800,
+                          fontSize: 11,
+                          letterSpacing: 0.5,
+                          color: AppColors.primary,
                         ),
                       ),
                     ),
                     ...pinned.map((c) => _buildChatItem(context, c)),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 12),
                   ],
                   if (recent.isNotEmpty) ...[
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                       child: Text(
                         "RECENT CHATS",
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: theme.colorScheme.onSurfaceVariant,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w800,
+                          fontSize: 11,
+                          letterSpacing: 0.5,
+                          color: AppColors.textMuted,
                         ),
                       ),
                     ),
@@ -138,74 +138,94 @@ class AIConversationSidebar extends GetView<AIChatController> {
   }
 
   Widget _buildChatItem(BuildContext context, AIConversationModel chat) {
-    final theme = Theme.of(context);
-    final isActive = controller.currentConversationId.value == chat.id;
+    return Obx(() {
+      final isActive = controller.currentConversationId.value == chat.id;
 
-    final tileColor = isActive
-        ? theme.colorScheme.primary.withValues(alpha: 0.08)
-        : Colors.transparent;
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 2.0),
-      child: Material(
-        color: tileColor,
-        borderRadius: BorderRadius.circular(10),
-        clipBehavior: Clip.antiAlias,
-        child: ListTile(
-          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-          leading: Icon(
-            chat.isPinned ? Icons.push_pin : Icons.chat_bubble_outline,
-            size: 18,
-            color: isActive ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant,
-          ),
-          title: Text(
-            chat.title,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
-              color: isActive ? theme.colorScheme.primary : theme.colorScheme.onSurface,
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 2.0),
+        child: Material(
+          color: isActive ? AppColors.primarySubtle : Colors.transparent,
+          borderRadius: BorderRadius.circular(10),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(10),
+            onTap: () {
+              controller.loadConversation(chat.id);
+            },
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              child: Row(
+                children: [
+                  Icon(
+                    chat.isPinned ? Icons.push_pin_rounded : Icons.chat_bubble_outline_rounded,
+                    size: 16,
+                    color: isActive ? AppColors.primary : AppColors.textSecondary,
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          chat.title,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
+                            color: isActive ? AppColors.primary : AppColors.textPrimary,
+                            fontSize: 13,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          DateFormat('MMM dd, hh:mm a').format(chat.updatedAt),
+                          style: const TextStyle(
+                            fontSize: 11,
+                            color: AppColors.textMuted,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (isActive) _buildItemActions(context, chat),
+                ],
+              ),
             ),
           ),
-          subtitle: Text(
-            DateFormat('MMM dd, hh:mm a').format(chat.updatedAt),
-            style: theme.textTheme.bodySmall?.copyWith(
-              fontSize: 11,
-              color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
-            ),
-          ),
-          trailing: isActive ? _buildItemActions(context, chat) : null,
-          onTap: () {
-            controller.loadConversation(chat.id);
-          },
         ),
-      ),
-    );
+      );
+    });
   }
 
   Widget _buildItemActions(BuildContext context, AIConversationModel chat) {
-    final theme = Theme.of(context);
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         IconButton(
-          icon: Icon(chat.isPinned ? Icons.push_pin : Icons.push_pin_outlined, size: 16),
-          color: theme.colorScheme.primary,
+          padding: EdgeInsets.zero,
+          constraints: const BoxConstraints(),
+          icon: Icon(chat.isPinned ? Icons.push_pin_rounded : Icons.push_pin_outlined, size: 14),
+          color: AppColors.primary,
           tooltip: chat.isPinned ? "Unpin" : "Pin",
           onPressed: () {
             controller.togglePinConversation(chat.id, !chat.isPinned);
           },
         ),
+        const SizedBox(width: 6),
         IconButton(
-          icon: const Icon(Icons.edit_outlined, size: 16),
+          padding: EdgeInsets.zero,
+          constraints: const BoxConstraints(),
+          icon: const Icon(Icons.edit_outlined, size: 14, color: AppColors.textSecondary),
           tooltip: "Rename",
           onPressed: () {
             _showRenameDialog(context, chat);
           },
         ),
+        const SizedBox(width: 6),
         IconButton(
-          icon: const Icon(Icons.delete_outline, size: 16),
-          color: theme.colorScheme.error,
+          padding: EdgeInsets.zero,
+          constraints: const BoxConstraints(),
+          icon: const Icon(Icons.delete_outline_rounded, size: 14),
+          color: AppColors.error,
           tooltip: "Delete",
           onPressed: () {
             _showDeleteDialog(context, chat);
@@ -219,12 +239,12 @@ class AIConversationSidebar extends GetView<AIChatController> {
     final editController = TextEditingController(text: chat.title);
     Get.dialog(
       AlertDialog(
-        title: const Text("Rename Chat"),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text("Rename Chat", style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18)),
         content: TextField(
           controller: editController,
           decoration: const InputDecoration(
             hintText: "Enter conversation title",
-            border: OutlineInputBorder(),
           ),
           autofocus: true,
         ),
@@ -248,15 +268,16 @@ class AIConversationSidebar extends GetView<AIChatController> {
   void _showDeleteDialog(BuildContext context, AIConversationModel chat) {
     Get.dialog(
       AlertDialog(
-        title: const Text("Delete Chat?"),
-        content: Text("Are you sure you want to delete '${chat.title}'? This action cannot be undone."),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text("Delete Chat?", style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18)),
+        content: Text("Are you sure you want to delete '${chat.title}'? This action cannot be undone.", style: const TextStyle(fontSize: 13, color: AppColors.textSecondary)),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
             child: const Text("Cancel"),
           ),
           FilledButton(
-            style: FilledButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.error),
+            style: FilledButton.styleFrom(backgroundColor: AppColors.error),
             onPressed: () {
               controller.deleteConversation(chat.id);
               Get.back();
@@ -268,3 +289,4 @@ class AIConversationSidebar extends GetView<AIChatController> {
     );
   }
 }
+

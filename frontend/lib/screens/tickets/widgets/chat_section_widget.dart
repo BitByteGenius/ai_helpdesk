@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/core/theme/app_colors.dart';
 import 'package:get/get.dart';
 import '../../../controllers/auth_controller.dart';
 import '../../../controllers/chat_controller.dart';
@@ -28,7 +29,6 @@ class _ChatSectionWidgetState extends State<ChatSectionWidget> {
     chatController = Get.find<ChatController>();
     authController = Get.find<AuthController>();
 
-    // Load messages on init
     WidgetsBinding.instance.addPostFrameCallback((_) {
       chatController.loadMessages(widget.ticket.id);
     });
@@ -50,43 +50,37 @@ class _ChatSectionWidgetState extends State<ChatSectionWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Card(
-      elevation: 0,
-      clipBehavior: Clip.antiAlias,
-      shape: RoundedRectangleBorder(
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.card,
         borderRadius: BorderRadius.circular(16),
-        side: BorderSide(
-          color: theme.colorScheme.outlineVariant.withValues(alpha: .30),
-        ),
+        border: Border.all(color: AppColors.border),
       ),
+      clipBehavior: Clip.antiAlias,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Header
+          // ── Header ──
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-            decoration: BoxDecoration(
-              color: theme.colorScheme.surfaceContainerLow,
-              border: Border(
-                bottom: BorderSide(
-                  color: theme.colorScheme.outlineVariant.withValues(alpha: .30),
-                ),
-              ),
+            decoration: const BoxDecoration(
+              color: AppColors.surfaceSubtle,
+              border: Border(bottom: BorderSide(color: AppColors.border)),
             ),
             child: Row(
               children: [
-                Icon(
-                  Icons.chat_bubble_outline,
-                  color: theme.colorScheme.primary,
-                  size: 20,
+                const Icon(
+                  Icons.chat_bubble_outline_rounded,
+                  color: AppColors.primary,
+                  size: 18,
                 ),
                 const SizedBox(width: 10),
-                Text(
+                const Text(
                   "Conversation Stream",
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 15,
+                    color: AppColors.textPrimary,
                   ),
                 ),
                 const Spacer(),
@@ -104,10 +98,10 @@ class _ChatSectionWidgetState extends State<ChatSectionWidget> {
             ),
           ),
 
-          // Message Stream
+          // ── Message Stream ──
           Container(
             height: 400,
-            color: theme.colorScheme.surfaceContainerLowest,
+            color: AppColors.card,
             child: Obx(() {
               final messages = chatController.messagesList;
 
@@ -116,28 +110,30 @@ class _ChatSectionWidgetState extends State<ChatSectionWidget> {
               }
 
               if (messages.isEmpty) {
-                return Center(
+                return const Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(
                         Icons.forum_outlined,
-                        size: 48,
-                        color: theme.colorScheme.onSurfaceVariant.withValues(alpha: .5),
+                        size: 40,
+                        color: AppColors.textMuted,
                       ),
-                      const SizedBox(height: 12),
+                      SizedBox(height: 10),
                       Text(
                         "No messages yet",
-                        style: theme.textTheme.bodyMedium?.copyWith(
+                        style: TextStyle(
                           fontWeight: FontWeight.w600,
-                          color: theme.colorScheme.onSurfaceVariant,
+                          fontSize: 14,
+                          color: AppColors.textPrimary,
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      SizedBox(height: 4),
                       Text(
                         "Type a reply to start the conversation.",
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant.withValues(alpha: .7),
+                        style: TextStyle(
+                          color: AppColors.textSecondary,
+                          fontSize: 12,
                         ),
                       ),
                     ],
@@ -150,11 +146,10 @@ class _ChatSectionWidgetState extends State<ChatSectionWidget> {
                 thumbVisibility: true,
                 child: ListView.builder(
                   controller: chatController.scrollController,
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                   itemCount: messages.length,
                   itemBuilder: (context, index) {
                     final message = messages[index];
-                    // Align right if it is an Admin reply: meaning not created by the ticket creator.
                     final isAdminReply = message.user.id != widget.ticket.createdBy.id;
 
                     return _buildMessageBubble(context, message, isAdminReply);
@@ -164,42 +159,40 @@ class _ChatSectionWidgetState extends State<ChatSectionWidget> {
             }),
           ),
 
-          // Inline Loading Bar
+          // ── Inline Loading Bar ──
           Obx(() {
             if (chatController.isUpdating.value) {
-              return const LinearProgressIndicator(minHeight: 2);
+              return const LinearProgressIndicator(minHeight: 2, color: AppColors.primary);
             }
             return const SizedBox(height: 2);
           }),
 
-          // Chat Input Bar
+          // ── Chat Input Bar ──
           Container(
             padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: theme.colorScheme.surface,
-              border: Border(
-                top: BorderSide(
-                  color: theme.colorScheme.outlineVariant.withValues(alpha: .30),
-                ),
-              ),
+            decoration: const BoxDecoration(
+              color: AppColors.surfaceSubtle,
+              border: Border(top: BorderSide(color: AppColors.border)),
             ),
             child: Row(
               children: [
                 Expanded(
                   child: Container(
                     decoration: BoxDecoration(
-                      color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: .4),
+                      color: AppColors.card,
                       borderRadius: BorderRadius.circular(24),
+                      border: Border.all(color: AppColors.border),
                     ),
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: TextField(
                       controller: textEditingController,
-                      style: theme.textTheme.bodyMedium,
+                      style: const TextStyle(fontSize: 13, color: AppColors.textPrimary),
                       decoration: const InputDecoration(
                         hintText: "Type your message...",
+                        hintStyle: TextStyle(fontSize: 13, color: AppColors.textMuted),
                         border: InputBorder.none,
                         isDense: true,
-                        contentPadding: EdgeInsets.symmetric(vertical: 12),
+                        contentPadding: EdgeInsets.symmetric(vertical: 10),
                       ),
                       textInputAction: TextInputAction.send,
                       onSubmitted: (_) => _handleSend(),
@@ -208,11 +201,11 @@ class _ChatSectionWidgetState extends State<ChatSectionWidget> {
                 ),
                 const SizedBox(width: 8),
                 IconButton.filled(
-                  icon: const Icon(Icons.send, size: 18),
+                  icon: const Icon(Icons.send_rounded, size: 16),
                   onPressed: _handleSend,
                   style: IconButton.styleFrom(
-                    backgroundColor: theme.colorScheme.primary,
-                    foregroundColor: theme.colorScheme.onPrimary,
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: Colors.white,
                   ),
                 ),
               ],
@@ -224,69 +217,57 @@ class _ChatSectionWidgetState extends State<ChatSectionWidget> {
   }
 
   Widget _buildMessageBubble(BuildContext context, CommentModel message, bool isAdminReply) {
-    final theme = Theme.of(context);
     final timeStr = "${message.createdAt.hour.toString().padLeft(2, '0')}:${message.createdAt.minute.toString().padLeft(2, '0')}";
 
-    // Colors: Admin (Primary Brand Color Tint), Client (Grey/Light Tint)
-    final bubbleColor = isAdminReply
-        ? theme.colorScheme.primary
-        : theme.colorScheme.surfaceContainerHighest.withValues(alpha: .8);
-    final textColor = isAdminReply
-        ? theme.colorScheme.onPrimary
-        : theme.colorScheme.onSurfaceVariant;
-    final senderColor = isAdminReply
-        ? theme.colorScheme.onPrimary.withValues(alpha: .8)
-        : theme.colorScheme.primary.withValues(alpha: .9);
+    final bubbleColor = isAdminReply ? AppColors.primary : AppColors.surfaceSubtle;
+    final textColor = isAdminReply ? Colors.white : AppColors.textPrimary;
+    final senderColor = isAdminReply ? Colors.white.withValues(alpha: 0.85) : AppColors.primary;
 
     return Align(
       alignment: isAdminReply ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 4),
         padding: const EdgeInsets.all(12),
-        constraints: const BoxConstraints(maxWidth: 500),
+        constraints: const BoxConstraints(maxWidth: 480),
         decoration: BoxDecoration(
           color: bubbleColor,
           borderRadius: BorderRadius.only(
-            topLeft: const Radius.circular(16),
-            topRight: const Radius.circular(16),
-            bottomLeft: isAdminReply ? const Radius.circular(16) : Radius.zero,
-            bottomRight: isAdminReply ? Radius.zero : const Radius.circular(16),
+            topLeft: const Radius.circular(14),
+            topRight: const Radius.circular(14),
+            bottomLeft: isAdminReply ? const Radius.circular(14) : Radius.zero,
+            bottomRight: isAdminReply ? Radius.zero : const Radius.circular(14),
           ),
+          border: isAdminReply ? null : Border.all(color: AppColors.border),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Sender Name
             Text(
-              isAdminReply ? "${message.user.name} (Admin)" : message.user.name,
-              style: theme.textTheme.bodySmall?.copyWith(
-                fontWeight: FontWeight.bold,
+              isAdminReply ? "${message.user.name} (Support)" : message.user.name,
+              style: TextStyle(
+                fontWeight: FontWeight.w700,
                 color: senderColor,
                 fontSize: 11,
               ),
             ),
             const SizedBox(height: 4),
-
-            // Message text
             Text(
               message.message,
-              style: theme.textTheme.bodyMedium?.copyWith(
+              style: TextStyle(
                 color: textColor,
+                fontSize: 13,
+                height: 1.4,
               ),
             ),
-            const SizedBox(height: 6),
-
-            // Timestamp in bottom-right corner of the bubble
+            const SizedBox(height: 4),
             Align(
               alignment: Alignment.bottomRight,
               child: Text(
                 timeStr,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  fontSize: 9,
-                  color: isAdminReply
-                      ? theme.colorScheme.onPrimary.withValues(alpha: .6)
-                      : theme.colorScheme.onSurfaceVariant.withValues(alpha: .6),
+                style: TextStyle(
+                  fontSize: 10,
+                  color: isAdminReply ? Colors.white.withValues(alpha: 0.6) : AppColors.textMuted,
                 ),
               ),
             ),
@@ -296,3 +277,4 @@ class _ChatSectionWidgetState extends State<ChatSectionWidget> {
     );
   }
 }
+

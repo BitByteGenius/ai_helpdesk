@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/core/theme/app_colors.dart';
 import 'package:frontend/models/upload_model.dart';
-
 import 'package:url_launcher/url_launcher.dart';
-
 
 class UploadPreview extends StatelessWidget {
   final UploadModel upload;
@@ -29,17 +28,19 @@ class UploadPreview extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(upload.originalName),
+        title: Text(upload.originalName, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
         actions: [
           IconButton(
-            icon: const Icon(Icons.open_in_new),
+            icon: const Icon(Icons.open_in_new_rounded, size: 20),
+            tooltip: "Open in External App",
             onPressed: _openFile,
           ),
+          const SizedBox(width: 8),
         ],
       ),
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(24),
           child: isImage
               ? InteractiveViewer(
                   minScale: 0.5,
@@ -48,57 +49,73 @@ class UploadPreview extends StatelessWidget {
                     upload.url,
                     fit: BoxFit.contain,
                     errorBuilder: (_, _, _) {
-                      return const Text(
-                        "Unable to load image.",
+                      return const Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.broken_image_outlined, size: 48, color: AppColors.error),
+                          SizedBox(height: 12),
+                          Text("Unable to load image preview.", style: TextStyle(color: AppColors.textSecondary)),
+                        ],
                       );
                     },
                   ),
                 )
-              : Column(
-                  mainAxisAlignment:
-                      MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      upload.isPdf
-                          ? Icons.picture_as_pdf
-                          : Icons.description,
-                      size: 90,
-                      color: upload.isPdf
-                          ? Colors.red
-                          : Colors.blue,
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    Text(
-                      upload.originalName,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
+              : Container(
+                  constraints: const BoxConstraints(maxWidth: 480),
+                  padding: const EdgeInsets.all(32),
+                  decoration: BoxDecoration(
+                    color: AppColors.card,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: AppColors.border),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(18),
+                        decoration: BoxDecoration(
+                          color: (upload.isPdf ? AppColors.error : AppColors.primary).withValues(alpha: 0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          upload.isPdf ? Icons.picture_as_pdf_outlined : Icons.insert_drive_file_outlined,
+                          size: 48,
+                          color: upload.isPdf ? AppColors.error : AppColors.primary,
+                        ),
                       ),
-                    ),
-
-                    const SizedBox(height: 10),
-
-                    Text(
-                      upload.formattedSize,
-                      style: const TextStyle(
-                        color: Colors.grey,
+                      const SizedBox(height: 20),
+                      Text(
+                        upload.originalName,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.textPrimary,
+                        ),
                       ),
-                    ),
-
-                    const SizedBox(height: 30),
-
-                    ElevatedButton.icon(
-                      onPressed: _openFile,
-                      icon: const Icon(Icons.open_in_new),
-                      label: const Text("Open File"),
-                    ),
-                  ],
+                      const SizedBox(height: 6),
+                      Text(
+                        "${upload.fileType.toUpperCase()} • ${upload.formattedSize}",
+                        style: const TextStyle(
+                          color: AppColors.textSecondary,
+                          fontSize: 13,
+                        ),
+                      ),
+                      const SizedBox(height: 28),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 46,
+                        child: FilledButton.icon(
+                          onPressed: _openFile,
+                          icon: const Icon(Icons.open_in_new_rounded, size: 18),
+                          label: const Text("Open in External Browser", style: TextStyle(fontWeight: FontWeight.w700)),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
         ),
       ),
     );
   }
-}
+}

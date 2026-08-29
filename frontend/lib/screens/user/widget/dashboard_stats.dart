@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/controllers/ticket_controller.dart';
+import 'package:frontend/core/theme/app_colors.dart';
 import 'package:get/get.dart';
 
 class DashboardStats extends GetView<TicketController> {
@@ -7,50 +8,50 @@ class DashboardStats extends GetView<TicketController> {
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final width = constraints.maxWidth;
+        final crossAxisCount = width >= 1100 ? 4 : width >= 640 ? 2 : 1;
+        final childAspectRatio = width >= 1100 ? 2.4 : width >= 640 ? 2.6 : 2.8;
 
-    final crossAxisCount = width > 1100
-        ? 4
-        : width > 700
-            ? 2
-            : 1;
-
-    return Obx(() {
-      return GridView.count(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        crossAxisCount: crossAxisCount,
-        crossAxisSpacing: 20,
-        mainAxisSpacing: 20,
-        childAspectRatio: width > 700 ? 2.65 : 2.4,
-        children: [
-          _StatCard(
-            title: "My Tickets",
-            value: controller.totalTicketsCount.toString(),
-            icon: Icons.confirmation_number,
-            color: Colors.blue,
-          ),
-          _StatCard(
-            title: "Open",
-            value: controller.openTicketsCount.toString(),
-            icon: Icons.pending_actions,
-            color: Colors.orange,
-          ),
-          _StatCard(
-            title: "In Progress",
-            value: controller.inProgressTicketsCount.toString(),
-            icon: Icons.sync,
-            color: Colors.deepPurple,
-          ),
-          _StatCard(
-            title: "Resolved",
-            value: controller.resolvedTicketsCount.toString(),
-            icon: Icons.check_circle,
-            color: Colors.green,
-          ),
-        ],
-      );
-    });
+        return Obx(() {
+          return GridView.count(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            crossAxisCount: crossAxisCount,
+            crossAxisSpacing: 16,
+            mainAxisSpacing: 16,
+            childAspectRatio: childAspectRatio,
+            children: [
+              _StatCard(
+                title: "Total Tickets",
+                value: controller.totalTicketsCount.toString(),
+                icon: Icons.confirmation_number_rounded,
+                color: AppColors.info,
+              ),
+              _StatCard(
+                title: "Open",
+                value: controller.openTicketsCount.toString(),
+                icon: Icons.pending_actions_rounded,
+                color: AppColors.warning,
+              ),
+              _StatCard(
+                title: "In Progress",
+                value: controller.inProgressTicketsCount.toString(),
+                icon: Icons.sync_rounded,
+                color: AppColors.purple,
+              ),
+              _StatCard(
+                title: "Resolved",
+                value: controller.resolvedTicketsCount.toString(),
+                icon: Icons.check_circle_rounded,
+                color: AppColors.success,
+              ),
+            ],
+          );
+        });
+      },
+    );
   }
 }
 
@@ -69,60 +70,54 @@ class _StatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 3,
-      shape: RoundedRectangleBorder(
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+      decoration: BoxDecoration(
+        color: AppColors.card,
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.border),
       ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 18,
-          vertical: 16,
-        ),
-        child: Row(
-          children: [
-            CircleAvatar(
-              radius: 26,
-              backgroundColor: color.withValues(alpha: .12),
-              child: Icon(
-                icon,
-                color: color,
-              ),
+      child: Row(
+        children: [
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(12),
             ),
-
-            const SizedBox(width: 16),
-
-            Expanded(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment:
-                    MainAxisAlignment.center,
-                crossAxisAlignment:
-                    CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      color: Colors.grey,
-                      fontSize: 14,
-                    ),
+            child: Icon(icon, color: color, size: 22),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    color: AppColors.textSecondary,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
                   ),
-
-                  const SizedBox(height: 6),
-
-                  Text(
-                    value,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 24,
-                    ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  value,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w800,
+                    fontSize: 22,
+                    color: AppColors.textPrimary,
+                    letterSpacing: -0.4,
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 }
+

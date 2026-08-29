@@ -1,76 +1,71 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-
 import 'package:frontend/core/routes/app_routes.dart';
+import 'package:frontend/core/theme/app_colors.dart';
+import 'package:get/get.dart';
 
 class QuickActions extends StatelessWidget {
   const QuickActions({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
-
-    final crossAxisCount = width > 900
-        ? 4
-        : width > 600
-            ? 2
-            : 1;
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-
         const Text(
           "Quick Actions",
           style: TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+            color: AppColors.textPrimary,
+            letterSpacing: -0.3,
           ),
         ),
+        const SizedBox(height: 16),
+        LayoutBuilder(
+          builder: (context, constraints) {
+            final width = constraints.maxWidth;
+            final crossAxisCount = width >= 900 ? 4 : width >= 600 ? 2 : 1;
+            final childAspectRatio = width >= 900 ? 2.2 : width >= 600 ? 2.5 : 3.0;
 
-        const SizedBox(height: 20),
-
-        GridView.count(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          crossAxisCount: crossAxisCount,
-          crossAxisSpacing: 20,
-          mainAxisSpacing: 16,
-          childAspectRatio: width > 900 ? 2.5 : 2.2,
-          children: const [
-
-            _ActionCard(
-              title: "Create Ticket",
-              subtitle: "Raise a new support request",
-              icon: Icons.add_circle_outline,
-              color: Colors.blue,
-              route: AppRoutes.createTicket,
-            ),
-
-            _ActionCard(
-              title: "My Tickets",
-              subtitle: "View all submitted tickets",
-              icon: Icons.confirmation_number_outlined,
-              color: Colors.orange,
-              route: AppRoutes.myTickets,
-            ),
-
-            _ActionCard(
-              title: "AI Assistant",
-              subtitle: "Get AI help instantly",
-              icon: Icons.smart_toy_outlined,
-              color: Colors.deepPurple,
-              route: AppRoutes.aiAssistant,
-            ),
-
-            _ActionCard(
-              title: "Profile",
-              subtitle: "Manage your account",
-              icon: Icons.person_outline,
-              color: Colors.green,
-              route: AppRoutes.profile,
-            ),
-          ],
+            return GridView.count(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              crossAxisCount: crossAxisCount,
+              crossAxisSpacing: 16,
+              mainAxisSpacing: 16,
+              childAspectRatio: childAspectRatio,
+              children: const [
+                _ActionCard(
+                  title: "Create Ticket",
+                  subtitle: "Raise a new support issue",
+                  icon: Icons.add_circle_outline_rounded,
+                  color: AppColors.primary,
+                  route: AppRoutes.createTicket,
+                ),
+                _ActionCard(
+                  title: "My Tickets",
+                  subtitle: "Track your active tickets",
+                  icon: Icons.confirmation_number_outlined,
+                  color: AppColors.warning,
+                  route: AppRoutes.myTickets,
+                ),
+                _ActionCard(
+                  title: "AI Assistant",
+                  subtitle: "Instant AI copilot triage",
+                  icon: Icons.auto_awesome_rounded,
+                  color: AppColors.purple,
+                  route: AppRoutes.aiAssistant,
+                ),
+                _ActionCard(
+                  title: "Profile",
+                  subtitle: "Manage security & settings",
+                  icon: Icons.person_outline_rounded,
+                  color: AppColors.success,
+                  route: AppRoutes.profile,
+                ),
+              ],
+            );
+          },
         ),
       ],
     );
@@ -94,64 +89,66 @@ class _ActionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(18),
-      onTap: () {
-        Get.toNamed(route);
-      },
-      child: Card(
-        elevation: 3,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(18),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: () => Get.toNamed(route),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          decoration: BoxDecoration(
+            color: AppColors.card,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: AppColors.border),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.02),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
           child: Row(
             children: [
-
-              CircleAvatar(
-                radius: 20,
-                backgroundColor: color.withValues(alpha: .12),
-                child: Icon(
-                  icon,
-                  size: 20,
-                  color: color,
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(10),
                 ),
+                child: Icon(icon, size: 20, color: color),
               ),
-
-              const SizedBox(width: 10),
-
+              const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-
                     Text(
                       title,
                       style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 14,
+                        color: AppColors.textPrimary,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-
                     const SizedBox(height: 2),
-
                     Text(
                       subtitle,
                       style: const TextStyle(
-                        color: Colors.grey,
-                        fontSize: 12,
+                        color: AppColors.textSecondary,
+                        fontSize: 11,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ),
-              )
+              ),
+              const Icon(Icons.chevron_right_rounded, size: 18, color: AppColors.textMuted),
             ],
           ),
         ),
@@ -159,3 +156,4 @@ class _ActionCard extends StatelessWidget {
     );
   }
 }
+

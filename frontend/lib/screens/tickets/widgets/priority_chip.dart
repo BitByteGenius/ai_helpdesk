@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/core/theme/app_colors.dart';
 
 class PriorityChip extends StatelessWidget {
   final String priority;
@@ -8,58 +9,31 @@ class PriorityChip extends StatelessWidget {
     required this.priority,
   });
 
-  Color get backgroundColor {
-    switch (priority) {
-      case "Low":
-        return Colors.green.shade100;
-
-      case "Medium":
-        return Colors.blue.shade100;
-
-      case "High":
-        return Colors.orange.shade100;
-
-      case "Critical":
-        return Colors.red.shade100;
-
+  Color get _color {
+    switch (priority.toLowerCase()) {
+      case "critical":
+        return AppColors.error;
+      case "high":
+        return const Color(0xFFF97316);
+      case "medium":
+        return AppColors.warning;
+      case "low":
+        return AppColors.success;
       default:
-        return Colors.grey.shade200;
+        return AppColors.secondary;
     }
   }
 
-  Color get textColor {
-    switch (priority) {
-      case "Low":
-        return Colors.green.shade900;
-
-      case "Medium":
-        return Colors.blue.shade900;
-
-      case "High":
-        return Colors.orange.shade900;
-
-      case "Critical":
-        return Colors.red.shade900;
-
-      default:
-        return Colors.black87;
-    }
-  }
-
-  IconData get icon {
-    switch (priority) {
-      case "Low":
-        return Icons.arrow_downward_rounded;
-
-      case "Medium":
-        return Icons.remove_rounded;
-
-      case "High":
-        return Icons.arrow_upward_rounded;
-
-      case "Critical":
+  IconData get _icon {
+    switch (priority.toLowerCase()) {
+      case "critical":
         return Icons.priority_high_rounded;
-
+      case "high":
+        return Icons.arrow_upward_rounded;
+      case "medium":
+        return Icons.remove_rounded;
+      case "low":
+        return Icons.arrow_downward_rounded;
       default:
         return Icons.flag_outlined;
     }
@@ -67,21 +41,29 @@ class PriorityChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Chip(
-      avatar: Icon(
-        icon,
-        color: textColor,
-        size: 18,
+    final color = _color;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(6),
       ),
-      label: Text(
-        priority,
-        style: TextStyle(
-          color: textColor,
-          fontWeight: FontWeight.w600,
-        ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(_icon, size: 12, color: color),
+          const SizedBox(width: 4),
+          Text(
+            priority,
+            style: TextStyle(
+              color: color,
+              fontWeight: FontWeight.w700,
+              fontSize: 11,
+              letterSpacing: 0.2,
+            ),
+          ),
+        ],
       ),
-      backgroundColor: backgroundColor,
-      side: BorderSide.none,
     );
   }
-}
+}

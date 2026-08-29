@@ -23,14 +23,23 @@ import '../controllers/dashboard_controller.dart';
 import '../controllers/ticket_controller.dart';
 import '../servicies/dashboard_service.dart';
 
+import 'package:frontend/controllers/theme_controller.dart';
+
 class InitialBinding extends Bindings {
   @override
   void dependencies() {
+    // ── Theme ─────────────────────────────────────────────────────────────
+    Get.lazyPut<ThemeController>(
+      () => ThemeController(),
+      fenix: true,
+    );
+
     // ── Navigation ────────────────────────────────────────────────────────
     Get.lazyPut<NavigationController>(
       () => NavigationController(),
       fenix: true,
     );
+
 
     // ── Auth ──────────────────────────────────────────────────────────────
     Get.lazyPut<AuthController>(

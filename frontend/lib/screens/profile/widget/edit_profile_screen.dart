@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/core/theme/app_colors.dart';
 import 'package:frontend/layouts/user_layout.dart';
 import 'package:get/get.dart';
-
 import '../../../controllers/profile_controller.dart';
 
 class EditProfileScreen extends GetView<ProfileController> {
@@ -11,110 +11,106 @@ class EditProfileScreen extends GetView<ProfileController> {
   Widget build(BuildContext context) {
     return UserLayout(
       title: 'Edit Profile',
-      child: Obx(
-        () => SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(
-                maxWidth: 600,
-              ),
-              child: Card(
-                elevation: 3,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(30),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final horizontalPadding = constraints.maxWidth >= 1200 ? 28.0 : 16.0;
+
+          return SingleChildScrollView(
+            padding: EdgeInsets.fromLTRB(horizontalPadding, 24, horizontalPadding, 32),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 600),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: AppColors.card,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: AppColors.border),
+                  ),
+                  padding: const EdgeInsets.all(28),
                   child: Column(
                     children: [
-
                       Obx(() {
-  final profile = controller.profile.value;
+                        final profile = controller.profile.value;
 
-  return CircleAvatar(
-    radius: 55,
-    backgroundImage: profile != null &&
-            profile.profileImage.isNotEmpty
-        ? NetworkImage(profile.profileImage)
-        : null,
-    child: profile == null ||
-            profile.profileImage.isEmpty
-        ? const Icon(
-            Icons.person,
-            size: 50,
-          )
-        : null,
-  );
-}),
-
-                      const SizedBox(height: 15),
-
+                        return Stack(
+                          alignment: Alignment.bottomRight,
+                          children: [
+                            CircleAvatar(
+                              radius: 50,
+                              backgroundColor: AppColors.primarySubtle,
+                              backgroundImage: profile != null && profile.profileImage.isNotEmpty
+                                  ? NetworkImage(profile.profileImage)
+                                  : null,
+                              child: profile == null || profile.profileImage.isEmpty
+                                  ? const Icon(
+                                      Icons.person_rounded,
+                                      size: 50,
+                                      color: AppColors.primary,
+                                    )
+                                  : null,
+                            ),
+                          ],
+                        );
+                      }),
+                      const SizedBox(height: 12),
                       OutlinedButton.icon(
-  onPressed: () async {
-    await controller.uploadProfileImage();
-  },
-  icon: const Icon(Icons.camera_alt),
-  label: const Text("Change Photo"),
-),
-
-                      const SizedBox(height: 30),
-
+                        style: OutlinedButton.styleFrom(
+                          side: const BorderSide(color: AppColors.border),
+                        ),
+                        onPressed: () async {
+                          await controller.uploadProfileImage();
+                        },
+                        icon: const Icon(Icons.camera_alt_outlined, size: 16),
+                        label: const Text("Change Photo", style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+                      ),
+                      const SizedBox(height: 28),
                       TextField(
                         controller: controller.nameController,
                         decoration: const InputDecoration(
                           labelText: "Full Name",
-                          prefixIcon: Icon(Icons.person),
+                          prefixIcon: Icon(Icons.person_outline_rounded, size: 18),
                         ),
                       ),
-
-                      const SizedBox(height: 20),
-
+                      const SizedBox(height: 16),
                       TextField(
                         controller: controller.emailController,
                         decoration: const InputDecoration(
-                          labelText: "Email",
-                          prefixIcon: Icon(Icons.email),
+                          labelText: "Email Address",
+                          prefixIcon: Icon(Icons.mail_outline_rounded, size: 18),
                         ),
                       ),
-
-                      const SizedBox(height: 20),
-
+                      const SizedBox(height: 16),
                       TextField(
                         controller: controller.phoneController,
                         decoration: const InputDecoration(
-                          labelText: "Phone",
-                          prefixIcon: Icon(Icons.phone),
+                          labelText: "Phone Number",
+                          prefixIcon: Icon(Icons.phone_outlined, size: 18),
                         ),
                       ),
-
-                      const SizedBox(height: 35),
-
+                      const SizedBox(height: 32),
                       SizedBox(
                         width: double.infinity,
-                        height: 55,
-                        child: ElevatedButton.icon(
-                          icon: controller.isLoading.value
-                              ? const SizedBox(
-                                  height: 20,
-                                  width: 20,
-                                  child:
-                                      CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    color: Colors.white,
-                                  ),
-                                )
-                              : const Icon(Icons.save),
-
-                          label: const Text("Save Changes"),
-
-                          onPressed: controller.isLoading.value
-                              ? null
-                              : () async {
-                                  await controller.updateProfile();
-
-                                  Get.back();
-                                },
+                        height: 48,
+                        child: Obx(
+                          () => FilledButton.icon(
+                            icon: controller.isLoading.value
+                                ? const SizedBox(
+                                    height: 18,
+                                    width: 18,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                : const Icon(Icons.check_rounded, size: 18),
+                            label: const Text("Save Profile Changes", style: TextStyle(fontWeight: FontWeight.w700)),
+                            onPressed: controller.isLoading.value
+                                ? null
+                                : () async {
+                                    await controller.updateProfile();
+                                    Get.back();
+                                  },
+                          ),
                         ),
                       ),
                     ],
@@ -122,9 +118,10 @@ class EditProfileScreen extends GetView<ProfileController> {
                 ),
               ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }
 }
+

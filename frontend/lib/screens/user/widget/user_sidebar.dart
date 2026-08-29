@@ -5,6 +5,7 @@ import 'package:frontend/controllers/notification_controller.dart';
 import 'package:frontend/controllers/profile_controller.dart';
 import 'package:frontend/controllers/socket_controller.dart';
 import 'package:frontend/core/routes/app_routes.dart';
+import 'package:frontend/core/theme/app_colors.dart';
 import 'package:get/get.dart';
 
 /// A reactive, professional sidebar for the user section.
@@ -61,14 +62,21 @@ class UserSidebar extends StatelessWidget {
   }
 
   // ─── Active route check ───────────────────────────────────────────────────
-  /// Returns true when [route] matches the current navigation path,
-  /// including sub-routes (e.g. /my-tickets/details still highlights myTickets).
   static bool _isActive(String currentRoute, String route) {
     if (route == AppRoutes.home) {
       return currentRoute == AppRoutes.home;
     }
-    return currentRoute.startsWith(route);
+    if (route == AppRoutes.myTickets) {
+      return currentRoute == AppRoutes.myTickets ||
+          currentRoute == AppRoutes.userTicketDetails ||
+          currentRoute == AppRoutes.ticketDetails;
+    }
+    if (route == AppRoutes.profile) {
+      return currentRoute.startsWith('/profile');
+    }
+    return currentRoute == route || (route.isNotEmpty && currentRoute.startsWith(route));
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -79,134 +87,84 @@ class UserSidebar extends StatelessWidget {
     return Container(
       width: 260,
       decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [Color(0xFF0F172A), Color(0xFF1E293B)],
+        color: Color(0xFF0F172A), // Slate 900
+        border: Border(
+          right: BorderSide(color: Color(0xFF1E293B), width: 1),
         ),
       ),
       child: SafeArea(
         child: Column(
           children: [
-            // ── Brand ────────────────────────────────────────────────────
+            // ── Brand Header ──
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
               child: Row(
                 children: [
                   Container(
-                    width: 36,
-                    height: 36,
+                    width: 38,
+                    height: 38,
                     decoration: BoxDecoration(
-                      color: const Color(0xFF6366F1),
+                      color: AppColors.primary,
                       borderRadius: BorderRadius.circular(10),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.primary.withValues(alpha: 0.35),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
                     ),
                     child: const Icon(
-                      Icons.support_agent,
+                      Icons.support_agent_rounded,
                       color: Colors.white,
-                      size: 20,
+                      size: 22,
                     ),
                   ),
                   const SizedBox(width: 12),
-                  const Text(
-                    'AI Helpdesk',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 17,
-                      letterSpacing: 0.3,
+                  const Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'AI Helpdesk',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 16,
+                            letterSpacing: -0.2,
+                          ),
+                        ),
+                        Text(
+                          'Client Portal',
+                          style: TextStyle(
+                            color: Color(0xFF94A3B8),
+                            fontSize: 11,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
               ),
             ),
 
-            // ── Profile Card ─────────────────────────────────────────────
-            Obx(() {
-              final profile = profileCtrl.profile.value;
-              final auth = Get.find<AuthController>();
-              final name = profile?.name.isNotEmpty == true
-                  ? profile!.name
-                  : (auth.user?.name.isNotEmpty == true
-                      ? auth.user!.name
-                      : 'User');
-              final email = profile?.email ?? auth.user?.email ?? '';
-              final avatarUrl = profile?.profileImage ?? '';
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: Divider(color: Color(0xFF1E293B), height: 1),
+            ),
 
-              return Container(
-                margin: const EdgeInsets.symmetric(horizontal: 12),
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.06),
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(
-                    color: Colors.white.withValues(alpha: 0.08),
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 22,
-                      backgroundColor: const Color(0xFF6366F1),
-                      backgroundImage: avatarUrl.isNotEmpty
-                          ? NetworkImage(avatarUrl)
-                          : null,
-                      child: avatarUrl.isEmpty
-                          ? Text(
-                              name.isNotEmpty
-                                  ? name[0].toUpperCase()
-                                  : 'U',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18,
-                              ),
-                            )
-                          : null,
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            name,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 14,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          if (email.isNotEmpty)
-                            Text(
-                              email,
-                              style: TextStyle(
-                                color: Colors.white.withValues(alpha: 0.5),
-                                fontSize: 11,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            }),
+            const SizedBox(height: 12),
 
-            const SizedBox(height: 20),
-
-            // ── Navigation Label ─────────────────────────────────────────
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+            // ── Navigation Label ──
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 6),
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  'NAVIGATION',
+                  'MAIN MENU',
                   style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.35),
+                    color: Color(0xFF64748B),
                     fontSize: 10,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 1.2,
@@ -215,14 +173,12 @@ class UserSidebar extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(height: 8),
-
-            // ── Menu Items ───────────────────────────────────────────────
+            // ── Menu Items ──
             Expanded(
               child: ListView(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 10,
-                  vertical: 4,
+                  vertical: 2,
                 ),
                 children: [
                   Obx(() => _MenuItem(
@@ -255,12 +211,12 @@ class UserSidebar extends StatelessWidget {
                     onTap: () =>
                         _navigate(context, AppRoutes.aiAssistant),
                   )),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(10, 16, 10, 6),
+                  const Padding(
+                    padding: EdgeInsets.fromLTRB(10, 16, 10, 6),
                     child: Text(
                       'ACCOUNT',
                       style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.35),
+                        color: Color(0xFF64748B),
                         fontSize: 10,
                         fontWeight: FontWeight.w700,
                         letterSpacing: 1.2,
@@ -298,27 +254,94 @@ class UserSidebar extends StatelessWidget {
               ),
             ),
 
-            // ── Divider ──────────────────────────────────────────────────
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Divider(
-                color: Colors.white.withValues(alpha: 0.1),
-                height: 1,
-              ),
+            // ── Divider ──
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: Divider(color: Color(0xFF1E293B), height: 1),
             ),
 
-            const SizedBox(height: 6),
+            // ── Profile Card & Logout ──
+            Obx(() {
+              final profile = profileCtrl.profile.value;
+              final auth = Get.find<AuthController>();
+              final name = profile?.name.isNotEmpty == true
+                  ? profile!.name
+                  : (auth.user?.name.isNotEmpty == true
+                      ? auth.user!.name
+                      : 'User');
+              final email = profile?.email ?? auth.user?.email ?? '';
+              final avatarUrl = profile?.profileImage ?? '';
 
-            // ── Logout ───────────────────────────────────────────────────
-            // Padding(
-            //   padding: const EdgeInsets.symmetric(
-            //     horizontal: 10,
-            //     vertical: 8,
-            //   ),
-            //   child: _LogoutTile(
-            //     onTap: () => _logout(context),
-            //   ),
-            // ),
+              return Container(
+                margin: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF1E293B).withValues(alpha: 0.6),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: 0.05),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    CircleAvatar(
+                      radius: 18,
+                      backgroundColor: AppColors.primary,
+                      backgroundImage: avatarUrl.isNotEmpty
+                          ? NetworkImage(avatarUrl)
+                          : null,
+                      child: avatarUrl.isEmpty
+                          ? Text(
+                              name.isNotEmpty ? name[0].toUpperCase() : 'U',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                              ),
+                            )
+                          : null,
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            name,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 13,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          if (email.isNotEmpty)
+                            Text(
+                              email,
+                              style: const TextStyle(
+                                color: Color(0xFF94A3B8),
+                                fontSize: 11,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(
+                        Icons.logout_rounded,
+                        color: Color(0xFFEF4444),
+                        size: 18,
+                      ),
+                      tooltip: 'Logout',
+                      onPressed: () => _logout(context),
+                    ),
+                  ],
+                ),
+              );
+            }),
           ],
         ),
       ),
@@ -373,14 +396,15 @@ class _MenuItemState extends State<_MenuItem> {
           ),
           decoration: BoxDecoration(
             color: active
-                ? const Color(0xFF6366F1).withValues(alpha: 0.18)
+                ? AppColors.primary.withValues(alpha: 0.18)
                 : _hovered
-                    ? Colors.white.withValues(alpha: 0.06)
+                    ? Colors.white.withValues(alpha: 0.05)
                     : Colors.transparent,
             borderRadius: BorderRadius.circular(10),
             border: active
                 ? Border.all(
-                    color: const Color(0xFF6366F1).withValues(alpha: 0.35),
+                    color: AppColors.primary.withValues(alpha: 0.35),
+                    width: 1,
                   )
                 : null,
           ),
@@ -391,7 +415,9 @@ class _MenuItemState extends State<_MenuItem> {
                 size: 20,
                 color: active
                     ? const Color(0xFF818CF8)
-                    : Colors.white.withValues(alpha: 0.6),
+                    : _hovered
+                        ? Colors.white
+                        : const Color(0xFF94A3B8),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -400,7 +426,9 @@ class _MenuItemState extends State<_MenuItem> {
                   style: TextStyle(
                     color: active
                         ? Colors.white
-                        : Colors.white.withValues(alpha: 0.75),
+                        : _hovered
+                            ? Colors.white
+                            : const Color(0xFFCBD5E1),
                     fontWeight: active ? FontWeight.w600 : FontWeight.w400,
                     fontSize: 14,
                   ),
@@ -429,11 +457,11 @@ class _MenuItemState extends State<_MenuItem> {
                 ),
               if (active)
                 Container(
-                  width: 4,
-                  height: 4,
+                  width: 6,
+                  height: 6,
                   margin: const EdgeInsets.only(left: 6),
                   decoration: const BoxDecoration(
-                    color: Color(0xFF6366F1),
+                    color: Color(0xFF818CF8),
                     shape: BoxShape.circle,
                   ),
                 ),
@@ -445,60 +473,3 @@ class _MenuItemState extends State<_MenuItem> {
   }
 }
 
-// ─── Private: Logout Tile ────────────────────────────────────────────────────
-
-class _LogoutTile extends StatefulWidget {
-  final VoidCallback onTap;
-
-  const _LogoutTile({required this.onTap});
-
-  @override
-  State<_LogoutTile> createState() => _LogoutTileState();
-}
-
-class _LogoutTileState extends State<_LogoutTile> {
-  bool _hovered = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return MouseRegion(
-      onEnter: (_) => setState(() => _hovered = true),
-      onExit: (_) => setState(() => _hovered = false),
-      cursor: SystemMouseCursors.click,
-      child: GestureDetector(
-        onTap: widget.onTap,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 150),
-          padding: const EdgeInsets.symmetric(
-            horizontal: 12,
-            vertical: 10,
-          ),
-          decoration: BoxDecoration(
-            color: _hovered
-                ? Colors.red.withValues(alpha: 0.12)
-                : Colors.transparent,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Row(
-            children: [
-              Icon(
-                Icons.logout_rounded,
-                size: 20,
-                color: Colors.red.withValues(alpha: 0.8),
-              ),
-              const SizedBox(width: 12),
-              Text(
-                'Logout',
-                style: TextStyle(
-                  color: Colors.red.withValues(alpha: 0.9),
-                  fontWeight: FontWeight.w500,
-                  fontSize: 14,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}

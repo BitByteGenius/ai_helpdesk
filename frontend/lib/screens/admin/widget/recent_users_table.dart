@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/core/theme/app_colors.dart';
+import 'package:frontend/models/user_model.dart';
 import 'package:intl/intl.dart';
-
-import '../../../models/user_model.dart';
 
 class RecentUsersTable extends StatelessWidget {
   final List<UserModel> users;
@@ -14,177 +14,111 @@ class RecentUsersTable extends StatelessWidget {
   Color _roleColor(String role) {
     switch (role.toLowerCase()) {
       case "admin":
-        return Colors.red;
-
+        return AppColors.purple;
       case "manager":
-        return Colors.orange;
-
+        return AppColors.warning;
       case "support":
-        return Colors.blue;
-
+        return AppColors.info;
       default:
-        return Colors.green;
+        return AppColors.success;
     }
   }
 
   IconData _roleIcon(String role) {
     switch (role.toLowerCase()) {
       case "admin":
-        return Icons.admin_panel_settings;
-
+        return Icons.admin_panel_settings_rounded;
       case "manager":
-        return Icons.manage_accounts;
-
+        return Icons.manage_accounts_rounded;
       case "support":
-        return Icons.support_agent;
-
+        return Icons.support_agent_rounded;
       default:
-        return Icons.person;
+        return Icons.person_outline_rounded;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 1.5,
-      clipBehavior: Clip.antiAlias,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.card,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.border),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-
-            /// HEADER
-            Row(
-              children: [
-
-                Container(
-                  width: 52,
-                  height: 52,
-                  decoration: BoxDecoration(
-                    color: Colors.blue.withValues(alpha: .08),
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  child: const Icon(
-                    Icons.people_alt_rounded,
-                    color: Colors.blue,
-                  ),
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // ── Header ──
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                "Recent Users",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textPrimary,
+                  letterSpacing: -0.2,
                 ),
-
-                const SizedBox(width: 16),
-
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment:
-                        CrossAxisAlignment.start,
-                    children: [
-
-                      const Text(
-                        "Recent Users",
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-
-                      const SizedBox(height: 4),
-
-                      Text(
-                        "${users.length} user${users.length == 1 ? "" : "s"}",
-                        style: TextStyle(
-                          color: Colors.grey.shade600,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                FilledButton.icon(
-                  onPressed: () {
-                    // TODO: Navigate to users page
-                  },
-                  icon: const Icon(Icons.people),
-                  label: const Text("View All"),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 28),
-
-            if (users.isEmpty)
-              SizedBox(
-                height: 250,
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment:
-                        MainAxisAlignment.center,
-                    children: [
-
-                      Icon(
-                        Icons.people_outline,
-                        size: 70,
-                        color: Colors.grey.shade400,
-                      ),
-
-                      const SizedBox(height: 18),
-
-                      const Text(
-                        "No Users Found",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                        ),
-                      ),
-
-                      const SizedBox(height: 8),
-
-                      Text(
-                        "New registered users will appear here.",
-                        style: TextStyle(
-                          color: Colors.grey,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              )
-            else
-              ListView.separated(
-                shrinkWrap: true,
-                physics:
-                    const NeverScrollableScrollPhysics(),
-                itemCount: users.length,
-                separatorBuilder: (_, _) =>
-                    const SizedBox(height: 14),
-                itemBuilder: (context, index) {
-
-                  final user = users[index];
-
-                  return _UserTile(
-                    user: user,
-                    roleColor: _roleColor(user.role),
-                    roleIcon: _roleIcon(user.role),
-                  );
-                },
               ),
-          ],
-        ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: AppColors.surfaceSubtle,
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Text(
+                  "${users.length} Active",
+                  style: const TextStyle(
+                    color: AppColors.textSecondary,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 11,
+                  ),
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 16),
+
+          if (users.isEmpty)
+            const SizedBox(
+              height: 120,
+              child: Center(
+                child: Text(
+                  "No users registered yet",
+                  style: TextStyle(color: AppColors.textMuted, fontSize: 13),
+                ),
+              ),
+            )
+          else
+            ListView.separated(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: users.length,
+              separatorBuilder: (_, _) => const Divider(height: 16, color: AppColors.borderLight),
+              itemBuilder: (context, index) {
+                final user = users[index];
+                return _UserRow(
+                  user: user,
+                  roleColor: _roleColor(user.role),
+                  roleIcon: _roleIcon(user.role),
+                );
+              },
+            ),
+        ],
       ),
     );
   }
 }
 
-
-class _UserTile extends StatelessWidget {
+class _UserRow extends StatelessWidget {
   final UserModel user;
   final Color roleColor;
   final IconData roleIcon;
 
-  const _UserTile({
+  const _UserRow({
     required this.user,
     required this.roleColor,
     required this.roleIcon,
@@ -192,252 +126,99 @@ class _UserTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final width = MediaQuery.of(context).size.width;
+    final isDesktop = width >= 800;
 
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(
-          horizontal: 20,
-          vertical: 18,
-        ),
-        decoration: BoxDecoration(
-          color: Colors.grey.shade50,
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(
-            color: Colors.grey.shade200,
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: 18,
+            backgroundColor: AppColors.primarySubtle,
+            backgroundImage: user.profileImage.isNotEmpty
+                ? NetworkImage(user.profileImage)
+                : null,
+            child: user.profileImage.isEmpty
+                ? Text(
+                    user.name.isNotEmpty ? user.name[0].toUpperCase() : "?",
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.primary,
+                      fontSize: 14,
+                    ),
+                  )
+                : null,
           ),
-        ),
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final desktop = constraints.maxWidth > 900;
-
-            if (desktop) {
-              return Row(
-                children: [
-                  CircleAvatar(
-                    radius: 28,
-                    backgroundColor: Colors.indigo.shade100,
-                    backgroundImage: user.profileImage.isNotEmpty
-                        ? NetworkImage(user.profileImage)
-                        : null,
-                    child: user.profileImage.isEmpty
-                        ? Text(
-                            user.name.isEmpty
-                                ? "?"
-                                : user.name[0].toUpperCase(),
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 22,
-                            ),
-                          )
-                        : null,
-                  ),
-
-                  const SizedBox(width: 18),
-
-                  Expanded(
-                    flex: 3,
-                    child: Column(
-                      crossAxisAlignment:
-                          CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          user.name,
-                          style: theme.textTheme.titleMedium
-                              ?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          user.email,
-                          style: TextStyle(
-                            color: Colors.grey.shade600,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  Expanded(
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 8,
-                      ),
-                      decoration: BoxDecoration(
-                        color:
-                            roleColor.withValues(alpha: .12),
-                        borderRadius:
-                            BorderRadius.circular(30),
-                      ),
-                      child: Row(
-                        mainAxisSize:
-                            MainAxisSize.min,
-                        children: [
-                          Icon(
-                            roleIcon,
-                            size: 16,
-                            color: roleColor,
-                          ),
-                          const SizedBox(width: 6),
-                          Text(
-                            user.role.toUpperCase(),
-                            style: TextStyle(
-                              color: roleColor,
-                              fontWeight:
-                                  FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(width: 30),
-
-                  SizedBox(
-                    width: 140,
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.phone,
-                          size: 16,
-                          color: Colors.grey.shade600,
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            user.phone.isEmpty
-                                ? "-"
-                                : user.phone,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(width: 30),
-
-                  SizedBox(
-                    width: 150,
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.calendar_today,
-                          size: 16,
-                          color: Colors.grey.shade600,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          user.createdAt == null
-                              ? "-"
-                              : DateFormat(
-                                  "dd MMM yyyy",
-                                ).format(
-                                  user.createdAt!,
-                                ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(width: 20),
-
-                  PopupMenuButton(
-                    itemBuilder: (_) => const [
-                      PopupMenuItem(
-                        value: 1,
-                        child: Text("View"),
-                      ),
-                      PopupMenuItem(
-                        value: 2,
-                        child: Text("Edit"),
-                      ),
-                      PopupMenuItem(
-                        value: 3,
-                        child: Text("Delete"),
-                      ),
-                    ],
-                  ),
-                ],
-              );
-            }
-
-            return Column(
-              crossAxisAlignment:
-                  CrossAxisAlignment.start,
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 24,
-                      backgroundColor:
-                          Colors.indigo.shade100,
-                      backgroundImage:
-                          user.profileImage.isNotEmpty
-                              ? NetworkImage(
-                                  user.profileImage,
-                                )
-                              : null,
-                      child:
-                          user.profileImage.isEmpty
-                              ? Text(
-                                  user.name.isEmpty
-                                      ? "?"
-                                      : user.name[0]
-                                          .toUpperCase(),
-                                )
-                              : null,
-                    ),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Text(
-                        user.name,
-                        style: const TextStyle(
-                          fontWeight:
-                              FontWeight.bold,
-                          fontSize: 17,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 12),
-
-                Text(user.email),
-
-                const SizedBox(height: 8),
-
                 Text(
-                  "Phone : ${user.phone}",
+                  user.name.isNotEmpty ? user.name : "Unnamed User",
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13,
+                    color: AppColors.textPrimary,
+                  ),
                 ),
-
-                const SizedBox(height: 8),
-
                 Text(
-                  "Role : ${user.role}",
-                ),
-
-                const SizedBox(height: 8),
-
-                Text(
-                  user.createdAt == null
-                      ? "-"
-                      : DateFormat("dd MMM yyyy")
-                          .format(
-                          user.createdAt!,
-                        ),
+                  user.email,
+                  style: const TextStyle(
+                    fontSize: 11,
+                    color: AppColors.textMuted,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
-            );
-          },
-        ),
+            ),
+          ),
+          if (isDesktop && user.phone.isNotEmpty) ...[
+            Text(
+              user.phone,
+              style: const TextStyle(
+                fontSize: 12,
+                color: AppColors.textSecondary,
+              ),
+            ),
+            const SizedBox(width: 16),
+          ],
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+            decoration: BoxDecoration(
+              color: roleColor.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(roleIcon, size: 12, color: roleColor),
+                const SizedBox(width: 4),
+                Text(
+                  user.role.toUpperCase(),
+                  style: TextStyle(
+                    color: roleColor,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.3,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (isDesktop && user.createdAt != null) ...[
+            const SizedBox(width: 16),
+            Text(
+              DateFormat("dd MMM yyyy").format(user.createdAt!),
+              style: const TextStyle(
+                fontSize: 11,
+                color: AppColors.textMuted,
+              ),
+            ),
+          ],
+        ],
       ),
     );
   }
-}
+}

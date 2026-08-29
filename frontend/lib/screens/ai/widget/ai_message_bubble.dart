@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:frontend/controllers/ai_chat_controller.dart';
+import 'package:frontend/core/theme/app_colors.dart';
 import 'package:frontend/models/ai_model/chat_message_model.dart';
 import 'package:get/get.dart';
 
@@ -29,15 +30,18 @@ class AIMessageBubble extends GetView<AIChatController> {
           // ── Assistant Avatar ──
           if (!isUser) ...[
             Container(
-              margin: const EdgeInsets.only(right: 12, top: 4),
-              child: CircleAvatar(
-                radius: 18,
-                backgroundColor: theme.colorScheme.primaryContainer,
-                child: Icon(
-                  Icons.smart_toy_outlined,
-                  size: 20,
-                  color: theme.colorScheme.onPrimaryContainer,
-                ),
+              margin: const EdgeInsets.only(right: 12, top: 2),
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                color: AppColors.primarySubtle,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
+              ),
+              child: const Icon(
+                Icons.auto_awesome_rounded,
+                size: 16,
+                color: AppColors.primary,
               ),
             ),
           ],
@@ -48,52 +52,54 @@ class AIMessageBubble extends GetView<AIChatController> {
               crossAxisAlignment: isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
               children: [
                 Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   constraints: const BoxConstraints(maxWidth: 600),
                   decoration: BoxDecoration(
-                    color: isUser
-                        ? theme.colorScheme.primary
-                        : theme.colorScheme.surfaceContainerHigh,
+                    color: isUser ? AppColors.primary : AppColors.card,
                     borderRadius: BorderRadius.only(
-                      topLeft: const Radius.circular(20),
-                      topRight: const Radius.circular(20),
-                      bottomLeft: Radius.circular(isUser ? 20 : 4),
-                      bottomRight: Radius.circular(isUser ? 4 : 20),
+                      topLeft: const Radius.circular(16),
+                      topRight: const Radius.circular(16),
+                      bottomLeft: Radius.circular(isUser ? 16 : 4),
+                      bottomRight: Radius.circular(isUser ? 4 : 16),
                     ),
-                    border: isUser
-                        ? null
-                        : Border.all(
-                            color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
-                          ),
+                    border: isUser ? null : Border.all(color: AppColors.border),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.02),
+                        blurRadius: 6,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
                   ),
                   child: isUser
                       ? Text(
                           message.message,
-                          style: theme.textTheme.bodyLarge?.copyWith(
-                            color: theme.colorScheme.onPrimary,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            height: 1.4,
                           ),
                         )
                       : MarkdownBody(
                           data: message.message,
                           selectable: true,
                           styleSheet: MarkdownStyleSheet.fromTheme(theme).copyWith(
-                            p: theme.textTheme.bodyLarge?.copyWith(
-                              color: theme.colorScheme.onSurface,
+                            p: const TextStyle(
+                              color: AppColors.textPrimary,
+                              fontSize: 13.5,
                               height: 1.5,
                             ),
-                            code: TextStyle(
-                              backgroundColor: theme.colorScheme.surfaceContainerLowest,
-                              color: theme.colorScheme.secondary,
+                            code: const TextStyle(
+                              backgroundColor: AppColors.surfaceSubtle,
+                              color: AppColors.primary,
                               fontFamily: 'monospace',
-                              fontSize: 14,
+                              fontSize: 12,
                             ),
                             codeblockPadding: const EdgeInsets.all(12),
                             codeblockDecoration: BoxDecoration(
-                              color: theme.colorScheme.surfaceContainerLowest,
+                              color: AppColors.surfaceSubtle,
                               borderRadius: BorderRadius.circular(8),
-                              border: Border.all(
-                                color: theme.colorScheme.outlineVariant.withValues(alpha: 0.3),
-                              ),
+                              border: Border.all(color: AppColors.border),
                             ),
                           ),
                         ),
@@ -105,19 +111,19 @@ class AIMessageBubble extends GetView<AIChatController> {
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.error_outline, size: 14, color: theme.colorScheme.error),
+                      const Icon(Icons.error_outline_rounded, size: 14, color: AppColors.error),
                       const SizedBox(width: 4),
-                      Text(
+                      const Text(
                         "Failed to send",
-                        style: TextStyle(color: theme.colorScheme.error, fontSize: 12),
+                        style: TextStyle(color: AppColors.error, fontSize: 12),
                       ),
                       const SizedBox(width: 8),
                       InkWell(
                         onTap: () => controller.retryFailedMessage(message),
-                        child: Text(
+                        child: const Text(
                           "Retry",
                           style: TextStyle(
-                            color: theme.colorScheme.primary,
+                            color: AppColors.primary,
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
                             decoration: TextDecoration.underline,
@@ -131,14 +137,14 @@ class AIMessageBubble extends GetView<AIChatController> {
                 // ── Assistant Message Action Icons ──
                 if (!isUser && !message.message.startsWith("⚠️ Error")) ...[
                   Padding(
-                    padding: const EdgeInsets.only(top: 6.0, left: 4.0),
+                    padding: const EdgeInsets.only(top: 4.0, left: 4.0),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         IconButton(
                           padding: EdgeInsets.zero,
                           constraints: const BoxConstraints(),
-                          icon: const Icon(Icons.copy, size: 16),
+                          icon: const Icon(Icons.copy_rounded, size: 14, color: AppColors.textMuted),
                           tooltip: "Copy message",
                           onPressed: () => controller.copyToClipboard(message.message),
                         ),
@@ -147,7 +153,7 @@ class AIMessageBubble extends GetView<AIChatController> {
                           IconButton(
                             padding: EdgeInsets.zero,
                             constraints: const BoxConstraints(),
-                            icon: const Icon(Icons.refresh, size: 16),
+                            icon: const Icon(Icons.refresh_rounded, size: 14, color: AppColors.textMuted),
                             tooltip: "Regenerate response",
                             onPressed: () => controller.regenerateResponse(),
                           ),
@@ -160,14 +166,14 @@ class AIMessageBubble extends GetView<AIChatController> {
                 // ── User Message Action Icons ──
                 if (isUser) ...[
                   Padding(
-                    padding: const EdgeInsets.only(top: 6.0, right: 4.0),
+                    padding: const EdgeInsets.only(top: 4.0, right: 4.0),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         IconButton(
                           padding: EdgeInsets.zero,
                           constraints: const BoxConstraints(),
-                          icon: const Icon(Icons.edit, size: 16),
+                          icon: const Icon(Icons.edit_outlined, size: 14, color: AppColors.textMuted),
                           tooltip: "Edit message",
                           onPressed: () => _showEditMessageDialog(context),
                         ),
@@ -182,15 +188,18 @@ class AIMessageBubble extends GetView<AIChatController> {
           // ── User Avatar ──
           if (isUser) ...[
             Container(
-              margin: const EdgeInsets.only(left: 12, top: 4),
-              child: CircleAvatar(
-                radius: 18,
-                backgroundColor: theme.colorScheme.secondaryContainer,
-                child: Icon(
-                  Icons.person_outline,
-                  size: 20,
-                  color: theme.colorScheme.onSecondaryContainer,
-                ),
+              margin: const EdgeInsets.only(left: 12, top: 2),
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                color: AppColors.surfaceSubtle,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: AppColors.border),
+              ),
+              child: const Icon(
+                Icons.person_outline_rounded,
+                size: 18,
+                color: AppColors.textSecondary,
               ),
             ),
           ],
@@ -203,12 +212,12 @@ class AIMessageBubble extends GetView<AIChatController> {
     final textController = TextEditingController(text: message.message);
     Get.dialog(
       AlertDialog(
-        title: const Text("Edit Message"),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text("Edit Message", style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18)),
         content: TextField(
           controller: textController,
           maxLines: 4,
           decoration: const InputDecoration(
-            border: OutlineInputBorder(),
             hintText: "Edit your prompt...",
           ),
         ),
@@ -217,7 +226,7 @@ class AIMessageBubble extends GetView<AIChatController> {
             onPressed: Get.back,
             child: const Text("Cancel"),
           ),
-          ElevatedButton(
+          FilledButton(
             onPressed: () {
               final newText = textController.text.trim();
               if (newText.isNotEmpty && newText != message.message) {
@@ -231,4 +240,4 @@ class AIMessageBubble extends GetView<AIChatController> {
       ),
     );
   }
-}
+}

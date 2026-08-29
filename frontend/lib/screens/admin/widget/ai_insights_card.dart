@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../models/dashboard_model.dart';
+import 'package:frontend/core/theme/app_colors.dart';
+import 'package:frontend/models/dashboard_model.dart';
 
 class AiInsightsCard extends StatelessWidget {
   final AiInsights insights;
@@ -14,154 +15,173 @@ class AiInsightsCard extends StatelessWidget {
     required String title,
     required String value,
     required Color color,
+    required String subtitle,
   }) {
-    return Expanded(
-      child: Card(
-        elevation: 0,
-        color: color.withValues(alpha: .08),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(14),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(18),
-          child: Column(
-            children: [
-              CircleAvatar(
-                radius: 24,
-                backgroundColor: color.withValues(alpha: .15),
-                child: Icon(
-                  icon,
-                  color: color,
-                  size: 28,
-                ),
-              ),
-
-              const SizedBox(height: 12),
-
-              Text(
-                value,
-                style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-
-              const SizedBox(height: 8),
-
-              Text(
-                title,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: Colors.grey,
-                ),
-              ),
-            ],
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.06),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: color.withValues(alpha: 0.18)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 42,
+            height: 42,
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.14),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(icon, color: color, size: 22),
           ),
-        ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  value,
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w800,
+                    color: color,
+                    letterSpacing: -0.3,
+                  ),
+                ),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 12,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+                Text(
+                  subtitle,
+                  style: const TextStyle(
+                    fontSize: 11,
+                    color: AppColors.textMuted,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.card,
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.border),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-
-            const Text(
-              "AI Insights",
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 32,
+                height: 32,
+                decoration: BoxDecoration(
+                  color: AppColors.primarySubtle,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(
+                  Icons.auto_awesome_rounded,
+                  color: AppColors.primary,
+                  size: 18,
+                ),
               ),
-            ),
-
-            const SizedBox(height: 20),
-
-            LayoutBuilder(
-              builder: (_, constraints) {
-
-                if (constraints.maxWidth > 900) {
-
-                  return Row(
-                    children: [
-
-                      _metric(
-                        icon: Icons.smart_toy,
-                        title: "AI Analyses",
-                        value:
-                            insights.totalAnalysis.toString(),
-                        color: Colors.blue,
-                      ),
-
-                      const SizedBox(width: 16),
-
-                      _metric(
-                        icon: Icons.copy,
-                        title: "Duplicate Tickets",
-                        value:
-                            insights.duplicates.toString(),
-                        color: Colors.orange,
-                      ),
-
-                      const SizedBox(width: 16),
-
-                      _metric(
-                        icon: Icons.auto_awesome,
-                        title: "Suggested Replies",
-                        value:
-                            insights.suggestedReplies
-                                .toString(),
-                        color: Colors.green,
-                      ),
-                    ],
-                  );
-                }
-
-                return Column(
+              const SizedBox(width: 10),
+              const Text(
+                "AI Insights & Intelligence",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textPrimary,
+                  letterSpacing: -0.2,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          LayoutBuilder(
+            builder: (_, constraints) {
+              if (constraints.maxWidth > 800) {
+                return Row(
                   children: [
-
-                    _metric(
-                      icon: Icons.smart_toy,
-                      title: "AI Analyses",
-                      value:
-                          insights.totalAnalysis.toString(),
-                      color: Colors.blue,
+                    Expanded(
+                      child: _metric(
+                        icon: Icons.psychology_rounded,
+                        title: "AI Analyses",
+                        value: insights.totalAnalysis.toString(),
+                        color: AppColors.primary,
+                        subtitle: "Total tickets triaged",
+                      ),
                     ),
-
-                    const SizedBox(height: 12),
-
-                    _metric(
-                      icon: Icons.copy,
-                      title: "Duplicate Tickets",
-                      value:
-                          insights.duplicates.toString(),
-                      color: Colors.orange,
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: _metric(
+                        icon: Icons.copy_all_rounded,
+                        title: "Duplicate Tickets",
+                        value: insights.duplicates.toString(),
+                        color: AppColors.warning,
+                        subtitle: "Clustered & linked",
+                      ),
                     ),
-
-                    const SizedBox(height: 12),
-
-                    _metric(
-                      icon: Icons.auto_awesome,
-                      title: "Suggested Replies",
-                      value:
-                          insights.suggestedReplies.toString(),
-                      color: Colors.green,
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: _metric(
+                        icon: Icons.quickreply_rounded,
+                        title: "Suggested Replies",
+                        value: insights.suggestedReplies.toString(),
+                        color: AppColors.success,
+                        subtitle: "Generated copilot drafts",
+                      ),
                     ),
                   ],
                 );
-              },
-            ),
-          ],
-        ),
+              }
+
+              return Column(
+                children: [
+                  _metric(
+                    icon: Icons.psychology_rounded,
+                    title: "AI Analyses",
+                    value: insights.totalAnalysis.toString(),
+                    color: AppColors.primary,
+                    subtitle: "Total tickets triaged",
+                  ),
+                  const SizedBox(height: 10),
+                  _metric(
+                    icon: Icons.copy_all_rounded,
+                    title: "Duplicate Tickets",
+                    value: insights.duplicates.toString(),
+                    color: AppColors.warning,
+                    subtitle: "Clustered & linked",
+                  ),
+                  const SizedBox(height: 10),
+                  _metric(
+                    icon: Icons.quickreply_rounded,
+                    title: "Suggested Replies",
+                    value: insights.suggestedReplies.toString(),
+                    color: AppColors.success,
+                    subtitle: "Generated copilot drafts",
+                  ),
+                ],
+              );
+            },
+          ),
+        ],
       ),
     );
   }
-}
+}

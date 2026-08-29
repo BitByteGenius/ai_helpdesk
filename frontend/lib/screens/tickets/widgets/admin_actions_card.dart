@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/core/theme/app_colors.dart';
 import 'package:get/get.dart';
 import '../../../../controllers/ticket_controller.dart';
 import '../../../../models/ticket_model.dart';
@@ -13,123 +14,107 @@ class AdminActionsCard extends GetView<TicketController> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.card,
         borderRadius: BorderRadius.circular(16),
-        side: BorderSide(
-          color: theme.colorScheme.outlineVariant.withValues(alpha: .30),
-        ),
+        border: Border.all(color: AppColors.border),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(
-                  Icons.admin_panel_settings_outlined,
-                  color: theme.colorScheme.primary,
-                  size: 20,
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Row(
+            children: [
+              Icon(
+                Icons.admin_panel_settings_outlined,
+                color: AppColors.primary,
+                size: 20,
+              ),
+              SizedBox(width: 8),
+              Text(
+                "Admin Actions",
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 16,
+                  color: AppColors.textPrimary,
                 ),
-                const SizedBox(width: 8),
-                Text(
-                  "Admin Actions",
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Wrap(
+            spacing: 10,
+            runSpacing: 10,
+            children: [
+              // Assign to Me Button
+              OutlinedButton.icon(
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  side: const BorderSide(color: AppColors.border),
                 ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Wrap(
-              spacing: 12,
-              runSpacing: 12,
-              children: [
-                // Assign to Me Button
-                ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  ),
-                  icon: const Icon(Icons.assignment_ind, size: 18),
-                  label: const Text("Assign to Me"),
-                  onPressed: () {
-                    controller.assignTicket(ticket.id);
-                  },
-                ),
+                icon: const Icon(Icons.assignment_ind_outlined, size: 16, color: AppColors.primary),
+                label: const Text("Assign to Me", style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+                onPressed: () {
+                  controller.assignTicket(ticket.id);
+                },
+              ),
 
-                // In Progress Button
-                ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  ),
-                  icon: const Icon(Icons.play_circle_outline, size: 18),
-                  label: const Text("In Progress"),
-                  onPressed: () {
-                    controller.updateStatus(ticket.id, "In Progress");
-                  },
+              // In Progress Button
+              OutlinedButton.icon(
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  side: const BorderSide(color: AppColors.border),
                 ),
+                icon: const Icon(Icons.play_circle_outline, size: 16, color: AppColors.purple),
+                label: const Text("In Progress", style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+                onPressed: () {
+                  controller.updateStatus(ticket.id, "In Progress");
+                },
+              ),
 
-                // Resolve Button
-                ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  ),
-                  icon: const Icon(Icons.check_circle_outline, size: 18),
-                  label: const Text("Resolve"),
-                  onPressed: () {
-                    controller.updateStatus(ticket.id, "Resolved");
-                  },
+              // Resolve Button
+              OutlinedButton.icon(
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  side: const BorderSide(color: AppColors.border),
                 ),
+                icon: const Icon(Icons.check_circle_outline_rounded, size: 16, color: AppColors.success),
+                label: const Text("Resolve", style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+                onPressed: () {
+                  controller.updateStatus(ticket.id, "Resolved");
+                },
+              ),
 
-                // Close Button
-                ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  ),
-                  icon: const Icon(Icons.lock_outline, size: 18),
-                  label: const Text("Close"),
-                  onPressed: () {
-                    controller.updateStatus(ticket.id, "Closed");
-                  },
+              // Close Button
+              OutlinedButton.icon(
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  side: const BorderSide(color: AppColors.border),
                 ),
+                icon: const Icon(Icons.lock_outline_rounded, size: 16, color: AppColors.secondary),
+                label: const Text("Close", style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+                onPressed: () {
+                  controller.updateStatus(ticket.id, "Closed");
+                },
+              ),
 
-                // Delete Button (Red / destructive style)
-                ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: theme.colorScheme.errorContainer,
-                    foregroundColor: theme.colorScheme.onErrorContainer,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  ),
-                  icon: const Icon(Icons.delete_outline, size: 18),
-                  label: const Text("Delete"),
-                  onPressed: () {
-                    _confirmDelete(context);
-                  },
+              // Delete Button (Red / destructive style)
+              OutlinedButton.icon(
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  side: BorderSide(color: AppColors.error.withValues(alpha: 0.4)),
+                  backgroundColor: AppColors.errorSubtle,
                 ),
-              ],
-            ),
-          ],
-        ),
+                icon: const Icon(Icons.delete_outline_rounded, size: 16, color: AppColors.error),
+                label: const Text("Delete", style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.error)),
+                onPressed: () {
+                  _confirmDelete(context);
+                },
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -137,16 +122,22 @@ class AdminActionsCard extends GetView<TicketController> {
   void _confirmDelete(BuildContext context) {
     Get.defaultDialog(
       title: "Delete Ticket",
+      titleStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 18, color: AppColors.textPrimary),
       middleText: "Are you sure you want to permanently delete this ticket?",
+      middleTextStyle: const TextStyle(color: AppColors.textSecondary, fontSize: 13),
       textConfirm: "Delete",
       textCancel: "Cancel",
+      cancelTextColor: AppColors.textPrimary,
       confirmTextColor: Colors.white,
-      buttonColor: Colors.red,
+      buttonColor: AppColors.error,
+      radius: 16,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+      titlePadding: const EdgeInsets.only(top: 24),
       onConfirm: () async {
-        Get.back(); // close dialog
+        Get.back();
         await controller.deleteTicket(ticket.id);
-        Get.back(); // go back to ticket list screen
+        Get.back();
       },
     );
   }
-}
+}

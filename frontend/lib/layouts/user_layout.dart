@@ -1,51 +1,75 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/core/theme/app_colors.dart';
+import 'package:frontend/screens/notification/widget/notification_badge.dart';
 import 'package:frontend/screens/user/widget/user_sidebar.dart';
 
 /// Shared layout for all user-facing screens.
 ///
 /// • Desktop (≥ 1100 px): permanent sidebar + no AppBar.
 /// • Mobile / Tablet (< 1100 px): Drawer-based sidebar + AppBar with
-///   hamburger menu so the user can open the Drawer.
+///   hamburger menu and notifications badge.
 class UserLayout extends StatelessWidget {
   final Widget child;
   final String title;
   final EdgeInsetsGeometry? padding;
+  final List<Widget>? actions;
 
   const UserLayout({
     super.key,
     required this.child,
     required this.title,
     this.padding,
+    this.actions,
   });
 
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
-    final desktop = width >= 1100;
+    final desktop = width >= 1024;
 
     return Scaffold(
+      backgroundColor: AppColors.background,
       appBar: desktop
           ? null
           : AppBar(
-              title: Text(title),
+              backgroundColor: AppColors.card,
+              surfaceTintColor: Colors.transparent,
+              elevation: 0,
+              title: Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textPrimary,
+                  letterSpacing: -0.2,
+                ),
+              ),
               centerTitle: false,
-              // Hamburger icon — opens the Drawer automatically via Scaffold.
+              bottom: const PreferredSize(
+                preferredSize: Size.fromHeight(1),
+                child: Divider(height: 1, color: AppColors.border),
+              ),
+              actions: actions ??
+                  const [
+                    NotificationBadge(),
+                    SizedBox(width: 8),
+                  ],
             ),
-
       drawer: desktop
           ? null
           : const Drawer(
+              backgroundColor: Color(0xFF0F172A),
+              surfaceTintColor: Colors.transparent,
               child: UserSidebar(),
             ),
-
       body: SafeArea(
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (desktop) const UserSidebar(),
-
             Expanded(
               child: Padding(
-                padding: padding ?? const EdgeInsets.all(24),
+                padding: padding ?? EdgeInsets.zero,
                 child: child,
               ),
             ),
@@ -55,3 +79,4 @@ class UserLayout extends StatelessWidget {
     );
   }
 }
+

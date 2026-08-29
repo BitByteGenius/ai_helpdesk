@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/controllers/ai_controller.dart';
 import 'package:frontend/controllers/ticket_controller.dart';
 import 'package:frontend/controllers/upload_controller.dart';
+import 'package:frontend/core/theme/app_colors.dart';
 import 'package:frontend/layouts/user_layout.dart';
 import 'package:frontend/screens/uploads/widget/upload_card.dart';
 import 'package:frontend/screens/uploads/widget/upload_progress.dart';
@@ -15,8 +16,6 @@ class CreateTicketScreen extends StatefulWidget {
 }
 
 class _CreateTicketScreenState extends State<CreateTicketScreen> {
-  // Use the controller's own TextEditingControllers so that
-  // ticketController.createTicket() can read the values the user typed.
   late final TicketController ticketController;
   late final AiController ai;
   late final UploadController upload;
@@ -29,8 +28,6 @@ class _CreateTicketScreenState extends State<CreateTicketScreen> {
     ai = Get.find<AiController>();
     upload = Get.find<UploadController>();
 
-    // Sync AI analysis results into the controller's own category/priority/summary
-    // controllers so they are included in ticket submission.
     _analysisWorker = ever(ai.analysis, (result) {
       if (result != null) {
         if (!mounted) return;
@@ -49,269 +46,270 @@ class _CreateTicketScreenState extends State<CreateTicketScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDesktop = MediaQuery.of(context).size.width > 900;
-
     return UserLayout(
       title: 'Create Ticket',
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 1000),
-            child: Obx(() {
-              final result = ai.analysis.value;
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final isDesktop = constraints.maxWidth >= 900;
+          final horizontalPadding = constraints.maxWidth >= 1200 ? 28.0 : 16.0;
 
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // --- HEADER SECTION ---
-                  Text(
-                    "Submit New Ticket",
-                    style: theme.textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: theme.colorScheme.onSurface,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    "Fill in the details below. Use our AI analyzer to auto-fill categories and tags.",
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                  const SizedBox(height: 32),
+          return SingleChildScrollView(
+            padding: EdgeInsets.fromLTRB(horizontalPadding, 24, horizontalPadding, 32),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 900),
+                child: Obx(() {
+                  final result = ai.analysis.value;
 
-                  // --- CORE FORM DETAILS ---
-                  _buildFormSection(
-                    title: "Ticket Details",
-                    icon: Icons.assignment_outlined,
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      TextField(
-                        controller: ticketController.titleController,
-                        decoration: const InputDecoration(
-                          labelText: "Title",
-                          hintText: "Briefly describe the issue",
-                          border: OutlineInputBorder(),
-                          prefixIcon: Icon(Icons.title),
+                      // ── Header ──
+                      Text(
+                        "Submit Support Ticket",
+                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: -0.4,
+                              color: AppColors.textPrimary,
+                            ),
+                      ),
+                      const SizedBox(height: 4),
+                      const Text(
+                        "Fill in the details below. Our AI assistant will automatically classify and suggest priority.",
+                        style: TextStyle(
+                          color: AppColors.textSecondary,
+                          fontSize: 13,
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+
+                      // ── Ticket Details Form ──
+                      _buildFormSection(
+                        title: "Issue Details",
+                        icon: Icons.edit_note_rounded,
+                        children: [
+                          TextField(
+                            controller: ticketController.titleController,
+                            decoration: const InputDecoration(
+                              labelText: "Subject / Title",
+                              hintText: "E.g. Unable to connect to VPN server",
+                              prefixIcon: Icon(Icons.title_rounded, size: 18),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          TextField(
+                            controller: ticketController.descriptionController,
+                            maxLines: 5,
+                            decoration: const InputDecoration(
+                              labelText: "Detailed Description",
+                              hintText: "Explain what happened, steps to reproduce, and any error codes...",
+                              alignLabelWithHint: true,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+
+                      // ── AI Assist Button ──
+                      SizedBox(
+                        width: double.infinity,
+                        height: 48,
+                        child: FilledButton.tonalIcon(
+                          style: FilledButton.styleFrom(
+                            backgroundColor: AppColors.primarySubtle,
+                            foregroundColor: AppColors.primary,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          icon: ai.isLoading.value
+                              ? const SizedBox(
+                                  width: 18,
+                                  height: 18,
+                                  child: CircularProgressIndicator(strokeWidth: 2),
+                                )
+                              : const Icon(Icons.auto_awesome_rounded, size: 18),
+                          label: Text(
+                            ai.isLoading.value ? "Analyzing with AI..." : "Auto-Categorize with AI Copilot",
+                            style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
+                          ),
+                          onPressed: ai.isLoading.value
+                              ? null
+                              : () {
+                                  ai.analyzeTicket(
+                                    title: ticketController.titleController.text,
+                                    description: ticketController.descriptionController.text,
+                                  );
+                                },
                         ),
                       ),
                       const SizedBox(height: 20),
-                      TextField(
-                        controller: ticketController.descriptionController,
-                        maxLines: 5,
-                        decoration: const InputDecoration(
-                          labelText: "Description",
-                          hintText: "Provide step-by-step details of the problem...",
-                          border: OutlineInputBorder(),
-                          alignLabelWithHint: true,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 24),
 
-                  // --- AI ASSIST TRIGGER ---
-                  SizedBox(
-                    width: double.infinity,
-                    height: 50,
-                    child: ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: theme.colorScheme.primaryContainer,
-                        foregroundColor: theme.colorScheme.onPrimaryContainer,
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      icon: ai.isLoading.value
-                          ? const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : const Icon(Icons.smart_toy_outlined),
-                      label: Text(
-                        ai.isLoading.value ? "Analyzing Details..." : "Analyze with AI Smart Assist",
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      onPressed: ai.isLoading.value
-                          ? null
-                          : () {
-                              ai.analyzeTicket(
-                                title: ticketController.titleController.text,
-                                description: ticketController.descriptionController.text,
-                              );
-                            },
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-
-                  // --- AI SMART METRICS DISPLAY ---
-                  if (result != null) ...[
-                    if (result.duplicate) ...[
-                      Card(
-                        elevation: 0,
-                        color: theme.colorScheme.errorContainer,
-                        margin: const EdgeInsets.only(bottom: 24),
-                        shape: RoundedRectangleBorder(
-                          side: BorderSide(color: theme.colorScheme.error),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: ListTile(
-                          leading: Icon(Icons.warning_amber_rounded, color: theme.colorScheme.error),
-                          title: Text(
-                            "Possible duplicate ticket detected.",
-                            style: TextStyle(color: theme.colorScheme.onErrorContainer, fontWeight: FontWeight.bold),
+                      // ── AI Smart Results ──
+                      if (result != null) ...[
+                        if (result.duplicate) ...[
+                          Container(
+                            margin: const EdgeInsets.only(bottom: 20),
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: AppColors.errorSubtle,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: AppColors.error.withValues(alpha: 0.3)),
+                            ),
+                            child: Row(
+                              children: [
+                                const Icon(Icons.warning_amber_rounded, color: AppColors.error, size: 24),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      const Text(
+                                        "Possible Duplicate Ticket Detected",
+                                        style: TextStyle(color: AppColors.error, fontWeight: FontWeight.w700, fontSize: 13),
+                                      ),
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        result.duplicateTicket?.title ?? "An identical ticket was recently submitted.",
+                                        style: const TextStyle(color: AppColors.textPrimary, fontSize: 12),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                          subtitle: Text(
-                            result.duplicateTicket?.title ?? "Identical submission active.",
-                            style: TextStyle(color: theme.colorScheme.onErrorContainer),
-                          ),
-                        ),
-                      ),
-                    ],
-                    _buildFormSection(
-                      title: "AI Smart Categorization",
-                      icon: Icons.auto_awesome_outlined,
-                      children: [
-                        if (isDesktop)
-                          Row(
-                            children: [
-                              Expanded(child: _buildMetaField("Category", ticketController.categoryController, Icons.category_outlined)),
-                              const SizedBox(width: 20),
-                              Expanded(child: _buildMetaField("Priority", ticketController.priorityController, Icons.outlined_flag)),
-                            ],
-                          )
-                        else ...[
-                          _buildMetaField("Category", ticketController.categoryController, Icons.category_outlined),
-                          const SizedBox(height: 20),
-                          _buildMetaField("Priority", ticketController.priorityController, Icons.outlined_flag),
                         ],
+                        _buildFormSection(
+                          title: "AI Smart Classification",
+                          icon: Icons.auto_awesome_rounded,
+                          children: [
+                            if (isDesktop)
+                              Row(
+                                children: [
+                                  Expanded(child: _buildMetaField("Category", ticketController.categoryController, Icons.category_outlined)),
+                                  const SizedBox(width: 16),
+                                  Expanded(child: _buildMetaField("Priority", ticketController.priorityController, Icons.outlined_flag_rounded)),
+                                ],
+                              )
+                            else ...[
+                              _buildMetaField("Category", ticketController.categoryController, Icons.category_outlined),
+                              const SizedBox(height: 16),
+                              _buildMetaField("Priority", ticketController.priorityController, Icons.outlined_flag_rounded),
+                            ],
+                            const SizedBox(height: 16),
+                            TextField(
+                              controller: ticketController.summaryController,
+                              maxLines: 3,
+                              readOnly: true,
+                              decoration: const InputDecoration(
+                                labelText: "AI Generated Summary",
+                                filled: true,
+                                fillColor: AppColors.surfaceSubtle,
+                              ),
+                            ),
+                          ],
+                        ),
                         const SizedBox(height: 20),
-                        TextField(
-                          controller: ticketController.summaryController,
-                          maxLines: 3,
-                          readOnly: true,
-                          decoration: InputDecoration(
-                            labelText: "AI Generated Summary",
-                            filled: true,
-                            fillColor: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
-                            border: const OutlineInputBorder(),
+                      ],
+
+                      // ── Attachments ──
+                      _buildFormSection(
+                        title: "Supporting Files",
+                        icon: Icons.attach_file_rounded,
+                        children: [
+                          OutlinedButton.icon(
+                            style: OutlinedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                              side: const BorderSide(color: AppColors.border),
+                            ),
+                            onPressed: upload.pickAndUpload,
+                            icon: const Icon(Icons.cloud_upload_outlined, size: 18),
+                            label: const Text("Upload Files (PDF, Image, Logs)", style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+                          ),
+                          const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 8.0),
+                            child: UploadProgress(),
+                          ),
+                          ListView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: upload.uploads.length,
+                            itemBuilder: (_, i) => UploadCard(upload: upload.uploads[i]),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 32),
+
+                      // ── Submit Button ──
+                      SizedBox(
+                        width: double.infinity,
+                        height: 50,
+                        child: FilledButton(
+                          onPressed: ticketController.isLoading.value
+                              ? null
+                              : () async {
+                                  if (ticketController.titleController.text.trim().isEmpty) {
+                                    Get.snackbar(
+                                      'Validation Error',
+                                      'Please enter a ticket title.',
+                                      snackPosition: SnackPosition.BOTTOM,
+                                    );
+                                    return;
+                                  }
+                                  if (ticketController.descriptionController.text.trim().isEmpty) {
+                                    Get.snackbar(
+                                      'Validation Error',
+                                      'Please enter a description.',
+                                      snackPosition: SnackPosition.BOTTOM,
+                                    );
+                                    return;
+                                  }
+                                  await ticketController.createTicket();
+                                },
+                          child: const Text(
+                            "Submit Support Ticket",
+                            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
                           ),
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
-                  ],
-
-                  // --- ATTACHMENTS SECTION ---
-                  _buildFormSection(
-                    title: "Attachments",
-                    icon: Icons.attach_file,
-                    children: [
-                      OutlinedButton.icon(
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                        ),
-                        onPressed: upload.pickAndUpload,
-                        icon: const Icon(Icons.cloud_upload_outlined),
-                        label: const Text("Upload Supporting Files"),
-                      ),
-                      const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 8.0),
-                        child: UploadProgress(),
-                      ),
-                      ListView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: upload.uploads.length,
-                        itemBuilder: (_, i) => UploadCard(upload: upload.uploads[i]),
                       ),
                     ],
-                  ),
-                  const SizedBox(height: 40),
-
-                  // --- SUBMIT ACTION ---
-                  SizedBox(
-                    width: double.infinity,
-                    height: 55,
-                    child: FilledButton(
-                      style: FilledButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      onPressed: ticketController.isLoading.value
-                          ? null
-                          : () async {
-                              // Basic validation
-                              if (ticketController.titleController.text.trim().isEmpty) {
-                                Get.snackbar(
-                                  'Validation Error',
-                                  'Please enter a ticket title.',
-                                  snackPosition: SnackPosition.BOTTOM,
-                                );
-                                return;
-                              }
-                              if (ticketController.descriptionController.text.trim().isEmpty) {
-                                Get.snackbar(
-                                  'Validation Error',
-                                  'Please enter a description.',
-                                  snackPosition: SnackPosition.BOTTOM,
-                                );
-                                return;
-                              }
-                              await ticketController.createTicket();
-                            },
-                      child: const Text(
-                        "Submit Ticket",
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ),
-                ],
-              );
-            }),
-          ),
-        ),
+                  );
+                }),
+              ),
+            ),
+          );
+        },
       ),
     );
   }
 
   Widget _buildFormSection({required String title, required IconData icon, required List<Widget> children}) {
-    final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
+        color: AppColors.card,
         borderRadius: BorderRadius.circular(16),
-        // ✅ Fixed
-border: Border.all(
-  color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
-),
+        border: Border.all(color: AppColors.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(icon, size: 20, color: theme.colorScheme.primary),
+              Icon(icon, size: 18, color: AppColors.primary),
               const SizedBox(width: 8),
               Text(
                 title,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: theme.colorScheme.onSurface,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 15,
+                  color: AppColors.textPrimary,
                 ),
               ),
             ],
           ),
-          const Padding(
-            padding: EdgeInsets.symmetric(vertical: 12.0),
-            child: Divider(height: 1),
-          ),
+          const SizedBox(height: 16),
           ...children,
         ],
       ),
@@ -324,13 +322,13 @@ border: Border.all(
       readOnly: true,
       decoration: InputDecoration(
         labelText: label,
-        prefixIcon: Icon(icon),
-        border: const OutlineInputBorder(),
+        prefixIcon: Icon(icon, size: 18),
         filled: true,
-        fillColor: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.1),
+        fillColor: AppColors.surfaceSubtle,
       ),
     );
   }
 }
+
 
 

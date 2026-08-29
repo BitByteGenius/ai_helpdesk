@@ -1,5 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:frontend/core/theme/app_colors.dart';
 
 class TicketStatusChart extends StatelessWidget {
   final Map<String, int> statusData;
@@ -10,21 +11,21 @@ class TicketStatusChart extends StatelessWidget {
   });
 
   Color _color(String status) {
-    switch (status) {
-      case "Open":
-        return Colors.orange;
-      case "Assigned":
-        return Colors.blue;
-      case "In Progress":
-        return Colors.purple;
-      case "Resolved":
-        return Colors.green;
-      case "Closed":
-        return Colors.grey;
-      case "Rejected":
-        return Colors.red;
+    switch (status.toLowerCase()) {
+      case "open":
+        return AppColors.warning;
+      case "assigned":
+        return AppColors.info;
+      case "in progress":
+        return AppColors.purple;
+      case "resolved":
+        return AppColors.success;
+      case "closed":
+        return const Color(0xFF64748B);
+      case "rejected":
+        return AppColors.error;
       default:
-        return Colors.teal;
+        return AppColors.secondary;
     }
   }
 
@@ -32,86 +33,144 @@ class TicketStatusChart extends StatelessWidget {
   Widget build(BuildContext context) {
     final total = statusData.values.fold<int>(0, (a, b) => a + b);
 
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.card,
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.border),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              "Ticket Status",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                "Ticket Status",
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 16,
+                  color: AppColors.textPrimary,
+                  letterSpacing: -0.2,
+                ),
               ),
-            ),
-
-            const SizedBox(height: 20),
-
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: AppColors.primarySubtle,
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Text(
+                  "$total Total",
+                  style: const TextStyle(
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 11,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          if (total == 0)
+            const Expanded(
+              child: Center(
+                child: Text(
+                  "No ticket data available",
+                  style: TextStyle(color: AppColors.textMuted, fontSize: 13),
+                ),
+              ),
+            )
+          else
             Expanded(
               child: Row(
                 children: [
                   Expanded(
-                    flex: 2,
-                    child: PieChart(
-                      PieChartData(
-                        centerSpaceRadius: 55,
-                        sectionsSpace: 2,
-                        sections: statusData.entries.map((entry) {
-                          final percent = total == 0
-                              ? 0.0
-                              : entry.value / total * 100;
-
-                          return PieChartSectionData(
-                            color: _color(entry.key),
-                            value: entry.value.toDouble(),
-                            title: "${percent.toStringAsFixed(0)}%",
-                            radius: 65,
-                            titleStyle: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 12,
+                    flex: 3,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        PieChart(
+                          PieChartData(
+                            centerSpaceRadius: 48,
+                            sectionsSpace: 3,
+                            sections: statusData.entries.map((entry) {
+                              final percent = total == 0 ? 0.0 : entry.value / total * 100;
+                              return PieChartSectionData(
+                                color: _color(entry.key),
+                                value: entry.value.toDouble(),
+                                title: percent >= 8 ? "${percent.toStringAsFixed(0)}%" : "",
+                                radius: 46,
+                                titleStyle: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 11,
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              "$total",
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w800,
+                                color: AppColors.textPrimary,
+                              ),
                             ),
-                          );
-                        }).toList(),
-                      ),
+                            const Text(
+                              "Tickets",
+                              style: TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w500,
+                                color: AppColors.textMuted,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
-
-                  const SizedBox(width: 20),
-
+                  const SizedBox(width: 16),
                   Expanded(
+                    flex: 2,
                     child: ListView(
+                      shrinkWrap: true,
                       children: statusData.entries.map((entry) {
                         return Padding(
-                          padding:
-                              const EdgeInsets.symmetric(vertical: 6),
+                          padding: const EdgeInsets.symmetric(vertical: 4),
                           child: Row(
                             children: [
                               Container(
-                                width: 14,
-                                height: 14,
+                                width: 10,
+                                height: 10,
                                 decoration: BoxDecoration(
                                   color: _color(entry.key),
-                                  borderRadius:
-                                      BorderRadius.circular(4),
+                                  borderRadius: BorderRadius.circular(3),
                                 ),
                               ),
-
-                              const SizedBox(width: 10),
-
+                              const SizedBox(width: 8),
                               Expanded(
-                                child: Text(entry.key),
+                                child: Text(
+                                  entry.key,
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    color: AppColors.textSecondary,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
-
                               Text(
                                 entry.value.toString(),
                                 style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 12,
+                                  color: AppColors.textPrimary,
                                 ),
                               ),
                             ],
@@ -119,13 +178,12 @@ class TicketStatusChart extends StatelessWidget {
                         );
                       }).toList(),
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
-          ],
-        ),
+        ],
       ),
     );
   }
-}
+}
