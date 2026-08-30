@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:frontend/controllers/audit_controller.dart';
 import 'package:frontend/core/theme/app_colors.dart';
 import 'package:get/get.dart';
@@ -10,19 +12,18 @@ class AuditDetailsDialog extends GetView<AuditController> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      backgroundColor: AppColors.card,
       insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
       child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 680),
+        constraints: const BoxConstraints(maxWidth: 720),
         child: Obx(() {
           final audit = controller.selectedAudit.value;
 
           if (audit == null) {
             return const Padding(
-              padding: EdgeInsets.all(40),
-              child: Center(
-                child: CircularProgressIndicator(),
-              ),
+              padding: EdgeInsets.all(48),
+              child: Center(child: CircularProgressIndicator()),
             );
           }
 
@@ -30,101 +31,206 @@ class AuditDetailsDialog extends GetView<AuditController> {
             padding: const EdgeInsets.all(24),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
+                // ── Header ──
                 Row(
                   children: [
                     Container(
-                      padding: const EdgeInsets.all(8),
+                      padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color: AppColors.primarySubtle,
-                        borderRadius: BorderRadius.circular(10),
+                        color: _actionColor(audit.action).withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                      child: const Icon(Icons.history_rounded, color: AppColors.primary, size: 22),
+                      child: Icon(_actionIcon(audit.action), color: _actionColor(audit.action), size: 22),
                     ),
-                    const SizedBox(width: 12),
-                    const Text(
-                      "Audit Log Details",
-                      style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18, color: AppColors.textPrimary),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                "Audit Event Inspection",
+                                style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 17, color: AppColors.textPrimary, letterSpacing: -0.2),
+                              ),
+                              const SizedBox(width: 8),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: _actionColor(audit.action).withValues(alpha: 0.12),
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: Text(
+                                  audit.action,
+                                  style: TextStyle(fontSize: 10.5, fontWeight: FontWeight.w800, color: _actionColor(audit.action)),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            "ID: ${audit.id}",
+                            style: const TextStyle(fontFamily: 'monospace', fontSize: 11, color: AppColors.textMuted),
+                          ),
+                        ],
+                      ),
                     ),
-                    const Spacer(),
                     IconButton(
-                      onPressed: Get.back,
+                      tooltip: "Copy Event ID",
+                      icon: const Icon(Icons.copy_rounded, size: 18, color: AppColors.textSecondary),
+                      onPressed: () {
+                        Clipboard.setData(ClipboardData(text: audit.id));
+                        Get.snackbar("Copied", "Audit Log ID copied to clipboard", snackPosition: SnackPosition.BOTTOM, duration: const Duration(seconds: 2));
+                      },
+                    ),
+                    IconButton(
+                      tooltip: "Close",
                       icon: const Icon(Icons.close_rounded, size: 20),
+                      onPressed: Get.back,
                     ),
                   ],
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 18),
                 const Divider(height: 1, color: AppColors.borderLight),
-                const SizedBox(height: 16),
+                const SizedBox(height: 18),
 
-                _item("User", audit.user.name),
-                _item("Email", audit.user.email),
-                _item("Role", audit.user.role.toUpperCase()),
-                _item("Action", audit.action),
-                _item("Entity", audit.entity),
-                _item("Description", audit.description),
-                _item("IP Address", audit.ipAddress.isNotEmpty ? audit.ipAddress : "—"),
-                _item("User Agent", audit.userAgent.isNotEmpty ? audit.userAgent : "—"),
-                _item("Timestamp", DateFormat("dd MMM yyyy, hh:mm:ss a").format(audit.createdAt)),
+                // ── User Actor Card ──
+                Container(
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: AppColors.surfaceSubtle,
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: AppColors.border),
+                  ),
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 20,
+                        backgroundColor: AppColors.primary.withValues(alpha: 0.15),
+                        child: Text(
+                          audit.user.name.isNotEmpty ? audit.user.name[0].toUpperCase() : "U",
+                          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: AppColors.primary),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Text(
+                                  audit.user.name.isNotEmpty ? audit.user.name : "System Anonymous",
+                                  style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13.5, color: AppColors.textPrimary),
+                                ),
+                                if (audit.user.role.isNotEmpty) ...[
+                                  const SizedBox(width: 8),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.primary.withValues(alpha: 0.1),
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                    child: Text(
+                                      audit.user.role.toUpperCase(),
+                                      style: const TextStyle(fontSize: 9.5, fontWeight: FontWeight.w700, color: AppColors.primary),
+                                    ),
+                                  ),
+                                ],
+                              ],
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              audit.user.email.isNotEmpty ? audit.user.email : "No email associated",
+                              style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 14),
 
-                if (audit.oldData != null) ...[
-                  const SizedBox(height: 16),
+                // ── Event Metadata Grid ──
+                Wrap(
+                  spacing: 10,
+                  runSpacing: 10,
+                  children: [
+                    _metaChip(Icons.category_outlined, "Entity", audit.entity),
+                    _metaChip(Icons.access_time_rounded, "Timestamp", DateFormat("dd MMM yyyy, hh:mm:ss a").format(audit.createdAt)),
+                    _metaChip(Icons.router_rounded, "IP Address", audit.ipAddress.isNotEmpty ? audit.ipAddress : "127.0.0.1"),
+                    if (audit.userAgent.isNotEmpty)
+                      _metaChip(Icons.devices_rounded, "Client", audit.userAgent),
+                  ],
+                ),
+                const SizedBox(height: 14),
+
+                // ── Description Box ──
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: AppColors.card,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: AppColors.border),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Activity Description",
+                        style: TextStyle(fontWeight: FontWeight.w700, fontSize: 11.5, color: AppColors.textSecondary, letterSpacing: 0.3),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        audit.description,
+                        style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w500, color: AppColors.textPrimary, height: 1.4),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // ── State Diff Viewers ──
+                if (audit.oldData != null || audit.newData != null) ...[
+                  const SizedBox(height: 20),
                   const Text(
-                    "Previous State",
-                    style: TextStyle(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 13,
-                      color: AppColors.textPrimary,
-                    ),
+                    "State Mutation Payload (Diff)",
+                    style: TextStyle(fontWeight: FontWeight.w800, fontSize: 13.5, color: AppColors.textPrimary),
                   ),
-                  const SizedBox(height: 8),
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: AppColors.surfaceSubtle,
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: AppColors.border),
+                  const SizedBox(height: 10),
+                  if (audit.oldData != null) ...[
+                    _buildJsonBox(
+                      title: "Previous State (Before Mutation)",
+                      data: audit.oldData!,
+                      borderColor: AppColors.error.withValues(alpha: 0.3),
+                      badgeColor: AppColors.errorSubtle,
+                      textColor: AppColors.error,
                     ),
-                    child: SelectableText(
-                      audit.oldData.toString(),
-                      style: const TextStyle(fontFamily: 'monospace', fontSize: 12, color: AppColors.textPrimary),
+                    const SizedBox(height: 10),
+                  ],
+                  if (audit.newData != null) ...[
+                    _buildJsonBox(
+                      title: "New State (After Mutation)",
+                      data: audit.newData!,
+                      borderColor: AppColors.success.withValues(alpha: 0.3),
+                      badgeColor: AppColors.successSubtle,
+                      textColor: AppColors.success,
                     ),
-                  ),
+                  ],
                 ],
 
-                if (audit.newData != null) ...[
-                  const SizedBox(height: 16),
-                  const Text(
-                    "New State",
-                    style: TextStyle(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 13,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: AppColors.successSubtle,
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: AppColors.success.withValues(alpha: 0.3)),
-                    ),
-                    child: SelectableText(
-                      audit.newData.toString(),
-                      style: const TextStyle(fontFamily: 'monospace', fontSize: 12, color: AppColors.textPrimary),
-                    ),
-                  ),
-                ],
-
-                const SizedBox(height: 20),
+                const SizedBox(height: 24),
                 Align(
                   alignment: Alignment.centerRight,
                   child: FilledButton(
                     onPressed: Get.back,
-                    child: const Text("Close"),
+                    style: FilledButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    ),
+                    child: const Text("Done"),
                   ),
                 ),
               ],
@@ -135,30 +241,101 @@ class AuditDetailsDialog extends GetView<AuditController> {
     );
   }
 
-  Widget _item(String title, String value) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+  Widget _metaChip(IconData icon, String label, String value) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceSubtle,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: AppColors.border),
+      ),
       child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 14, color: AppColors.textSecondary),
+          const SizedBox(width: 6),
+          Text(
+            "$label: ",
+            style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w600, color: AppColors.textSecondary),
+          ),
+          Text(
+            value,
+            style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildJsonBox({
+    required String title,
+    required Map<String, dynamic> data,
+    required Color borderColor,
+    required Color badgeColor,
+    required Color textColor,
+  }) {
+    String prettyJson;
+    try {
+      prettyJson = const JsonEncoder.withIndent('  ').convert(data);
+    } catch (_) {
+      prettyJson = data.toString();
+    }
+
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: const Color(0xFF0F172A), // Slate 900 code box
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: borderColor),
+      ),
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
-            width: 120,
-            child: Text(
-              title,
-              style: const TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 13,
-                color: AppColors.textSecondary,
-              ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.05),
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 8,
+                  height: 8,
+                  decoration: BoxDecoration(color: textColor, shape: BoxShape.circle),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  title,
+                  style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: textColor),
+                ),
+                const Spacer(),
+                InkWell(
+                  onTap: () {
+                    Clipboard.setData(ClipboardData(text: prettyJson));
+                    Get.snackbar("Copied", "JSON copied to clipboard", snackPosition: SnackPosition.BOTTOM, duration: const Duration(seconds: 2));
+                  },
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.copy_rounded, size: 12, color: Color(0xFF94A3B8)),
+                      SizedBox(width: 4),
+                      Text("Copy JSON", style: TextStyle(fontSize: 10.5, color: Color(0xFF94A3B8), fontWeight: FontWeight.w600)),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
-          Expanded(
-            child: Text(
-              value,
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: SelectableText(
+              prettyJson,
               style: const TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 13,
-                color: AppColors.textPrimary,
+                fontFamily: 'monospace',
+                fontSize: 12,
+                color: Color(0xFF38BDF8), // Light sky JSON text
+                height: 1.4,
               ),
             ),
           ),
@@ -166,4 +343,50 @@ class AuditDetailsDialog extends GetView<AuditController> {
       ),
     );
   }
-}
+
+  Color _actionColor(String action) {
+    switch (action.toUpperCase()) {
+      case "LOGIN":
+      case "REGISTER":
+        return AppColors.success;
+      case "CREATE":
+        return AppColors.primary;
+      case "UPDATE":
+      case "STATUS_CHANGE":
+      case "ASSIGN":
+        return AppColors.warning;
+      case "DELETE":
+        return AppColors.error;
+      case "AI_ANALYSIS":
+        return AppColors.purple;
+      default:
+        return AppColors.info;
+    }
+  }
+
+  IconData _actionIcon(String action) {
+    switch (action.toUpperCase()) {
+      case "LOGIN":
+      case "REGISTER":
+        return Icons.login_rounded;
+      case "CREATE":
+        return Icons.add_circle_outline_rounded;
+      case "UPDATE":
+      case "STATUS_CHANGE":
+        return Icons.edit_note_rounded;
+      case "ASSIGN":
+        return Icons.person_add_alt_1_rounded;
+      case "DELETE":
+        return Icons.delete_outline_rounded;
+      case "AI_ANALYSIS":
+        return Icons.auto_awesome_rounded;
+      case "COMMENT":
+        return Icons.chat_bubble_outline_rounded;
+      case "UPLOAD":
+        return Icons.upload_file_rounded;
+      default:
+        return Icons.flash_on_rounded;
+    }
+  }
+}
+
