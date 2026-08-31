@@ -1,5 +1,5 @@
 {
-  "buildCommand": "bash install_flutter.sh",
+  "buildCommand": "bash install_flutter.sh && flutter build web --release",
   "outputDirectory": "build/web",
   "rewrites": [
     {
