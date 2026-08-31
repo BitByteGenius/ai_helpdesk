@@ -134,7 +134,7 @@ class _LoginScreenState extends State<LoginScreen>
                               ),
                               const SizedBox(height: 28),
                               const Text(
-                                "AI-Powered\nHelpdesk & TMS",
+                                "AI-Powered\nHelpdesk",
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 28,
@@ -425,4 +425,4 @@ class _LoginScreenState extends State<LoginScreen>
       ),
     );
   }
-}
+}
