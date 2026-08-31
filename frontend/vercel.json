@@ -1,6 +1,6 @@
 {
   "buildCommand": "bash install_flutter.sh",
-  "outputDirectory": "frontend/build/web",
+  "outputDirectory": "build/web",
   "rewrites": [
     {
       "source": "/(.*)",
