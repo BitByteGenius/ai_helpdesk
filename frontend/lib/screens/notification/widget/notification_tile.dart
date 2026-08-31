@@ -71,7 +71,9 @@
 
 
 import 'package:flutter/material.dart';
+import 'package:frontend/core/theme/app_colors.dart';
 import 'package:frontend/models/notification_model.dart';
+import 'package:intl/intl.dart';
 
 class NotificationTile extends StatelessWidget {
   final NotificationModel notification;
@@ -86,7 +88,7 @@ class NotificationTile extends StatelessWidget {
   });
 
   IconData _getIcon() {
-    switch (notification.type) {
+    switch (notification.type.toLowerCase()) {
       case "ticket":
         return Icons.confirmation_number_outlined;
       case "assignment":
@@ -96,120 +98,124 @@ class NotificationTile extends StatelessWidget {
       case "comment":
         return Icons.chat_bubble_outline_rounded;
       case "security":
-        return Icons.shield_outlined; 
+        return Icons.shield_outlined;
       default:
         return Icons.notifications_outlined;
     }
   }
 
-  Color _getTypeColor(BuildContext context) {
-    final theme = Theme.of(context);
-    switch (notification.type) {
+  Color _getTypeColor() {
+    switch (notification.type.toLowerCase()) {
       case "ticket":
-        return theme.colorScheme.primary;
+        return AppColors.primary;
       case "assignment":
-        return Colors.purple;
+        return AppColors.purple;
       case "status":
-        return Colors.orange;
+        return AppColors.warning;
       case "comment":
-        return Colors.teal;
+        return AppColors.info;
       case "security":
-        return theme.colorScheme.error;
+        return AppColors.error;
       default:
-        return theme.colorScheme.secondary;
+        return AppColors.primary;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final typeColor = _getTypeColor(context);
+    final typeColor = _getTypeColor();
 
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
-      child: Container(
-        decoration: BoxDecoration(
-          color: notification.isRead
-              ? theme.colorScheme.surface
-              : theme.colorScheme.primaryContainer.withValues(alpha: 0.15),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: notification.isRead
-                ? theme.colorScheme.outlineVariant.withValues(alpha: 0.4)
-                : theme.colorScheme.primary.withValues(alpha: 0.2),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
+          decoration: BoxDecoration(
+            color: notification.isRead ? AppColors.card : AppColors.primarySubtle.withValues(alpha: 0.5),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: notification.isRead ? AppColors.border : AppColors.primary.withValues(alpha: 0.25),
+            ),
           ),
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(16),
-          child: Stack(
-            children: [
-              // Left Vertical Unread Highlight Accent Bar
-              if (!notification.isRead)
-                Positioned(
-                  left: 0,
-                  top: 0,
-                  bottom: 0,
-                  width: 4,
-                  child: Container(color: theme.colorScheme.primary),
-                ),
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Styled Avatar Icon Box
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: typeColor.withValues(alpha: 0.1),
-                        shape: BoxShape.circle,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: Stack(
+              children: [
+                if (!notification.isRead)
+                  Positioned(
+                    left: 0,
+                    top: 0,
+                    bottom: 0,
+                    width: 4,
+                    child: Container(color: AppColors.primary),
+                  ),
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: typeColor.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Icon(_getIcon(), size: 20, color: typeColor),
                       ),
-                      child: Icon(_getIcon(), size: 22, color: typeColor),
-                    ),
-                    const SizedBox(width: 16),
-                    // Main Text Info Frame
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            notification.title,
-                            style: theme.textTheme.bodyLarge?.copyWith(
-                              fontWeight: notification.isRead
-                                  ? FontWeight.normal
-                                  : FontWeight.w600,
-                              color: theme.colorScheme.onSurface,
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    notification.title,
+                                    style: TextStyle(
+                                      fontWeight: notification.isRead ? FontWeight.w600 : FontWeight.w700,
+                                      fontSize: 14,
+                                      color: AppColors.textPrimary,
+                                    ),
+                                  ),
+                                ),
+                                Text(
+                                  DateFormat("hh:mm a").format(notification.createdAt),
+                                  style: const TextStyle(fontSize: 11, color: AppColors.textMuted),
+                                ),
+                              ],
                             ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            notification.message,
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant,
+                            const SizedBox(height: 4),
+                            Text(
+                              notification.message,
+                              style: const TextStyle(
+                                fontSize: 13,
+                                color: AppColors.textSecondary,
+                                height: 1.4,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 8),
-                    // Action Context (Delete) Button
-                    IconButton(
-                      icon: Icon(
-                        Icons.clear_rounded,
-                        size: 20,
-                        color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
+                      const SizedBox(width: 8),
+                      IconButton(
+                        icon: const Icon(
+                          Icons.close_rounded,
+                          size: 16,
+                          color: AppColors.textMuted,
+                        ),
+                        tooltip: "Dismiss",
+                        onPressed: onDelete,
                       ),
-                      tooltip: "Dismiss Alert",
-                      onPressed: onDelete,
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
     );
   }
-}
+}

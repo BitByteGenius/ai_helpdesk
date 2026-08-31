@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/core/theme/app_colors.dart';
 import 'package:get/get.dart';
 
 import '../../../controllers/auth_controller.dart';
@@ -13,81 +14,72 @@ class CommentsSection extends StatelessWidget {
     final commentController = Get.find<CommentController>();
     final authController = Get.find<AuthController>();
 
-    final theme = Theme.of(context);
-
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(14),
-        side: BorderSide(
-          color: theme.colorScheme.outlineVariant.withValues(alpha: .30),
-        ),
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.card,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.border),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Obx(() {
-          if (commentController.isLoading.value) {
-            return const SizedBox(
-              height: 180,
-              child: Center(
-                child: CircularProgressIndicator(),
-              ),
-            );
-          }
-
-          if (commentController.comments.isEmpty) {
-            return SizedBox(
-              height: 160,
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.chat_bubble_outline,
-                      size: 42,
-                      color: Colors.grey.shade500,
-                    ),
-                    const SizedBox(height: 10),
-                    const Text(
-                      "No comments yet",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      "Start the discussion below.",
-                      style: TextStyle(
-                        color: Colors.grey.shade600,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }
-
-          return ListView.separated(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: commentController.comments.length,
-            separatorBuilder: (_, _) =>
-                const SizedBox(height: 10),
-            itemBuilder: (_, index) {
-              final comment =
-                  commentController.comments[index];
-
-              return CommentBubble(
-                comment: comment,
-                isMine:
-                    comment.user.id ==
-                    authController.user?.id,
-              );
-            },
+      padding: const EdgeInsets.all(20),
+      child: Obx(() {
+        if (commentController.isLoading.value) {
+          return const SizedBox(
+            height: 180,
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
           );
-        }),
-      ),
+        }
+
+        if (commentController.comments.isEmpty) {
+          return const SizedBox(
+            height: 140,
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.chat_bubble_outline_rounded,
+                    size: 36,
+                    color: AppColors.textMuted,
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    "No comments yet",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 15,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                  SizedBox(height: 2),
+                  Text(
+                    "Start the discussion below.",
+                    style: TextStyle(
+                      color: AppColors.textSecondary,
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+
+        return ListView.separated(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: commentController.comments.length,
+          separatorBuilder: (_, _) => const SizedBox(height: 8),
+          itemBuilder: (_, index) {
+            final comment = commentController.comments[index];
+            return CommentBubble(
+              comment: comment,
+              isMine: comment.user.id == authController.user?.id,
+            );
+          },
+        );
+      }),
     );
   }
-}
+}

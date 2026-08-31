@@ -1,5 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:frontend/core/theme/app_colors.dart';
 
 class PriorityChart extends StatelessWidget {
   final Map<String, int> priorityData;
@@ -10,117 +11,128 @@ class PriorityChart extends StatelessWidget {
   });
 
   Color _color(String priority) {
-    switch (priority) {
-      case "Critical":
-        return Colors.red;
-      case "High":
-        return Colors.orange;
-      case "Medium":
-        return Colors.amber;
-      case "Low":
-        return Colors.green;
+    switch (priority.toLowerCase()) {
+      case "critical":
+        return AppColors.error;
+      case "high":
+        return const Color(0xFFF97316); // Orange
+      case "medium":
+        return AppColors.warning;
+      case "low":
+        return AppColors.success;
       default:
-        return Colors.blueGrey;
+        return AppColors.secondary;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final priorities = [
-      "Low",
-      "Medium",
-      "High",
-      "Critical",
-    ];
+    const priorities = ["Low", "Medium", "High", "Critical"];
 
     final maxValue = priorityData.values.isEmpty
         ? 5
         : priorityData.values.reduce((a, b) => a > b ? a : b);
 
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.card,
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.border),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              "Priority Distribution",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            "Priority Distribution",
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textPrimary,
+              letterSpacing: -0.2,
             ),
-
-            const SizedBox(height: 25),
-
-            Expanded(
-              child: BarChart(
-                BarChartData(
-                  maxY: (maxValue + 5).toDouble(),
-                  borderData: FlBorderData(show: false),
-                  gridData: FlGridData(show: true),
-                  titlesData: FlTitlesData(
-                    rightTitles: const AxisTitles(
-                      sideTitles: SideTitles(showTitles: false),
-                    ),
-                    topTitles: const AxisTitles(
-                      sideTitles: SideTitles(showTitles: false),
-                    ),
-                    leftTitles: const AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        reservedSize: 35,
+          ),
+          const SizedBox(height: 20),
+          Expanded(
+            child: BarChart(
+              BarChartData(
+                maxY: (maxValue == 0 ? 5 : maxValue + 2).toDouble(),
+                borderData: FlBorderData(show: false),
+                gridData: FlGridData(
+                  show: true,
+                  drawVerticalLine: false,
+                  horizontalInterval: maxValue > 10 ? 5 : 2,
+                  getDrawingHorizontalLine: (value) => FlLine(
+                    color: AppColors.border.withValues(alpha: 0.7),
+                    strokeWidth: 1,
+                  ),
+                ),
+                titlesData: FlTitlesData(
+                  rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  leftTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      reservedSize: 28,
+                      getTitlesWidget: (val, meta) => Text(
+                        val.toInt().toString(),
+                        style: const TextStyle(
+                          fontSize: 11,
+                          color: AppColors.textMuted,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
-                    bottomTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        getTitlesWidget: (value, meta) {
-                          if (value.toInt() >= priorities.length) {
-                            return const SizedBox();
-                          }
-
-                          return Padding(
-                            padding: const EdgeInsets.only(top: 8),
-                            child: Text(
-                              priorities[value.toInt()],
+                  ),
+                  bottomTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      getTitlesWidget: (value, meta) {
+                        if (value.toInt() >= priorities.length) {
+                          return const SizedBox();
+                        }
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 8),
+                          child: Text(
+                            priorities[value.toInt()],
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: AppColors.textSecondary,
+                              fontWeight: FontWeight.w600,
                             ),
-                          );
-                        },
-                      ),
+                          ),
+                        );
+                      },
                     ),
                   ),
-                  barGroups: List.generate(
-                    priorities.length,
-                    (index) {
-                      final label = priorities[index];
-                      final value =
-                          priorityData[label] ?? 0;
+                ),
+                barGroups: List.generate(
+                  priorities.length,
+                  (index) {
+                    final label = priorities[index];
+                    final value = priorityData[label] ?? 0;
 
-                      return BarChartGroupData(
-                        x: index,
-                        barRods: [
-                          BarChartRodData(
-                            toY: value.toDouble(),
-                            width: 28,
-                            color: _color(label),
-                            borderRadius:
-                                BorderRadius.circular(6),
-                          )
-                        ],
-                      );
-                    },
-                  ),
+                    return BarChartGroupData(
+                      x: index,
+                      barRods: [
+                        BarChartRodData(
+                          toY: value.toDouble(),
+                          width: 24,
+                          color: _color(label),
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(6),
+                            topRight: Radius.circular(6),
+                          ),
+                        )
+                      ],
+                    );
+                  },
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
-}
+}

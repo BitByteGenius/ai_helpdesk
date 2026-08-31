@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/controllers/upload_controller.dart';
+import 'package:frontend/core/theme/app_colors.dart';
 import 'package:get/get.dart';
-
 
 class UploadProgress extends GetView<UploadController> {
   const UploadProgress({super.key});
@@ -15,54 +15,63 @@ class UploadProgress extends GetView<UploadController> {
 
       final progress = controller.progress.value;
 
-      return Card(
-        elevation: 2,
-        margin: const EdgeInsets.symmetric(vertical: 10),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+      return Container(
+        decoration: BoxDecoration(
+          color: AppColors.card,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: AppColors.border),
         ),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  const Icon(
-                    Icons.cloud_upload,
-                    color: Colors.blue,
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: AppColors.primarySubtle,
+                    borderRadius: BorderRadius.circular(8),
                   ),
-
-                  const SizedBox(width: 10),
-
-                  const Expanded(
-                    child: Text(
-                      "Uploading...",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
+                  child: const Icon(
+                    Icons.cloud_upload_outlined,
+                    size: 18,
+                    color: AppColors.primary,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                const Expanded(
+                  child: Text(
+                    "Uploading file...",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 13,
+                      color: AppColors.textPrimary,
                     ),
                   ),
-
-                  Text(
-                    "${(progress * 100).toStringAsFixed(0)}%",
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
+                ),
+                Text(
+                  "${(progress * 100).toStringAsFixed(0)}%",
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w800,
+                    fontSize: 13,
+                    color: AppColors.primary,
                   ),
-                ],
-              ),
-
-              const SizedBox(height: 15),
-
-              LinearProgressIndicator(
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: LinearProgressIndicator(
                 value: progress,
-                minHeight: 8,
-                borderRadius: BorderRadius.circular(10),
+                minHeight: 6,
+                backgroundColor: AppColors.surfaceSubtle,
+                color: AppColors.primary,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       );
     });
   }
-}
+}

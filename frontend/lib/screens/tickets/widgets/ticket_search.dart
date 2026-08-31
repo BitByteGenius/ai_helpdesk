@@ -1,9 +1,8 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:frontend/controllers/ticket_controller.dart';
+import 'package:frontend/core/theme/app_colors.dart';
 import 'package:get/get.dart';
-
 
 class TicketSearch extends StatefulWidget {
   const TicketSearch({super.key});
@@ -29,7 +28,7 @@ class _TicketSearchState extends State<TicketSearch> {
     }
 
     _debounce = Timer(
-      const Duration(milliseconds: 500),
+      const Duration(milliseconds: 400),
       () {
         controller.searchTickets(value);
       },
@@ -42,9 +41,9 @@ class _TicketSearchState extends State<TicketSearch> {
       controller: controller.searchController,
       onChanged: _onSearch,
       decoration: InputDecoration(
-        hintText: "Search tickets...",
-        prefixIcon: const Icon(Icons.search),
-
+        hintText: "Search tickets by title, description, or requester...",
+        hintStyle: const TextStyle(fontSize: 13, color: AppColors.textMuted),
+        prefixIcon: const Icon(Icons.search_rounded, size: 18, color: AppColors.textSecondary),
         suffixIcon: ValueListenableBuilder<TextEditingValue>(
           valueListenable: controller.searchController,
           builder: (context, value, _) {
@@ -53,7 +52,7 @@ class _TicketSearchState extends State<TicketSearch> {
             }
 
             return IconButton(
-              icon: const Icon(Icons.close),
+              icon: const Icon(Icons.close_rounded, size: 16),
               onPressed: () {
                 controller.searchController.clear();
                 controller.searchTickets("");
@@ -61,27 +60,23 @@ class _TicketSearchState extends State<TicketSearch> {
             );
           },
         ),
-
         filled: true,
-        fillColor: Colors.grey.shade100,
-
+        fillColor: AppColors.surfaceSubtle,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none,
+          borderSide: const BorderSide(color: AppColors.border),
         ),
-
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none,
+          borderSide: const BorderSide(color: AppColors.border),
         ),
-
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(
-            color: Theme.of(context).primaryColor,
-          ),
+          borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
         ),
       ),
     );
   }
 }
+

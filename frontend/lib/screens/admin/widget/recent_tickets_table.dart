@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/core/routes/app_routes.dart';
+import 'package:frontend/core/theme/app_colors.dart';
+import 'package:frontend/models/ticket_model.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-
-import '../../../models/ticket_model.dart';
 
 class RecentTicketsTable extends StatelessWidget {
   final List<TicketModel> tickets;
@@ -12,60 +14,54 @@ class RecentTicketsTable extends StatelessWidget {
   });
 
   Color _statusColor(String status) {
-    switch (status) {
-      case "Open":
-        return Colors.orange;
-      case "Assigned":
-        return Colors.blue;
-      case "In Progress":
-        return Colors.purple;
-      case "Resolved":
-        return Colors.green;
-      case "Closed":
-        return Colors.grey;
-      case "Rejected":
-        return Colors.red;
+    switch (status.toLowerCase()) {
+      case "open":
+        return AppColors.warning;
+      case "assigned":
+        return AppColors.info;
+      case "in progress":
+        return AppColors.purple;
+      case "resolved":
+        return AppColors.success;
+      case "closed":
+        return const Color(0xFF64748B);
+      case "rejected":
+        return AppColors.error;
       default:
-        return Colors.black54;
+        return AppColors.secondary;
     }
   }
 
   Color _priorityColor(String priority) {
-    switch (priority) {
-      case "Critical":
-        return Colors.red;
-      case "High":
-        return Colors.orange;
-      case "Medium":
-        return Colors.amber;
-      case "Low":
-        return Colors.green;
+    switch (priority.toLowerCase()) {
+      case "critical":
+        return AppColors.error;
+      case "high":
+        return const Color(0xFFF97316);
+      case "medium":
+        return AppColors.warning;
+      case "low":
+        return AppColors.success;
       default:
-        return Colors.blueGrey;
+        return AppColors.secondary;
     }
   }
 
   Widget _badge(String text, Color color) {
     return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 12,
-        vertical: 6,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: .12),
-        borderRadius: BorderRadius.circular(30),
-        border: Border.all(
-          color: color.withValues(alpha: 0.25),
-          width: 1,
-        ),
+        color: color.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: color.withValues(alpha: 0.25), width: 1),
       ),
       child: Text(
         text,
         style: TextStyle(
           color: color,
-          fontWeight: FontWeight.w600,
-          fontSize: 12,
-          letterSpacing: 0.3,
+          fontWeight: FontWeight.w700,
+          fontSize: 11,
+          letterSpacing: 0.2,
         ),
       ),
     );
@@ -73,172 +69,153 @@ class RecentTicketsTable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Container(
       decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
+        color: AppColors.card,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.4),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
-            blurRadius: 16,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        border: Border.all(color: AppColors.border),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Header Section
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  "Recent Tickets",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: -0.2,
-                  ),
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                "Recent Tickets",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textPrimary,
+                  letterSpacing: -0.2,
                 ),
-                if (tickets.isNotEmpty)
-                  Text(
-                    "${tickets.length} total",
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-              ],
-            ),
-
-            const SizedBox(height: 20),
-
-            // Empty State
-            if (tickets.isEmpty)
-              SizedBox(
-                height: 200,
-                child: Center(
-                  child: Text(
-                    "No Tickets Found",
-                    style: TextStyle(
-                      color: theme.colorScheme.onSurfaceVariant,
-                      fontSize: 14,
-                    ),
-                  ),
-                ),
-              )
-            else
-              // Scrollable Responsive Container
-              LayoutBuilder(
-                builder: (context, constraints) {
-                  return SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    physics: const BouncingScrollPhysics(),
-                    child: ConstrainedBox(
-                      // Ensures table spreads out properly on desktop but stays scrollable on small mobile
-                      constraints: BoxConstraints(
-                        minWidth: constraints.maxWidth > 800 ? constraints.maxWidth : 800,
-                      ),
-                      child: Theme(
-                        data: theme.copyWith(
-                          dividerColor: theme.colorScheme.outlineVariant.withValues(alpha: 0.3),
-                        ),
-                        child: DataTable(
-                          columnSpacing: 24,
-                          headingRowHeight: 48,
-                          dataRowMinHeight: 56,
-                          dataRowMaxHeight: 68,
-                          horizontalMargin: 8,
-                          headingTextStyle: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 13,
-                            color: theme.colorScheme.onSurfaceVariant,
-                          ),
-                          columns: const [
-                            DataColumn(label: Text("Title")),
-                            DataColumn(label: Text("User")),
-                            DataColumn(label: Text("Category")),
-                            DataColumn(label: Text("Priority")),
-                            DataColumn(label: Text("Status")),
-                            DataColumn(label: Text("Created")),
-                          ],
-                          rows: tickets.map((ticket) {
-                            return DataRow(
-                              cells: [
-                                DataCell(
-                                  SizedBox(
-                                    width: 200,
-                                    child: Text(
-                                      ticket.title,
-                                      overflow: TextOverflow.ellipsis,
-                                      maxLines: 2,
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 14,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                DataCell(
-                                  Text(
-                                    ticket.createdBy.name,
-                                    style: TextStyle(
-                                      color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                ),
-                                DataCell(
-                                  Text(
-                                    ticket.category,
-                                    style: TextStyle(
-                                      color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                ),
-                                DataCell(
-                                  _badge(
-                                    ticket.priority,
-                                    _priorityColor(ticket.priority),
-                                  ),
-                                ),
-                                DataCell(
-                                  _badge(
-                                    ticket.status,
-                                    _statusColor(ticket.status),
-                                  ),
-                                ),
-                                DataCell(
-                                  Text(
-                                    DateFormat("dd MMM yyyy").format(ticket.createdAt),
-                                    style: TextStyle(
-                                      color: theme.colorScheme.onSurfaceVariant,
-                                      fontSize: 13,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            );
-                          }).toList(),
-                        ),
-                      ),
-                    ),
-                  );
-                },
               ),
-          ],
-        ),
+              if (tickets.isNotEmpty)
+                TextButton(
+                  onPressed: () => Get.toNamed(AppRoutes.tickets),
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    minimumSize: Size.zero,
+                  ),
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text("View All", style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700)),
+                      SizedBox(width: 4),
+                      Icon(Icons.arrow_forward_rounded, size: 14),
+                    ],
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          if (tickets.isEmpty)
+            const SizedBox(
+              height: 120,
+              child: Center(
+                child: Text(
+                  "No tickets found",
+                  style: TextStyle(color: AppColors.textMuted, fontSize: 13),
+                ),
+              ),
+            )
+          else
+            LayoutBuilder(
+              builder: (context, constraints) {
+                return SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  physics: const BouncingScrollPhysics(),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minWidth: constraints.maxWidth > 700 ? constraints.maxWidth : 700,
+                    ),
+                    child: DataTable(
+                      columnSpacing: 20,
+                      headingRowHeight: 40,
+                      dataRowMinHeight: 52,
+                      dataRowMaxHeight: 60,
+                      horizontalMargin: 0,
+                      headingTextStyle: const TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 12,
+                        color: AppColors.textSecondary,
+                        letterSpacing: 0.2,
+                      ),
+                      columns: const [
+                        DataColumn(label: Text("TITLE")),
+                        DataColumn(label: Text("REQUESTER")),
+                        DataColumn(label: Text("CATEGORY")),
+                        DataColumn(label: Text("PRIORITY")),
+                        DataColumn(label: Text("STATUS")),
+                        DataColumn(label: Text("DATE")),
+                      ],
+                      rows: tickets.map((ticket) {
+                        return DataRow(
+                          cells: [
+                            DataCell(
+                              SizedBox(
+                                width: 180,
+                                child: Text(
+                                  ticket.title,
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 13,
+                                    color: AppColors.textPrimary,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            DataCell(
+                              Text(
+                                ticket.createdBy.name,
+                                style: const TextStyle(
+                                  color: AppColors.textSecondary,
+                                  fontSize: 13,
+                                ),
+                              ),
+                            ),
+                            DataCell(
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: AppColors.surfaceSubtle,
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: Text(
+                                  ticket.category,
+                                  style: const TextStyle(
+                                    color: AppColors.textSecondary,
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            DataCell(_badge(ticket.priority, _priorityColor(ticket.priority))),
+                            DataCell(_badge(ticket.status, _statusColor(ticket.status))),
+                            DataCell(
+                              Text(
+                                DateFormat("dd MMM yyyy").format(ticket.createdAt),
+                                style: const TextStyle(
+                                  color: AppColors.textMuted,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                );
+              },
+            ),
+        ],
       ),
     );
   }
-}
+}

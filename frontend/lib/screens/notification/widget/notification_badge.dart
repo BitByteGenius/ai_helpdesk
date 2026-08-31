@@ -57,6 +57,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/controllers/notification_controller.dart';
 import 'package:frontend/core/routes/app_routes.dart';
+import 'package:frontend/core/theme/app_colors.dart';
 import 'package:get/get.dart';
 
 class NotificationBadge extends GetView<NotificationController> {
@@ -68,15 +69,15 @@ class NotificationBadge extends GetView<NotificationController> {
       final count = controller.unreadCount.value;
 
       return Badge(
-        label: Text(count > 99 ? "99+" : count.toString()),
+        label: Text(count > 99 ? "99+" : count.toString(), style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
         isLabelVisible: count > 0,
-        backgroundColor: Theme.of(context).colorScheme.error,
-        textColor: Theme.of(context).colorScheme.onError,
+        backgroundColor: AppColors.error,
+        textColor: Colors.white,
         padding: const EdgeInsets.symmetric(horizontal: 5),
-        offset: const Offset(-4, 4),
+        offset: const Offset(-2, 2),
         child: IconButton(
-          icon: const Icon(Icons.notifications_outlined),
-          tooltip: "View Notifications",
+          icon: const Icon(Icons.notifications_outlined, size: 20),
+          tooltip: "Notifications",
           onPressed: () {
             Get.toNamed(AppRoutes.notifications);
           },
@@ -84,4 +85,4 @@ class NotificationBadge extends GetView<NotificationController> {
       );
     });
   }
-}
+}

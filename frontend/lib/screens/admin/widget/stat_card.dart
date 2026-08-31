@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:frontend/core/theme/app_colors.dart';
 
 class StatCard extends StatelessWidget {
   final String title;
@@ -21,95 +21,85 @@ class StatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool isDesktop = Get.width >= 1200;
-
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(18),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 250),
-        padding: EdgeInsets.all(isDesktop ? 22 : 16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(
-            color: Colors.grey.shade200,
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: AppColors.card,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: AppColors.border),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.02),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: .05),
-              blurRadius: 12,
-              offset: const Offset(0, 6),
-            )
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment:
-              CrossAxisAlignment.start,
-          children: [
-
-            Row(
-              children: [
-
-                Container(
-                  height: isDesktop ? 55 : 48,
-                  width: isDesktop ? 55 : 48,
-                  decoration: BoxDecoration(
-                    color: color.withValues(alpha: .12),
-                    borderRadius:
-                        BorderRadius.circular(14),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      color: AppColors.textSecondary,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13,
+                    ),
                   ),
-                  child: Icon(
-                    icon,
-                    color: color,
-                    size: isDesktop ? 30 : 26,
+                  Container(
+                    width: 36,
+                    height: 36,
+                    decoration: BoxDecoration(
+                      color: color.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Icon(
+                      icon,
+                      color: color,
+                      size: 18,
+                    ),
                   ),
-                ),
-
-                const Spacer(),
-
-                Icon(
-                  Icons.arrow_forward_ios,
-                  size: 16,
-                  color: Colors.grey.shade400,
-                ),
-              ],
-            ),
-
-            const Spacer(),
-
-            Text(
-              value,
-              style: TextStyle(
-                fontSize: isDesktop ? 34 : 28,
-                fontWeight: FontWeight.bold,
+                ],
               ),
-            ),
-
-            const SizedBox(height: 6),
-
-            Text(
-              title,
-              style: TextStyle(
-                color: Colors.grey.shade700,
-                fontWeight: FontWeight.w600,
-                fontSize: isDesktop ? 17 : 15,
+              const SizedBox(height: 12),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    value,
+                    style: const TextStyle(
+                      fontSize: 26,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.textPrimary,
+                      letterSpacing: -0.5,
+                    ),
+                  ),
+                  if (subtitle != null) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      subtitle!,
+                      style: const TextStyle(
+                        color: AppColors.success,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ],
               ),
-            ),
-
-            if (subtitle != null) ...[
-              const SizedBox(height: 8),
-              Text(
-                subtitle!,
-                style: TextStyle(
-                  color: Colors.green.shade700,
-                  fontSize: 13,
-                ),
-              ),
-            ]
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
-}
+}

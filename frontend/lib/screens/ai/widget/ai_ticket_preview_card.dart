@@ -75,6 +75,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:frontend/controllers/ai_chat_controller.dart';
+import 'package:frontend/core/theme/app_colors.dart';
 import 'package:frontend/screens/ai/widget/ai_ticket_preview_dialog.dart';
 import 'package:get/get.dart';
 
@@ -88,95 +89,91 @@ class AIEscalationCard extends GetView<AIChatController> {
         return const SizedBox.shrink();
       }
 
-      return Card(
-        elevation: 2,
-        color: Colors.orange.shade50,
-        shape: RoundedRectangleBorder(
+      return Container(
+        decoration: BoxDecoration(
+          color: AppColors.primarySubtle,
           borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
         ),
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Icon(
-                    Icons.support_agent,
-                    color: Colors.orange.shade700,
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Row(
+              children: [
+                Icon(
+                  Icons.support_agent_rounded,
+                  color: AppColors.primary,
+                  size: 22,
+                ),
+                SizedBox(width: 10),
+                Text(
+                  "Need more help?",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 16,
+                    color: AppColors.textPrimary,
                   ),
-                  const SizedBox(width: 10),
-                  const Text(
-                    "Need more help?",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            const Text(
+              "It looks like this issue hasn't been completely resolved. I can create a support ticket using this conversation so our support team has the complete context.",
+              style: TextStyle(
+                height: 1.4,
+                fontSize: 13,
+                color: AppColors.textSecondary,
+              ),
+            ),
+            const SizedBox(height: 18),
+            Row(
+              children: [
+                Expanded(
+                  child: FilledButton.icon(
+                    icon: controller.isGeneratingTicket.value
+                        ? const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
+                          )
+                        : const Icon(Icons.confirmation_number_outlined, size: 16),
+                    label: Text(
+                      controller.isGeneratingTicket.value ? "Generating..." : "Create Ticket",
+                      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
                     ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 15),
-
-              const Text(
-                "It looks like this issue hasn't been completely resolved.\n\n"
-                "I can create a support ticket using this conversation so our support team has the complete context.",
-                style: TextStyle(height: 1.5),
-              ),
-
-              const SizedBox(height: 20),
-
-              Row(
-                children: [
-                  Expanded(
-                    child: FilledButton.icon(
-                      icon: controller.isGeneratingTicket.value
-                          ? const SizedBox(
-                              width: 18,
-                              height: 18,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: Colors.white,
+                    onPressed: controller.isGeneratingTicket.value
+                        ? null
+                        : () async {
+                            final draft = await controller.generateTicketDraft();
+                            if (draft == null) return;
+                            Get.dialog(
+                              AITicketPreviewDialog(
+                                draft: draft,
+                                chatMessages: controller.messages.toList(),
                               ),
-                            )
-                          : const Icon(Icons.confirmation_number),
-                      label: Text(
-                        controller.isGeneratingTicket.value
-                            ? "Generating..."
-                            : "Create Ticket",
-                      ),
-                      onPressed: controller.isGeneratingTicket.value
-                          ? null
-                          : () async {
-                              final draft =
-                                  await controller.generateTicketDraft();
-
-                              if (draft == null) return;
-
-                              Get.dialog(
-  AITicketPreviewDialog(
-    draft: draft,
-    chatMessages: controller.messages.toList(),
-  ),
-);
-                            },
-                    ),
+                            );
+                          },
                   ),
-
-                  const SizedBox(width: 12),
-
-                  OutlinedButton(
-                    onPressed: () {
-                      controller.canCreateTicket.value = false;
-                    },
-                    child: const Text("Continue Chat"),
+                ),
+                const SizedBox(width: 12),
+                OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                    side: const BorderSide(color: AppColors.border),
                   ),
-                ],
-              ),
-            ],
-          ),
+                  onPressed: () {
+                    controller.canCreateTicket.value = false;
+                  },
+                  child: const Text("Continue Chat", style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+                ),
+              ],
+            ),
+          ],
         ),
       );
     });
   }
-}
+}

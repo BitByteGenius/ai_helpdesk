@@ -287,7 +287,7 @@ export const fallbackChatResponse = ({
 }) => {
   const normalized = normalizeText(message).toLowerCase();
 
-  const greetings = [
+  const greetingWords = [
     "hi",
     "hello",
     "hey",
@@ -296,56 +296,64 @@ export const fallbackChatResponse = ({
     "good evening",
   ];
 
-  const greeting = greetings.some((g) => normalized.startsWith(g));
+  const isGreeting = greetingWords.some((g) =>
+    normalized.startsWith(g),
+  );
 
-  const joke =
+  const wantsJoke =
     normalized.includes("joke") ||
     normalized.includes("funny");
 
-  const ticketRequest =
+  const wantsTicket =
     normalized.includes("create ticket") ||
     normalized.includes("create a ticket") ||
     normalized.includes("raise ticket") ||
+    normalized.includes("raise a ticket") ||
     normalized.includes("open ticket") ||
     normalized.includes("contact support") ||
-    normalized.includes("human support") ||
-    normalized.includes("talk to human");
+    normalized.includes("talk to support") ||
+    normalized.includes("human support");
 
-  const troubleshooting =
-    containsAny(normalized, [
-      "not working",
-      "issue",
-      "problem",
-      "error",
-      "failed",
-      "failure",
-      "offline",
-      "crash",
-      "broken",
-      "printer",
-      "wifi",
-      "login",
-      "password",
-      "network",
-      "email",
-      "server",
-    ]);
+  const troubleshooting = containsAny(normalized, [
+    "error",
+    "issue",
+    "problem",
+    "failed",
+    "failure",
+    "crash",
+    "not working",
+    "offline",
+    "wifi",
+    "network",
+    "login",
+    "password",
+    "server",
+    "printer",
+    "database",
+    "email",
+  ]);
 
   let reply = "";
   let canCreateTicket = false;
 
-  if (greeting) {
+  if (isGreeting) {
     reply =
-      "Hello! 👋 I'm your AI assistant. Ask me anything—coding, recipes, writing, technology, travel, study, troubleshooting, or general knowledge.";
-  } else if (joke) {
+      "Hello 👋 I'm your AI assistant. Ask me anything about programming, Flutter, React, Node.js, studies, career, technology, or general knowledge.";
+  }
+
+  else if (wantsJoke) {
     reply =
-      "😂 Why do programmers prefer dark mode? Because light attracts bugs.";
-  } else if (ticketRequest) {
+      "😂 Why do Java developers wear glasses? Because they don't C#.";
+  }
+
+  else if (wantsTicket) {
     canCreateTicket = true;
 
     reply =
-      "Sure. I can create a support ticket using this conversation. Before doing that, would you like to add any more details?";
-  } else if (troubleshooting) {
+      "Sure. I can create a support ticket from this conversation whenever you're ready.";
+  }
+
+  else if (troubleshooting) {
     const category = fallbackCategory(message);
     const priority = fallbackPriority(message);
 
@@ -355,27 +363,49 @@ export const fallbackChatResponse = ({
       category,
       priority,
     });
-  } else {
+  }
+
+  else {
     reply =
-      "I'm currently running in offline fallback mode, so I can't answer general knowledge questions. Once Gemini/OpenAI is available, I'll respond like ChatGPT. Right now I can still help with troubleshooting and ticket creation.";
+      "I'm unable to reach the AI service at the moment. Please try again in a few moments. If you're facing a technical issue that requires human assistance, simply type **Create Ticket** and I'll prepare a support ticket for you.";
   }
 
   return {
     reply,
-    category: troubleshooting ? fallbackCategory(message) : null,
-    priority: troubleshooting ? fallbackPriority(message) : null,
-    summary: troubleshooting ? fallbackSummary(message) : null,
+
+    category: troubleshooting
+        ? fallbackCategory(message)
+        : null,
+
+    priority: troubleshooting
+        ? fallbackPriority(message)
+        : null,
+
+    summary: troubleshooting
+        ? fallbackSummary(message)
+        : null,
+
     ticketSuggested: canCreateTicket,
+
     createTicket: canCreateTicket,
+
     duplicate: Boolean(duplicateTicket),
+
     duplicateTicket: duplicateTicket
-      ? {
-          id: duplicateTicket._id ?? duplicateTicket.id ?? null,
-          title: duplicateTicket.title,
-          status: duplicateTicket.status,
-        }
-      : null,
+        ? {
+            id:
+                duplicateTicket._id ??
+                duplicateTicket.id ??
+                null,
+
+            title: duplicateTicket.title,
+
+            status: duplicateTicket.status,
+          }
+        : null,
+
     articles: [],
+
     history,
   };
 };

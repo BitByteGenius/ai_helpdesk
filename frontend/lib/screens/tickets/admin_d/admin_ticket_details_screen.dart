@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/core/theme/app_colors.dart';
 import 'package:get/get.dart';
 
 import 'package:frontend/layouts/admin_layout.dart';
@@ -25,8 +26,7 @@ class AdminTicketDetailsScreen extends StatefulWidget {
   });
 
   @override
-  State<AdminTicketDetailsScreen> createState() =>
-      _AdminTicketDetailsScreenState();
+  State<AdminTicketDetailsScreen> createState() => _AdminTicketDetailsScreenState();
 }
 
 class _AdminTicketDetailsScreenState extends State<AdminTicketDetailsScreen> {
@@ -68,9 +68,7 @@ class _AdminTicketDetailsScreenState extends State<AdminTicketDetailsScreen> {
     if (!mounted) return;
 
     try {
-      final data = payload is Map<String, dynamic>
-          ? payload
-          : Map<String, dynamic>.from(payload);
+      final data = payload is Map<String, dynamic> ? payload : Map<String, dynamic>.from(payload);
 
       if (data["ticketId"]?.toString() != widget.ticketId) {
         return;
@@ -96,8 +94,6 @@ class _AdminTicketDetailsScreenState extends State<AdminTicketDetailsScreen> {
     super.dispose();
   }
 
-  // ─── Build ──────────────────────────────────────────────────────────
-
   @override
   Widget build(BuildContext context) {
     final ticketController = Get.find<TicketController>();
@@ -106,17 +102,23 @@ class _AdminTicketDetailsScreenState extends State<AdminTicketDetailsScreen> {
 
     return AdminLayout(
       title: "Ticket Details",
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.refresh_rounded, size: 20),
+          tooltip: 'Refresh',
+          onPressed: _refresh,
+        ),
+        const SizedBox(width: 8),
+      ],
       child: Stack(
         children: [
           Obx(() {
-            // ── Loading state ──
             if (ticketController.isLoading.value) {
               return const Center(
                 child: CircularProgressIndicator(),
               );
             }
 
-            // ── Null / error state ──
             final ticket = ticketController.selectedTicket.value;
 
             if (ticket == null) {
@@ -125,22 +127,23 @@ class _AdminTicketDetailsScreenState extends State<AdminTicketDetailsScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Icon(
-                      Icons.error_outline,
-                      size: 70,
-                      color: Colors.red,
+                      Icons.error_outline_rounded,
+                      size: 56,
+                      color: AppColors.error,
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 12),
                     const Text(
-                      "Unable to load ticket.",
+                      "Unable to load ticket details.",
                       style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 16),
-                    ElevatedButton.icon(
+                    FilledButton.icon(
                       onPressed: _refresh,
-                      icon: const Icon(Icons.refresh),
+                      icon: const Icon(Icons.refresh, size: 18),
                       label: const Text("Retry"),
                     ),
                   ],
@@ -148,55 +151,52 @@ class _AdminTicketDetailsScreenState extends State<AdminTicketDetailsScreen> {
               );
             }
 
-            // ── Ticket loaded ──
             return RefreshIndicator(
               onRefresh: _refresh,
               child: Scrollbar(
                 controller: scrollController,
                 thumbVisibility: true,
-                child: SingleChildScrollView(
-                  controller: scrollController,
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  padding: const EdgeInsets.all(24),
-                  child: Center(
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(
-                        maxWidth: 1400,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // ── Ticket Header ──
-                          TicketHeader(ticket: ticket),
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final isDesktop = constraints.maxWidth > 1100;
+                    final horizontalPadding = constraints.maxWidth >= 1200 ? 28.0 : 16.0;
 
-                          const SizedBox(height: 16),
+                    return SingleChildScrollView(
+                      controller: scrollController,
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      padding: EdgeInsets.fromLTRB(horizontalPadding, 24, horizontalPadding, 32),
+                      child: Center(
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: 1400),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // ── Ticket Header ──
+                              TicketHeader(ticket: ticket),
 
-                          // ── Responsive two-column / single-column layout ──
-                          LayoutBuilder(
-                            builder: (context, constraints) {
-                              final isDesktop = constraints.maxWidth > 1100;
+                              const SizedBox(height: 16),
 
-                              if (!isDesktop) {
-                                return _buildMobileLayout(
+                              // ── Responsive Layout ──
+                              if (!isDesktop)
+                                _buildMobileLayout(
                                   ticket,
                                   ticketController,
                                   chatController,
                                   auditController,
-                                );
-                              }
-
-                              return _buildDesktopLayout(
-                                ticket,
-                                ticketController,
-                                chatController,
-                                auditController,
-                              );
-                            },
+                                )
+                              else
+                                _buildDesktopLayout(
+                                  ticket,
+                                  ticketController,
+                                  chatController,
+                                  auditController,
+                                ),
+                            ],
                           ),
-                        ],
+                        ),
                       ),
-                    ),
-                  ),
+                    );
+                  },
                 ),
               ),
             );
@@ -207,10 +207,10 @@ class _AdminTicketDetailsScreenState extends State<AdminTicketDetailsScreen> {
             final isUpdating = ticketController.isUpdating.value;
             if (isUpdating) {
               return Container(
-                color: Colors.black.withValues(alpha: 0.25),
+                color: Colors.black.withValues(alpha: 0.35),
                 child: const Center(
                   child: Card(
-                    elevation: 4,
+                    elevation: 8,
                     child: Padding(
                       padding: EdgeInsets.symmetric(horizontal: 32, vertical: 24),
                       child: Column(
@@ -220,7 +220,7 @@ class _AdminTicketDetailsScreenState extends State<AdminTicketDetailsScreen> {
                           SizedBox(height: 16),
                           Text(
                             "Updating ticket status...",
-                            style: TextStyle(fontWeight: FontWeight.w600),
+                            style: TextStyle(fontWeight: FontWeight.w700, color: AppColors.textPrimary),
                           ),
                         ],
                       ),
@@ -236,8 +236,6 @@ class _AdminTicketDetailsScreenState extends State<AdminTicketDetailsScreen> {
     );
   }
 
-  // ─── Desktop: Left + Right columns (70:30 split) ───────────────────
-
   Widget _buildDesktopLayout(
     TicketModel ticket,
     TicketController ticketController,
@@ -247,26 +245,23 @@ class _AdminTicketDetailsScreenState extends State<AdminTicketDetailsScreen> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // ── Left Column: Attachments -> Actions -> Chat (Flex 7) ──
+        // Left Column (Flex 7)
         Expanded(
           flex: 7,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               AttachmentSection(ticket: ticket),
-              const SizedBox(height: 16),
-              
+              if (ticket.attachments.isNotEmpty) const SizedBox(height: 16),
               AdminActionsCard(ticket: ticket),
               const SizedBox(height: 16),
-              
               ChatSectionWidget(ticket: ticket),
             ],
           ),
         ),
-
         const SizedBox(width: 16),
 
-        // ── Right Column: AI Copilot -> Audit Timeline (Flex 3) ──
+        // Right Column (Flex 3)
         Expanded(
           flex: 3,
           child: Column(
@@ -274,7 +269,6 @@ class _AdminTicketDetailsScreenState extends State<AdminTicketDetailsScreen> {
             children: [
               AICopilotCard(ticket: ticket),
               const SizedBox(height: 16),
-              
               _buildAuditTimeline(auditController),
             ],
           ),
@@ -282,8 +276,6 @@ class _AdminTicketDetailsScreenState extends State<AdminTicketDetailsScreen> {
       ],
     );
   }
-
-  // ─── Mobile: single-column stacked layout ──────────────────────────
 
   Widget _buildMobileLayout(
     TicketModel ticket,
@@ -295,32 +287,29 @@ class _AdminTicketDetailsScreenState extends State<AdminTicketDetailsScreen> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         AttachmentSection(ticket: ticket),
-        const SizedBox(height: 16),
-        
+        if (ticket.attachments.isNotEmpty) const SizedBox(height: 16),
         AdminActionsCard(ticket: ticket),
         const SizedBox(height: 16),
-        
         AICopilotCard(ticket: ticket),
         const SizedBox(height: 16),
-        
         _buildAuditTimeline(auditController),
         const SizedBox(height: 16),
-        
         ChatSectionWidget(ticket: ticket),
       ],
     );
   }
 
-  // ─── Audit timeline (reactive wrapper) ─────────────────────────────
-
   Widget _buildAuditTimeline(AuditController auditController) {
     return Obx(() {
       if (auditController.isLoadingTicketAudits.value) {
-        return const Card(
-          child: SizedBox(
-            height: 120,
-            child: Center(child: CircularProgressIndicator()),
+        return Container(
+          height: 120,
+          decoration: BoxDecoration(
+            color: AppColors.card,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: AppColors.border),
           ),
+          child: const Center(child: CircularProgressIndicator()),
         );
       }
 
@@ -329,4 +318,4 @@ class _AdminTicketDetailsScreenState extends State<AdminTicketDetailsScreen> {
       );
     });
   }
-}
+}

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/core/theme/app_colors.dart';
 import 'package:frontend/models/ticket_model.dart';
+import 'package:intl/intl.dart';
 
 import 'priority_chip.dart';
 import 'ticket_status_chip.dart';
@@ -21,29 +23,33 @@ class TicketTable extends StatelessWidget {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
+      physics: const BouncingScrollPhysics(),
       child: DataTable(
-        headingRowHeight: 60,
-        dataRowMinHeight: 70,
-        dataRowMaxHeight: 90,
-        columnSpacing: 30,
-        horizontalMargin: 20,
-
+        headingRowHeight: 48,
+        dataRowMinHeight: 56,
+        dataRowMaxHeight: 68,
+        columnSpacing: 24,
+        horizontalMargin: 16,
+        headingTextStyle: const TextStyle(
+          fontWeight: FontWeight.w700,
+          fontSize: 12,
+          color: AppColors.textSecondary,
+          letterSpacing: 0.2,
+        ),
         columns: const [
-          DataColumn(label: Text("Title")),
-          DataColumn(label: Text("Created By")),
-          DataColumn(label: Text("Assigned To")),
-          DataColumn(label: Text("Status")),
-          DataColumn(label: Text("Priority")),
-          DataColumn(label: Text("Category")),
-          DataColumn(label: Text("Created")),
-          DataColumn(label: Text("Actions")),
+          DataColumn(label: Text("TITLE")),
+          DataColumn(label: Text("REQUESTER")),
+          DataColumn(label: Text("ASSIGNED TO")),
+          DataColumn(label: Text("STATUS")),
+          DataColumn(label: Text("PRIORITY")),
+          DataColumn(label: Text("CATEGORY")),
+          DataColumn(label: Text("CREATED")),
+          DataColumn(label: Text("ACTIONS")),
         ],
-
         rows: tickets.map((ticket) {
           return DataRow(
             cells: [
-
-              /// Title
+              // ── Title ──
               DataCell(
                 SizedBox(
                   width: 220,
@@ -51,122 +57,161 @@ class TicketTable extends StatelessWidget {
                     ticket.title,
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13,
+                      color: AppColors.textPrimary,
+                    ),
                   ),
                 ),
               ),
 
-              /// Created By
+              // ── Created By ──
               DataCell(
                 Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-
                     CircleAvatar(
-                      radius: 16,
-                      backgroundImage:
-                          ticket.createdBy.profileImage.isNotEmpty
-                              ? NetworkImage(
-                                  ticket.createdBy.profileImage,
-                                )
-                              : null,
-                      child:
-                          ticket.createdBy.profileImage.isEmpty
-                              ? Text(
-                                  ticket.createdBy.name.isNotEmpty
-                                      ? ticket.createdBy.name[0]
-                                      : "?",
-                                )
-                              : null,
+                      radius: 13,
+                      backgroundColor: AppColors.primarySubtle,
+                      backgroundImage: ticket.createdBy.profileImage.isNotEmpty
+                          ? NetworkImage(ticket.createdBy.profileImage)
+                          : null,
+                      child: ticket.createdBy.profileImage.isEmpty
+                          ? Text(
+                              ticket.createdBy.name.isNotEmpty
+                                  ? ticket.createdBy.name[0].toUpperCase()
+                                  : "?",
+                              style: const TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.primary,
+                              ),
+                            )
+                          : null,
                     ),
-
-                    const SizedBox(width: 10),
-
-                    Text(ticket.createdBy.name),
+                    const SizedBox(width: 8),
+                    Text(
+                      ticket.createdBy.name,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
                   ],
                 ),
               ),
 
-              /// Assigned To
+              // ── Assigned To ──
               DataCell(
                 ticket.assignedTo == null
-                    ? const Text("-")
+                    ? const Text(
+                        "Unassigned",
+                        style: TextStyle(
+                          color: AppColors.textMuted,
+                          fontSize: 12,
+                          fontStyle: FontStyle.italic,
+                        ),
+                      )
                     : Row(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-
                           CircleAvatar(
-                            radius: 16,
-                            backgroundImage: ticket
-                                    .assignedTo!
-                                    .profileImage
-                                    .isNotEmpty
-                                ? NetworkImage(
-                                    ticket.assignedTo!.profileImage,
-                                  )
+                            radius: 13,
+                            backgroundColor: AppColors.purple.withValues(alpha: 0.15),
+                            backgroundImage: ticket.assignedTo!.profileImage.isNotEmpty
+                                ? NetworkImage(ticket.assignedTo!.profileImage)
                                 : null,
-                            child: ticket
-                                    .assignedTo!
-                                    .profileImage
-                                    .isEmpty
+                            child: ticket.assignedTo!.profileImage.isEmpty
                                 ? Text(
                                     ticket.assignedTo!.name.isNotEmpty
-                                        ? ticket.assignedTo!.name[0]
+                                        ? ticket.assignedTo!.name[0].toUpperCase()
                                         : "?",
+                                    style: const TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w700,
+                                      color: AppColors.purple,
+                                    ),
                                   )
                                 : null,
                           ),
-
-                          const SizedBox(width: 10),
-
-                          Text(ticket.assignedTo!.name),
+                          const SizedBox(width: 8),
+                          Text(
+                            ticket.assignedTo!.name,
+                            style: const TextStyle(
+                              fontSize: 13,
+                              color: AppColors.textPrimary,
+                            ),
+                          ),
                         ],
                       ),
               ),
 
-              /// Status
+              // ── Status ──
               DataCell(
                 TicketStatusChip(
                   status: ticket.status,
                 ),
               ),
 
-              /// Priority
+              // ── Priority ──
               DataCell(
                 PriorityChip(
                   priority: ticket.priority,
                 ),
               ),
 
-              /// Category
+              // ── Category ──
               DataCell(
-                Text(ticket.category),
-              ),
-
-              /// Created Date
-              DataCell(
-                Text(
-                  "${ticket.createdAt.day}/${ticket.createdAt.month}/${ticket.createdAt.year}",
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: AppColors.surfaceSubtle,
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(
+                    ticket.category,
+                    style: const TextStyle(
+                      fontSize: 11,
+                      color: AppColors.textSecondary,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
                 ),
               ),
 
-              /// Actions
+              // ── Created Date ──
+              DataCell(
+                Text(
+                  DateFormat("dd MMM yyyy").format(ticket.createdAt),
+                  style: const TextStyle(
+                    color: AppColors.textMuted,
+                    fontSize: 12,
+                  ),
+                ),
+              ),
+
+              // ── Actions ──
               DataCell(
                 Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-
                     IconButton(
-                      tooltip: "View",
+                      tooltip: "View Details",
                       onPressed: () => onView?.call(ticket),
                       icon: const Icon(
-                        Icons.visibility,
-                        color: Colors.blue,
+                        Icons.visibility_outlined,
+                        color: AppColors.primary,
+                        size: 18,
                       ),
                     ),
-
                     IconButton(
-                      tooltip: "Delete",
+                      tooltip: "Delete Ticket",
                       onPressed: () => onDelete?.call(ticket),
                       icon: const Icon(
-                        Icons.delete,
-                        color: Colors.red,
+                        Icons.delete_outline_rounded,
+                        color: AppColors.error,
+                        size: 18,
                       ),
                     ),
                   ],
@@ -178,4 +223,4 @@ class TicketTable extends StatelessWidget {
       ),
     );
   }
-}
+}

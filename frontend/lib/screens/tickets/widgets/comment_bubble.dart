@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/core/theme/app_colors.dart';
 import 'package:frontend/models/comment_model.dart';
-
 
 class CommentBubble extends StatelessWidget {
   final CommentModel comment;
@@ -15,60 +15,49 @@ class CommentBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Align(
-      alignment:
-          isMine
-              ? Alignment.centerRight
-              : Alignment.centerLeft,
+      alignment: isMine ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
-        margin: const EdgeInsets.symmetric(
-          vertical: 6,
-        ),
-        padding: const EdgeInsets.all(14),
-        constraints: const BoxConstraints(
-          maxWidth: 380,
-        ),
+        margin: const EdgeInsets.symmetric(vertical: 4),
+        padding: const EdgeInsets.all(12),
+        constraints: const BoxConstraints(maxWidth: 400),
         decoration: BoxDecoration(
-          color: isMine
-              ? Colors.blue
-              : Colors.grey.shade200,
-          borderRadius: BorderRadius.circular(16),
+          color: isMine ? AppColors.primary : AppColors.surfaceSubtle,
+          borderRadius: BorderRadius.only(
+            topLeft: const Radius.circular(14),
+            topRight: const Radius.circular(14),
+            bottomLeft: isMine ? const Radius.circular(14) : Radius.zero,
+            bottomRight: isMine ? Radius.zero : const Radius.circular(14),
+          ),
+          border: isMine ? null : Border.all(color: AppColors.border),
         ),
         child: Column(
-          crossAxisAlignment:
-              CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               comment.user.name,
               style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: isMine
-                    ? Colors.white
-                    : Colors.black87,
+                fontWeight: FontWeight.w700,
+                fontSize: 11,
+                color: isMine ? Colors.white.withValues(alpha: 0.9) : AppColors.primary,
               ),
             ),
-
-            const SizedBox(height: 8),
-
+            const SizedBox(height: 4),
             Text(
               comment.message,
               style: TextStyle(
-                color: isMine
-                    ? Colors.white
-                    : Colors.black87,
+                color: isMine ? Colors.white : AppColors.textPrimary,
+                fontSize: 13,
+                height: 1.4,
               ),
             ),
-
-            const SizedBox(height: 8),
-
+            const SizedBox(height: 4),
             Align(
               alignment: Alignment.bottomRight,
               child: Text(
                 "${comment.createdAt.hour.toString().padLeft(2, '0')}:${comment.createdAt.minute.toString().padLeft(2, '0')}",
                 style: TextStyle(
-                  fontSize: 11,
-                  color: isMine
-                      ? Colors.white70
-                      : Colors.black54,
+                  fontSize: 10,
+                  color: isMine ? Colors.white.withValues(alpha: 0.6) : AppColors.textMuted,
                 ),
               ),
             ),
@@ -77,4 +66,4 @@ class CommentBubble extends StatelessWidget {
       ),
     );
   }
-}
+}

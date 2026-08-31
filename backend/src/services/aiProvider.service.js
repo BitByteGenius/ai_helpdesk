@@ -44,71 +44,118 @@ class AIProvider {
 // ── Gemini Implementation ──────────────────────────────────────────────
 class GeminiProvider extends AIProvider {
   async chat(conversation) {
-    if (!isGeminiConfigured || !model) {
-      return new LocalFallbackProvider().chat(conversation);
-    }
+  if (!isGeminiConfigured || !model) {
+    return new LocalFallbackProvider().chat(conversation);
+  }
 
-    const prompt = `
-You are a helpful, friendly conversational AI assistant like Gemini.
-Your first job is to respond naturally to the user's message.
-Only switch into IT support mode when the user is clearly describing a real technical issue.
+  const formattedConversation = conversation
+    .map((m) => {
+      const role = m.role === "assistant" ? "Assistant" : "User";
+      return `${role}: ${m.content}`;
+    })
+    .join("\n");
 
-Rules:
-1. For greetings, jokes, general knowledge, writing help, coding help, math, science, career advice, and casual conversation, respond naturally and helpfully.
-2. Do not classify every message as a support issue.
-3. Do not suggest or create a ticket for normal conversation.
-4. Set "canCreateTicket" to true only when:
-   - the user explicitly asks to create a ticket, or
-   - the user says the previous troubleshooting did not work / the issue is still unresolved, or
-   - the problem is clearly not solvable in chat and needs human support.
-5. For general conversation, keep "canCreateTicket" false.
-6. When the user is describing a technical issue, provide short, practical troubleshooting steps first.
-7. Output ONLY a valid JSON object. Do not include markdown code fences. The response must match this schema:
-{
-  "reply": "your response to the user here (in Markdown format if formatting is helpful)",
-  "canCreateTicket": true or false
-}
+  const prompt = `
+You are an intelligent AI assistant similar to Google Gemini or ChatGPT.
 
-Here is the conversation history so far:
-${JSON.stringify(conversation, null, 2)}
+Your job is to have a completely natural conversation.
+
+You can help with:
+
+• Programming
+• Flutter
+• React
+• Node.js
+• Express
+• MongoDB
+• Firebase
+• AI
+• Mathematics
+• Science
+• History
+• Geography
+• Career advice
+• Interview preparation
+• Resume writing
+• Email writing
+• Grammar
+• Translation
+• Travel
+• Cooking
+• Health (general information only)
+• Business
+• Productivity
+• General knowledge
+• Casual conversation
+
+Guidelines:
+
+- Always answer naturally.
+- Be friendly.
+- Be conversational.
+- Answer follow-up questions using previous conversation context.
+- Use Markdown when helpful.
+- Never mention JSON.
+- Never mention APIs.
+- Never say you are in fallback mode.
+- Never say you are an IT helpdesk unless the user is discussing an IT issue.
+
+If the user asks general questions, answer them normally exactly like Gemini.
+
+If the user asks coding questions,
+provide explanations and code.
+
+If the user asks mathematics,
+solve step by step.
+
+If the user asks for writing,
+produce professional writing.
+
+If the user asks about technology,
+give detailed answers.
+
+Only if the user is describing an actual technical issue,
+provide troubleshooting first.
+
+Do NOT suggest creating a ticket unless the user explicitly asks for it.
+
+Conversation:
+
+${formattedConversation}
+
+Assistant:
 `;
 
-    try {
-      console.log("GeminiProvider.chat prompt:", prompt);
-      const result = await model.generateContent(prompt);
-      const text = result?.response?.text?.() ?? "";
-      console.log("GeminiProvider.chat raw response:", text);
+  try {
+    console.log("===== GEMINI CHAT =====");
+    console.log(prompt);
 
-      const jsonText = extractJsonObject(text);
-      if (!jsonText) {
-        return {
-          reply: stripCodeFences(text) || "",
-          canCreateTicket: false,
-        };
-      }
+    const result = await model.generateContent(prompt);
 
-      try {
-        const parsed = JSON.parse(jsonText);
-        return {
-          reply: typeof parsed.reply === "string" && parsed.reply.trim()
-            ? parsed.reply.trim()
-            : stripCodeFences(text) || "",
-          canCreateTicket: typeof parsed.canCreateTicket === "boolean"
-            ? parsed.canCreateTicket
-            : false,
-        };
-      } catch (parseError) {
-        console.error("GeminiProvider.chat JSON parse error:", parseError.message);
-        return {
-          reply: stripCodeFences(text) || "",
-          canCreateTicket: false,
-        };
-      }
-    } catch (error) {
-      console.error("GeminiProvider chat error:", error);
-      return new LocalFallbackProvider().chat(conversation);
+    const response = await result.response;
+const text = response.text().trim();
+
+console.log("========== GEMINI RESPONSE ==========");
+console.log(text);
+console.log("=====================================");
+   
+        if (!text || text.length == 0) {
+      throw new Error("Gemini returned an empty response.");
     }
+
+    return {
+      reply: text,
+      canCreateTicket: false,
+      articles: [],
+      history: conversation,
+    };
+  } catch (error) {
+    console.error("Gemini Chat Error:", error.message);
+
+    // Only use fallback if Gemini actually fails.
+    return new LocalFallbackProvider().chat(conversation);
   }
+}
 
   async analyzeTicket(title, description) {
     if (!isGeminiConfigured || !model) {
@@ -260,13 +307,26 @@ class ClaudeProvider extends AIProvider {
 // ── Local Fallback Implementation ──────────────────────────────────────
 class LocalFallbackProvider extends AIProvider {
   async chat(conversation) {
-    const lastUserMessage = conversation.length > 0 ? conversation[conversation.length - 1].content : "";
-    const fb = fallbackChatResponse({ message: lastUserMessage, history: conversation });
-    return {
-      reply: fb.reply,
-      canCreateTicket: false,
-    };
-  }
+  const lastUserMessage =
+      conversation.length > 0
+          ? conversation[conversation.length - 1].content
+          : "";
+
+  const fb = fallbackChatResponse({
+    message: lastUserMessage,
+    history: conversation,
+  });
+
+  return {
+    reply: fb.reply,
+    canCreateTicket: fb.createTicket,
+    category: fb.category,
+    priority: fb.priority,
+    summary: fb.summary,
+    articles: fb.articles,
+    history: fb.history,
+  };
+}
 
   async analyzeTicket(title, description) {
     return {

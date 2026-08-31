@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/controllers/auth_controller.dart';
 import 'package:frontend/core/routes/app_routes.dart';
+import 'package:frontend/core/theme/app_colors.dart';
 import 'package:get/get.dart';
-
-import '../../controllers/auth_controller.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -47,24 +47,25 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (success) {
       Get.snackbar(
         "Registration Successful",
-        "You have been registered successfully.",
+        "Your account has been created successfully.",
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green.shade600,
+        backgroundColor: AppColors.success,
         colorText: Colors.white,
         margin: const EdgeInsets.all(16),
-        icon: const Icon(Icons.check_circle, color: Colors.white),
+        icon: const Icon(Icons.check_circle_outline, color: Colors.white),
       );
 
       Get.offAllNamed(
         auth.user?.isAdmin == true ? AppRoutes.dashboard : AppRoutes.home,
-
       );
     } else {
       Get.snackbar(
         "Registration Failed",
-        auth.errorMessage,
+        auth.errorMessage.isNotEmpty
+            ? auth.errorMessage
+            : "An error occurred during registration.",
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.shade600,
+        backgroundColor: AppColors.error,
         colorText: Colors.white,
         margin: const EdgeInsets.all(16),
         icon: const Icon(Icons.error_outline, color: Colors.white),
@@ -72,202 +73,230 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
   }
 
-  InputDecoration inputDecoration({
-    required String label,
-    required IconData icon,
-    Widget? suffix,
-  }) {
-    return InputDecoration(
-      labelText: label,
-      prefixIcon: Icon(icon),
-      suffixIcon: suffix,
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    final isDesktop = width >= 900;
+
     return Scaffold(
-      backgroundColor: const Color(0xffF4F7FA),
+      backgroundColor: AppColors.background,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_rounded),
+          onPressed: () => Get.back(),
+        ),
+      ),
       body: Center(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
           child: Container(
-            width: 450,
-            padding: const EdgeInsets.all(30),
+            constraints: BoxConstraints(maxWidth: isDesktop ? 500 : 440),
+            padding: const EdgeInsets.all(32),
             decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(18),
-              boxShadow: const [
+              color: AppColors.card,
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: AppColors.border),
+              boxShadow: [
                 BoxShadow(
-                  color: Colors.black12,
-                  blurRadius: 15,
-                  offset: Offset(0, 5),
+                  color: Colors.black.withValues(alpha: 0.04),
+                  blurRadius: 24,
+                  offset: const Offset(0, 8),
                 ),
               ],
             ),
             child: Form(
               key: _formKey,
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const Icon(
-                    Icons.person_add_alt_1,
-                    size: 70,
-                    color: Colors.blue,
+                  // ── Header Icon & Title ──
+                  Row(
+                    children: [
+                      Container(
+                        width: 44,
+                        height: 44,
+                        decoration: BoxDecoration(
+                          color: AppColors.primarySubtle,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Icon(
+                          Icons.person_add_rounded,
+                          color: AppColors.primary,
+                          size: 24,
+                        ),
+                      ),
+                      const SizedBox(width: 14),
+                      const Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Create Account",
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.textPrimary,
+                              letterSpacing: -0.3,
+                            ),
+                          ),
+                          Text(
+                            "Get started with your helpdesk portal",
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
 
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 28),
 
-                  const Text(
-                    "Create Account",
-                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-                  ),
-
-                  const SizedBox(height: 8),
-
-                  const Text(
-                    "Register to continue",
-                    style: TextStyle(color: Colors.grey),
-                  ),
-
-                  const SizedBox(height: 30),
-
+                  // ── Full Name Input ──
                   TextFormField(
                     controller: _nameController,
-                    decoration: inputDecoration(
-                      label: "Full Name",
-                      icon: Icons.person,
+                    decoration: const InputDecoration(
+                      labelText: "Full Name",
+                      hintText: "John Doe",
+                      prefixIcon: Icon(Icons.person_outline_rounded, size: 18),
                     ),
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
-                        return "Please enter your name";
+                        return "Please enter your full name";
                       }
                       return null;
                     },
                   ),
 
-                  const SizedBox(height: 18),
+                  const SizedBox(height: 16),
 
+                  // ── Email Input ──
                   TextFormField(
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
-                    decoration: inputDecoration(
-                      label: "Email",
-                      icon: Icons.email,
+                    decoration: const InputDecoration(
+                      labelText: "Email address",
+                      hintText: "you@example.com",
+                      prefixIcon: Icon(Icons.email_outlined, size: 18),
                     ),
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
-                        return "Please enter email";
+                        return "Please enter your email";
                       }
-
                       final emailRegex = RegExp(
                         r'^[\w\.-]+@([\w-]+\.)+[A-Za-z]{2,4}$',
                       );
-
                       if (!emailRegex.hasMatch(value.trim())) {
-                        return "Invalid email";
+                        return "Enter a valid email address";
                       }
-
                       return null;
                     },
                   ),
 
-                  const SizedBox(height: 18),
+                  const SizedBox(height: 16),
 
+                  // ── Phone Input ──
                   TextFormField(
                     controller: _phoneController,
                     keyboardType: TextInputType.phone,
-                    decoration: inputDecoration(
-                      label: "Phone",
-                      icon: Icons.phone,
+                    decoration: const InputDecoration(
+                      labelText: "Phone Number",
+                      hintText: "10-digit number",
+                      prefixIcon: Icon(Icons.phone_outlined, size: 18),
                     ),
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
-                        return "Please enter phone number";
+                        return "Please enter your phone number";
                       }
-
-                      if (value.length != 10) {
-                        return "Phone number must be 10 digits";
+                      if (value.trim().length != 10) {
+                        return "Phone number must be exactly 10 digits";
                       }
-
                       return null;
                     },
                   ),
 
-                  const SizedBox(height: 18),
+                  const SizedBox(height: 16),
 
+                  // ── Password Input ──
                   TextFormField(
                     controller: _passwordController,
                     obscureText: _obscurePassword,
-                    decoration: inputDecoration(
-                      label: "Password",
-                      icon: Icons.lock,
-                      suffix: IconButton(
+                    decoration: InputDecoration(
+                      labelText: "Password",
+                      hintText: "Min. 6 characters",
+                      prefixIcon: const Icon(Icons.lock_outline_rounded, size: 18),
+                      suffixIcon: IconButton(
                         icon: Icon(
                           _obscurePassword
-                              ? Icons.visibility
-                              : Icons.visibility_off,
+                              ? Icons.visibility_outlined
+                              : Icons.visibility_off_outlined,
+                          size: 18,
                         ),
                         onPressed: () {
-                          setState(() {
-                            _obscurePassword = !_obscurePassword;
-                          });
+                          setState(() => _obscurePassword = !_obscurePassword);
                         },
                       ),
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return "Please enter password";
+                        return "Please enter a password";
                       }
-
                       if (value.length < 6) {
                         return "Password must be at least 6 characters";
                       }
-
                       return null;
                     },
                   ),
 
-                  const SizedBox(height: 30),
+                  const SizedBox(height: 28),
 
-                  SizedBox(
-                    width: double.infinity,
-                    height: 52,
-                    child: GetBuilder<AuthController>(
-                      builder: (auth) => ElevatedButton(
-                        onPressed: auth.isLoading ? null : _register,
-                        child: auth.isLoading
-                            ? const SizedBox(
-                                width: 22,
-                                height: 22,
-                                child: CircularProgressIndicator(
-                                  color: Colors.white,
-                                  strokeWidth: 2,
-                                ),
-                              )
-                            : const Text(
-                                "REGISTER",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                  // ── Submit Button ──
+                  GetBuilder<AuthController>(
+                    builder: (auth) => FilledButton(
+                      onPressed: auth.isLoading ? null : _register,
+                      child: auth.isLoading
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
                               ),
-                      ),
+                            )
+                          : const Text("Create Account"),
                     ),
                   ),
 
                   const SizedBox(height: 20),
 
+                  // ── Login Link ──
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text("Already have an account?"),
-
+                      const Text(
+                        "Already have an account?",
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
                       TextButton(
-                        onPressed: () {
-                          Get.back();
-                        },
-                        child: const Text("Login"),
+                        onPressed: () => Get.back(),
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(horizontal: 4),
+                          minimumSize: Size.zero,
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        ),
+                        child: const Text(
+                          "Sign in",
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -280,3 +309,4 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 }
+

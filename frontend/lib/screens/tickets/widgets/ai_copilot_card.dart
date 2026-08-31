@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:frontend/core/theme/app_colors.dart';
 import 'package:get/get.dart';
 import '../../../../controllers/ticket_controller.dart';
 import '../../../../models/ticket_model.dart';
 
-/// Expandable card showing AI-generated insights for a ticket.
-///
-/// Reactivity is handled by the parent screen's top-level Obx, which rebuilds
-/// this component when the ticket data changes. We do not use an internal Obx
-/// here to avoid GetX improper use crashes when reading non-observable parameters.
 class AICopilotCard extends StatelessWidget {
   final TicketModel? ticket;
 
@@ -19,50 +15,56 @@ class AICopilotCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final ticketController = Get.find<TicketController>();
 
-    // Fallback to controller's active ticket if not passed
     final activeTicket = ticket ?? ticketController.selectedTicket.value;
     if (activeTicket == null) {
       return const SizedBox.shrink();
     }
 
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.card,
         borderRadius: BorderRadius.circular(16),
-        side: BorderSide(
-          color: theme.colorScheme.outlineVariant.withValues(alpha: .30),
-        ),
+        border: Border.all(color: AppColors.border),
       ),
       child: Theme(
-        data: theme.copyWith(dividerColor: Colors.transparent),
+        data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
         child: ExpansionTile(
-          leading: Icon(
-            Icons.smart_toy,
-            color: theme.colorScheme.primary,
-          ),
-          title: Text(
-            "AI Copilot Insights",
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.bold,
+          initiallyExpanded: true,
+          leading: Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: AppColors.primarySubtle,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: const Icon(
+              Icons.auto_awesome_rounded,
+              color: AppColors.primary,
+              size: 18,
             ),
           ),
-          childrenPadding: const EdgeInsets.all(20),
+          title: const Text(
+            "AI Copilot Insights",
+            style: TextStyle(
+              fontWeight: FontWeight.w700,
+              fontSize: 15,
+              color: AppColors.textPrimary,
+            ),
+          ),
+          childrenPadding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
           children: [
+            const Divider(color: AppColors.borderLight, height: 1),
+            const SizedBox(height: 16),
             _item(
-              theme,
               "AI Summary",
               activeTicket.aiSummary,
             ),
             _item(
-              theme,
               "Suggested Root Cause",
               activeTicket.aiSuggestedRootCause,
             ),
             _item(
-              theme,
               "Troubleshooting Attempted",
               activeTicket.aiTroubleshootingAttempted,
             ),
@@ -73,13 +75,10 @@ class AICopilotCard extends StatelessWidget {
                 Expanded(
                   child: FilledButton.icon(
                     style: FilledButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
                       padding: const EdgeInsets.symmetric(vertical: 12),
                     ),
-                    icon: const Icon(Icons.copy, size: 16),
-                    label: const Text("Copy Reply"),
+                    icon: const Icon(Icons.copy_rounded, size: 16),
+                    label: const Text("Copy Reply", style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
                     onPressed: () {
                       Clipboard.setData(
                         ClipboardData(
@@ -94,17 +93,15 @@ class AICopilotCard extends StatelessWidget {
                     },
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 10),
                 Expanded(
                   child: OutlinedButton.icon(
                     style: OutlinedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
                       padding: const EdgeInsets.symmetric(vertical: 12),
+                      side: const BorderSide(color: AppColors.border),
                     ),
-                    icon: const Icon(Icons.chat, size: 16),
-                    label: const Text("Transcript"),
+                    icon: const Icon(Icons.chat_bubble_outline_rounded, size: 16),
+                    label: const Text("Transcript", style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
                     onPressed: () => _showTranscript(context, activeTicket),
                   ),
                 ),
@@ -116,24 +113,28 @@ class AICopilotCard extends StatelessWidget {
     );
   }
 
-  Widget _item(ThemeData theme, String title, String value) {
+  Widget _item(String title, String value) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 18),
+      padding: const EdgeInsets.only(bottom: 14),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
             title,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: theme.colorScheme.onSurface,
+            style: const TextStyle(
+              fontWeight: FontWeight.w700,
+              fontSize: 12,
+              color: AppColors.textSecondary,
+              letterSpacing: 0.2,
             ),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 4),
           Text(
             value.isNotEmpty ? value : "—",
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
+            style: const TextStyle(
+              fontSize: 13,
+              color: AppColors.textPrimary,
+              height: 1.4,
             ),
           ),
         ],
@@ -147,25 +148,27 @@ class AICopilotCard extends StatelessWidget {
 
     switch (confidence) {
       case "high":
-        color = Colors.green;
+        color = AppColors.success;
         break;
       case "medium":
-        color = Colors.orange;
+        color = AppColors.warning;
         break;
       default:
-        color = Colors.red;
+        color = AppColors.error;
     }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          "Confidence",
+          "Confidence Score",
           style: TextStyle(
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w700,
+            fontSize: 12,
+            color: AppColors.textSecondary,
           ),
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: 8),
         LinearProgressIndicator(
           value: confidence == "high"
               ? 1.0
@@ -174,15 +177,16 @@ class AICopilotCard extends StatelessWidget {
                   : .35,
           color: color,
           backgroundColor: color.withValues(alpha: 0.15),
-          minHeight: 8,
-          borderRadius: BorderRadius.circular(20),
+          minHeight: 6,
+          borderRadius: BorderRadius.circular(10),
         ),
         const SizedBox(height: 6),
         Text(
-          activeTicket.aiConfidence,
+          activeTicket.aiConfidence.toUpperCase(),
           style: TextStyle(
             color: color,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w800,
+            fontSize: 11,
           ),
         ),
       ],
@@ -194,16 +198,19 @@ class AICopilotCard extends StatelessWidget {
       context: context,
       builder: (_) {
         return AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           title: const Text(
             "Conversation Transcript",
+            style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18, color: AppColors.textPrimary),
           ),
           content: SizedBox(
-            width: 700,
+            width: 600,
             child: SingleChildScrollView(
               child: SelectableText(
                 activeTicket.aiConversationTranscript.isNotEmpty
                     ? activeTicket.aiConversationTranscript
                     : "No transcript available.",
+                style: const TextStyle(fontSize: 13, height: 1.5, color: AppColors.textPrimary),
               ),
             ),
           ),
@@ -217,4 +224,4 @@ class AICopilotCard extends StatelessWidget {
       },
     );
   }
-}
+}

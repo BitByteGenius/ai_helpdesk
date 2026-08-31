@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/core/theme/app_colors.dart';
 import 'package:frontend/layouts/admin_layout.dart';
 import 'package:frontend/screens/tickets/admin_d/admin_ticket_details_screen.dart';
 import 'package:frontend/screens/tickets/widgets/ticket_card.dart';
@@ -14,210 +15,225 @@ class TicketListScreen extends GetView<TicketController> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return AdminLayout(
       title: 'Ticket Management',
-      child: Stack(
-        children: [
-          Obx(() {
-            // 1. Loading State (Centered with a professional touch)
-            if (controller.isLoading.value) {
-              return Center(
-                child: CircularProgressIndicator(
-                  strokeWidth: 3,
-                  valueColor: AlwaysStoppedAnimation<Color>(theme.primaryColor),
-                ),
-              );
-            }
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.refresh_rounded, size: 20),
+          tooltip: 'Refresh Tickets',
+          onPressed: controller.refreshTickets,
+        ),
+        const SizedBox(width: 8),
+      ],
+      child: Obx(() {
+        if (controller.isLoading.value) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
 
-            // 2. Error State (Clean error card layout)
-            if (controller.hasError.value) {
-              return Center(
-                child: Container(
-                  constraints: const BoxConstraints(maxWidth: 400),
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.errorContainer.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: theme.colorScheme.error.withValues(alpha: 0.3)),
+        if (controller.hasError.value) {
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.error_outline_rounded, size: 48, color: AppColors.error),
+                  const SizedBox(height: 12),
+                  Text(
+                    controller.errorMessage.value,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(color: AppColors.textPrimary, fontSize: 15),
                   ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.error_outline, size: 48, color: theme.colorScheme.error),
-                      const SizedBox(height: 16),
-                      Text(
-                        controller.errorMessage.value,
-                        textAlign: TextAlign.center,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: theme.colorScheme.onErrorContainer,
-                        ),
-                      ),
-                    ],
+                  const SizedBox(height: 16),
+                  FilledButton.icon(
+                    onPressed: controller.refreshTickets,
+                    icon: const Icon(Icons.refresh, size: 18),
+                    label: const Text("Try Again"),
                   ),
-                ),
-              );
-            }
+                ],
+              ),
+            ),
+          );
+        }
 
-            // 3. Main Dynamic Grid/List View
-            return RefreshIndicator(
-              onRefresh: controller.refreshTickets,
-              color: theme.primaryColor,
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  final isDesktop = constraints.maxWidth >= 1000;
+        return RefreshIndicator(
+          onRefresh: controller.refreshTickets,
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final isDesktop = constraints.maxWidth >= 1000;
+              final horizontalPadding = constraints.maxWidth >= 1200 ? 28.0 : 16.0;
 
-                  return SingleChildScrollView(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    padding: EdgeInsets.symmetric(
-                      horizontal: isDesktop ? 32 : 16,
-                      vertical: 24,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+              return SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: EdgeInsets.fromLTRB(horizontalPadding, 24, horizontalPadding, 32),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // ── Header Title Block ──
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        // Responsive Header Layout
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "Tickets",
-                              style: theme.textTheme.headlineMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: theme.colorScheme.onSurface,
+                              "All Tickets",
+                              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                    fontWeight: FontWeight.w800,
+                                    letterSpacing: -0.4,
+                                    color: AppColors.textPrimary,
+                                  ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              "View, triage, assign and manage all customer support tickets.",
+                              style: TextStyle(
+                                color: AppColors.textSecondary,
+                                fontSize: 13,
                               ),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 24),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
 
-                        // Search and Filter controls housed inside a modern unified surface block
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: theme.cardColor,
-                            borderRadius: BorderRadius.circular(12),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.03),
-                                blurRadius: 10,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
-                          ),
+                    // ── Search & Filters Block ──
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: AppColors.card,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: AppColors.border),
+                      ),
+                      child: const Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          TicketSearch(),
+                          SizedBox(height: 14),
+                          TicketFilter(),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+
+                    // ── Tickets Content ──
+                    if (controller.tickets.isEmpty)
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(vertical: 60, horizontal: 20),
+                        decoration: BoxDecoration(
+                          color: AppColors.card,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: AppColors.border),
+                        ),
+                        child: Center(
                           child: Column(
+                            mainAxisSize: MainAxisSize.min,
                             children: [
-                              const TicketSearch(),
-                              const SizedBox(height: 12),
-                              const TicketFilter(),
+                              Container(
+                                width: 52,
+                                height: 52,
+                                decoration: BoxDecoration(
+                                  color: AppColors.primarySubtle,
+                                  borderRadius: BorderRadius.circular(14),
+                                ),
+                                child: const Icon(
+                                  Icons.confirmation_number_outlined,
+                                  size: 26,
+                                  color: AppColors.primary,
+                                ),
+                              ),
+                              const SizedBox(height: 14),
+                              const Text(
+                                "No Tickets Found",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppColors.textPrimary,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              const Text(
+                                "Try modifying your search or clear the active filter parameters.",
+                                style: TextStyle(
+                                  color: AppColors.textSecondary,
+                                  fontSize: 13,
+                                ),
+                              ),
                             ],
                           ),
                         ),
-                        const SizedBox(height: 24),
-
-                        // Ticket Items Presentation logic
-                        if (controller.tickets.isEmpty)
-                          Center(
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 80),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(
-                                    Icons.confirmation_number_outlined,
-                                    size: 64,
-                                    color: theme.disabledColor.withValues(alpha: 0.5),
-                                  ),
-                                  const SizedBox(height: 16),
-                                  Text(
-                                    "No Tickets Found",
-                                    style: theme.textTheme.titleMedium?.copyWith(
-                                      color: theme.hintColor,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ],
+                      )
+                    else if (isDesktop)
+                      Container(
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: AppColors.card,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: AppColors.border),
+                        ),
+                        clipBehavior: Clip.antiAlias,
+                        child: TicketTable(
+                          tickets: controller.tickets,
+                          onView: (ticket) {
+                            Get.to(
+                              () => AdminTicketDetailsScreen(
+                                ticketId: ticket.id,
                               ),
-                            ),
-                          )
-                        else if (isDesktop)
-                          // Table wrapper container for professional enterprise UI
-                          Container(
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              color: theme.cardColor,
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: theme.dividerColor.withValues(alpha: 0.5)),
-                            ),
-                            clipBehavior: Clip.antiAlias,
-                            child: TicketTable(
-                              tickets: controller.tickets,
-                              onView: (ticket) {
-  Get.to(
-    () => AdminTicketDetailsScreen(
-      ticketId: ticket.id,
-    ),
-  );
-},
-                              onDelete: (ticket) => _showDeleteDialog(context, ticket.id),
-                            ),
-                          )
-                        else
-                          // Mobile Layout: Generates spacing between individual cards
-                          ListView.separated(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount: controller.tickets.length,
-                            separatorBuilder: (_, _) => const SizedBox(height: 12),
-                            itemBuilder: (_, index) {
-                              final ticket = controller.tickets[index];
-                              return TicketCard(
-                                ticket: ticket,
-                                isAdmin: true,
-                                onTap: () {
-  Get.to(
-    () => AdminTicketDetailsScreen(
-      ticketId: ticket.id,
-    ),
-  );
-},
-                                onDelete: () => _showDeleteDialog(context, ticket.id),
+                            );
+                          },
+                          onDelete: (ticket) => _showDeleteDialog(context, ticket.id),
+                        ),
+                      )
+                    else
+                      ListView.separated(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: controller.tickets.length,
+                        separatorBuilder: (_, _) => const SizedBox(height: 12),
+                        itemBuilder: (_, index) {
+                          final ticket = controller.tickets[index];
+                          return TicketCard(
+                            ticket: ticket,
+                            isAdmin: true,
+                            onTap: () {
+                              Get.to(
+                                () => AdminTicketDetailsScreen(
+                                  ticketId: ticket.id,
+                                ),
                               );
                             },
-                          ),
-                        // Bottom cushion space to prevent floating action button overlaps
-                        const SizedBox(height: 80),
-                      ],
-                    ),
-                  );
-                },
-              ),
-            );
-          }),
-
-          
-        ],
-      ),
+                            onDelete: () => _showDeleteDialog(context, ticket.id),
+                          );
+                        },
+                      ),
+                  ],
+                ),
+              );
+            },
+          ),
+        );
+      }),
     );
   }
 
-  // Extracted styled dialog helper matching modern design specifications
   void _showDeleteDialog(BuildContext context, String ticketId) {
-    final theme = Theme.of(context);
     Get.defaultDialog(
       title: "Delete Ticket",
-      titleStyle: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+      titleStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 18, color: AppColors.textPrimary),
       middleText: "Are you sure you want to permanently delete this ticket?",
-      middleTextStyle: theme.textTheme.bodyMedium?.copyWith(color: theme.hintColor),
+      middleTextStyle: const TextStyle(color: AppColors.textSecondary, fontSize: 13),
       textCancel: "Cancel",
       textConfirm: "Delete",
-      cancelTextColor: theme.colorScheme.primary,
-      confirmTextColor: theme.colorScheme.onError,
-      buttonColor: theme.colorScheme.error,
-      radius: 12,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+      cancelTextColor: AppColors.textPrimary,
+      confirmTextColor: Colors.white,
+      buttonColor: AppColors.error,
+      radius: 16,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
       titlePadding: const EdgeInsets.only(top: 24),
       onConfirm: () {
         Get.back();
@@ -225,4 +241,4 @@ class TicketListScreen extends GetView<TicketController> {
       },
     );
   }
-}
+}
