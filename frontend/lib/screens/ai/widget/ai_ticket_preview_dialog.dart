@@ -48,14 +48,24 @@ class _AITicketPreviewDialogState extends State<AITicketPreviewDialog> {
 
   late final UploadController _uploadController;
 
+  static String _safeString(dynamic val, {String fallback = ""}) {
+    if (val == null) return fallback;
+    if (val is String) return val;
+    if (val is List) return val.map((e) => e.toString()).join("\n• ");
+    return val.toString();
+  }
+
   @override
   void initState() {
     super.initState();
-    _titleController = TextEditingController(text: widget.draft["title"]);
-    _descriptionController = TextEditingController(text: widget.draft["description"]);
+    _titleController = TextEditingController(text: _safeString(widget.draft["title"]));
+    _descriptionController = TextEditingController(text: _safeString(widget.draft["description"]));
 
-    _selectedCategory = _categories.contains(widget.draft["category"]) ? widget.draft["category"] : "Other";
-    _selectedPriority = _priorities.contains(widget.draft["priority"]) ? widget.draft["priority"] : "Medium";
+    final categoryStr = _safeString(widget.draft["category"], fallback: "Other");
+    _selectedCategory = _categories.contains(categoryStr) ? categoryStr : "Other";
+
+    final priorityStr = _safeString(widget.draft["priority"], fallback: "Medium");
+    _selectedPriority = _priorities.contains(priorityStr) ? priorityStr : "Medium";
 
     _uploadController = Get.find<UploadController>();
     _uploadController.clearUploads();
@@ -100,14 +110,14 @@ class _AITicketPreviewDialogState extends State<AITicketPreviewDialog> {
         description: finalDescription,
         category: _selectedCategory,
         priority: _selectedPriority,
-        summary: widget.draft["summary"] ?? "",
-        duplicateTicket: widget.draft["duplicate"] ?? false,
+        summary: _safeString(widget.draft["summary"]),
+        duplicateTicket: widget.draft["duplicate"] == true,
         attachments: uploadIds,
         aiConversationTranscript: transcript,
-        aiConfidence: widget.draft["confidence"] ?? "Medium",
-        aiSuggestedRootCause: widget.draft["possibleRootCause"] ?? "",
-        aiTroubleshootingAttempted: widget.draft["troubleshootingAttempted"] ?? "",
-        aiSuggestedReply: widget.draft["suggestedReply"] ?? "",
+        aiConfidence: _safeString(widget.draft["confidence"], fallback: "Medium"),
+        aiSuggestedRootCause: _safeString(widget.draft["possibleRootCause"]),
+        aiTroubleshootingAttempted: _safeString(widget.draft["troubleshootingAttempted"]),
+        aiSuggestedReply: _safeString(widget.draft["suggestedReply"]),
       );
 
       final ticketController = Get.find<TicketController>();
@@ -216,7 +226,9 @@ class _AITicketPreviewDialogState extends State<AITicketPreviewDialog> {
                                   ),
                                   const SizedBox(height: 2),
                                   Text(
-                                    widget.draft["duplicateTicket"]?["title"] ?? "Similar ticket is active on dashboard.",
+                                    _safeString(widget.draft["duplicateTicket"] is Map
+                                        ? widget.draft["duplicateTicket"]["title"]
+                                        : widget.draft["duplicateTicket"], fallback: "Similar ticket is active on dashboard."),
                                     style: TextStyle(
                                       color: context.textPrimary,
                                       fontSize: 12,
@@ -256,18 +268,18 @@ class _AITicketPreviewDialogState extends State<AITicketPreviewDialog> {
                           if (isDesktop)
                             Row(
                               children: [
-                                Expanded(child: _buildInfoTag("Suggested Root Cause", widget.draft["possibleRootCause"] ?? "Unknown")),
+                                Expanded(child: _buildInfoTag("Suggested Root Cause", _safeString(widget.draft["possibleRootCause"], fallback: "Unknown"))),
                                 const SizedBox(width: 16),
-                                Expanded(child: _buildInfoTag("Assignment Team", widget.draft["recommendedAssignmentTeam"] ?? "Support")),
+                                Expanded(child: _buildInfoTag("Assignment Team", _safeString(widget.draft["recommendedAssignmentTeam"], fallback: "Support"))),
                               ],
                             )
                           else ...[
-                            _buildInfoTag("Suggested Root Cause", widget.draft["possibleRootCause"] ?? "Unknown"),
+                            _buildInfoTag("Suggested Root Cause", _safeString(widget.draft["possibleRootCause"], fallback: "Unknown")),
                             const SizedBox(height: 10),
-                            _buildInfoTag("Assignment Team", widget.draft["recommendedAssignmentTeam"] ?? "Support"),
+                            _buildInfoTag("Assignment Team", _safeString(widget.draft["recommendedAssignmentTeam"], fallback: "Support")),
                           ],
                           const SizedBox(height: 10),
-                          _buildInfoTag("Troubleshooting Attempted", widget.draft["troubleshootingAttempted"] ?? "None identified"),
+                          _buildInfoTag("Troubleshooting Attempted", _safeString(widget.draft["troubleshootingAttempted"], fallback: "None identified")),
                         ],
                       ),
                     ),

@@ -19,17 +19,24 @@ class ProfileModel {
     required this.createdAt,
   });
 
+  static String _parseString(dynamic val, {String fallback = ""}) {
+    if (val == null) return fallback;
+    if (val is String) return val;
+    if (val is List) return val.map((e) => e.toString()).join(", ");
+    return val.toString();
+  }
+
   factory ProfileModel.fromJson(Map<String, dynamic> json) {
     return ProfileModel(
-      id: json["_id"] ?? "",
-      name: json["name"] ?? "",
-      email: json["email"] ?? "",
-      phone: json["phone"] ?? "",
-      role: json["role"] ?? "User",
-      profileImage: json["profileImage"] ?? "",
-      isVerified: json["isVerified"] ?? false,
+      id: _parseString(json["_id"]),
+      name: _parseString(json["name"]),
+      email: _parseString(json["email"]),
+      phone: _parseString(json["phone"]),
+      role: _parseString(json["role"], fallback: "User"),
+      profileImage: _parseString(json["profileImage"]),
+      isVerified: json["isVerified"] == true,
       createdAt: json["createdAt"] != null
-          ? DateTime.parse(json["createdAt"])
+          ? DateTime.tryParse(json["createdAt"].toString()) ?? DateTime.now()
           : DateTime.now(),
     );
   }

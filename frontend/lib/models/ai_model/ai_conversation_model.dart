@@ -17,21 +17,36 @@ class AIConversationModel {
     required this.updatedAt,
   });
 
+  static String _parseString(dynamic val, {String fallback = ""}) {
+    if (val == null) return fallback;
+    if (val is String) return val;
+    if (val is List) return val.map((e) => e.toString()).join(", ");
+    return val.toString();
+  }
+
   factory AIConversationModel.fromJson(Map<String, dynamic> json) {
+    final List<ChatMessageModel> msgs = [];
+    final messagesRaw = json["messages"];
+    if (messagesRaw is List) {
+      for (final m in messagesRaw) {
+        if (m is Map<String, dynamic>) {
+          msgs.add(ChatMessageModel.fromJson(m));
+        } else if (m is Map) {
+          msgs.add(ChatMessageModel.fromJson(Map<String, dynamic>.from(m)));
+        }
+      }
+    }
+
     return AIConversationModel(
       id: json["_id"]?.toString() ?? "",
-      title: json["title"] ?? "New Chat",
-      isPinned: json["isPinned"] ?? false,
-      messages: json["messages"] == null
-          ? []
-          : (json["messages"] as List)
-              .map((e) => ChatMessageModel.fromJson(e))
-              .toList(),
+      title: _parseString(json["title"], fallback: "New Chat"),
+      isPinned: json["isPinned"] == true,
+      messages: msgs,
       createdAt: json["createdAt"] != null
-          ? DateTime.tryParse(json["createdAt"]) ?? DateTime.now()
+          ? DateTime.tryParse(json["createdAt"].toString()) ?? DateTime.now()
           : DateTime.now(),
       updatedAt: json["updatedAt"] != null
-          ? DateTime.tryParse(json["updatedAt"]) ?? DateTime.now()
+          ? DateTime.tryParse(json["updatedAt"].toString()) ?? DateTime.now()
           : DateTime.now(),
     );
   }

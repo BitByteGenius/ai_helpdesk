@@ -19,16 +19,23 @@ class UploadModel {
     required this.fileSize,
   });
 
+  static String _parseString(dynamic val, {String fallback = ""}) {
+    if (val == null) return fallback;
+    if (val is String) return val;
+    if (val is List) return val.map((e) => e.toString()).join(", ");
+    return val.toString();
+  }
+
   factory UploadModel.fromJson(Map<String, dynamic> json) {
     return UploadModel(
-      id: json["_id"] ?? "",
-      originalName: json["originalName"] ?? "",
-      fileName: json["fileName"] ?? "",
-      url: json["url"] ?? "",
-      publicId: json["publicId"] ?? "",
-      mimeType: json["mimeType"] ?? "",
-      fileType: json["fileType"] ?? "",
-      fileSize: json["fileSize"] ?? 0,
+      id: _parseString(json["_id"]),
+      originalName: _parseString(json["originalName"]),
+      fileName: _parseString(json["fileName"]),
+      url: _parseString(json["url"]),
+      publicId: _parseString(json["publicId"]),
+      mimeType: _parseString(json["mimeType"]),
+      fileType: _parseString(json["fileType"]),
+      fileSize: int.tryParse(json["fileSize"]?.toString() ?? "0") ?? 0,
     );
   }
 

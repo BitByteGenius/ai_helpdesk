@@ -13,13 +13,20 @@ class ChatMessageModel {
     required this.createdAt,
   });
 
+  static String _parseString(dynamic val, {String fallback = ""}) {
+    if (val == null) return fallback;
+    if (val is String) return val;
+    if (val is List) return val.map((e) => e.toString()).join("\n");
+    return val.toString();
+  }
+
   factory ChatMessageModel.fromJson(Map<String, dynamic> json) {
     return ChatMessageModel(
       id: json["_id"]?.toString() ?? UniqueKey().toString(),
-      role: json["role"] ?? "user",
-      message: json["message"] ?? "",
-      createdAt: json["timestamp"] != null
-          ? DateTime.tryParse(json["timestamp"]) ?? DateTime.now()
+      role: _parseString(json["role"], fallback: "user"),
+      message: _parseString(json["message"] ?? json["content"]),
+      createdAt: json["timestamp"] != null || json["createdAt"] != null
+          ? DateTime.tryParse((json["timestamp"] ?? json["createdAt"]).toString()) ?? DateTime.now()
           : DateTime.now(),
     );
   }

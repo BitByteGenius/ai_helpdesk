@@ -267,18 +267,24 @@ ${JSON.stringify(conversation, null, 2)}
       const text = result?.response?.text?.() ?? "";
       console.log("GeminiProvider.analyzeConversationForTicket raw response:", text);
       const cleanText = extractJsonObject(text) ?? stripCodeFences(text);
-      const parsed = JSON.parse(cleanText);
+      const toStringSafe = (val, fallback = "") => {
+        if (val === null || val === undefined) return fallback;
+        if (typeof val === "string") return val;
+        if (Array.isArray(val)) return val.map((x) => (typeof x === "object" ? JSON.stringify(x) : String(x))).join(", ");
+        return String(val);
+      };
+
       return {
-        title: parsed.title || "Support ticket from chat",
-        description: parsed.description || "Issue described in chat transcript.",
-        summary: parsed.summary || "Conversation escalation.",
-        priority: parsed.priority || "Medium",
-        category: parsed.category || "Other",
-        suggestedReply: parsed.suggestedReply || "How can I help you?",
-        possibleRootCause: parsed.possibleRootCause || "Unknown",
-        recommendedAssignmentTeam: parsed.recommendedAssignmentTeam || "General Support",
-        confidence: parsed.confidence || "Medium",
-        troubleshootingAttempted: parsed.troubleshootingAttempted || "Troubleshooting attempted.",
+        title: toStringSafe(parsed.title, "Support ticket from chat"),
+        description: toStringSafe(parsed.description, "Issue described in chat transcript."),
+        summary: toStringSafe(parsed.summary, "Conversation escalation."),
+        priority: toStringSafe(parsed.priority, "Medium"),
+        category: toStringSafe(parsed.category, "Other"),
+        suggestedReply: toStringSafe(parsed.suggestedReply, "How can I help you?"),
+        possibleRootCause: toStringSafe(parsed.possibleRootCause, "Unknown"),
+        recommendedAssignmentTeam: toStringSafe(parsed.recommendedAssignmentTeam, "General Support"),
+        confidence: toStringSafe(parsed.confidence, "Medium"),
+        troubleshootingAttempted: toStringSafe(parsed.troubleshootingAttempted, "Troubleshooting attempted."),
       };
     } catch (error) {
       console.error("GeminiProvider analyzeConversationForTicket error:", error);

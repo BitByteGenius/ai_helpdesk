@@ -19,19 +19,24 @@ class NotificationModel {
     required this.createdAt,
   });
 
-  factory NotificationModel.fromJson(
-      Map<String, dynamic> json) {
+  static String _parseString(dynamic val, {String fallback = ""}) {
+    if (val == null) return fallback;
+    if (val is String) return val;
+    if (val is List) return val.map((e) => e.toString()).join(", ");
+    return val.toString();
+  }
+
+  factory NotificationModel.fromJson(Map<String, dynamic> json) {
     return NotificationModel(
-      id: json["_id"] ?? "",
-      title: json["title"] ?? "",
-      message: json["message"] ?? "",
-      type: json["type"] ?? "system",
-      isRead: json["isRead"] ?? false,
-      referenceId: json["referenceId"],
-      referenceModel: json["referenceModel"],
+      id: _parseString(json["_id"]),
+      title: _parseString(json["title"]),
+      message: _parseString(json["message"]),
+      type: _parseString(json["type"], fallback: "system"),
+      isRead: json["isRead"] == true,
+      referenceId: json["referenceId"]?.toString(),
+      referenceModel: json["referenceModel"]?.toString(),
       createdAt: json["createdAt"] != null
-          ? DateTime.tryParse(json["createdAt"].toString()) ??
-              DateTime.now()
+          ? DateTime.tryParse(json["createdAt"].toString()) ?? DateTime.now()
           : DateTime.now(),
     );
   }

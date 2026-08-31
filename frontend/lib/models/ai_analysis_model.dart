@@ -13,13 +13,20 @@ class AiAnalysisModel {
     this.duplicateTicket,
   });
 
+  static String _parseString(dynamic val, {String fallback = ""}) {
+    if (val == null) return fallback;
+    if (val is String) return val;
+    if (val is List) return val.map((e) => e.toString()).join(", ");
+    return val.toString();
+  }
+
   factory AiAnalysisModel.fromJson(Map<String, dynamic> json) {
     return AiAnalysisModel(
-      category: json["category"] ?? "Other",
-      priority: json["priority"] ?? "Medium",
-      aiSummary: json["aiSummary"] ?? "",
-      duplicate: json["duplicate"] ?? false,
-      duplicateTicket: json["duplicateTicket"] != null
+      category: _parseString(json["category"], fallback: "Other"),
+      priority: _parseString(json["priority"], fallback: "Medium"),
+      aiSummary: _parseString(json["aiSummary"] ?? json["summary"]),
+      duplicate: json["duplicate"] == true,
+      duplicateTicket: json["duplicateTicket"] != null && json["duplicateTicket"] is Map<String, dynamic>
           ? DuplicateTicket.fromJson(json["duplicateTicket"])
           : null,
     );
@@ -51,13 +58,20 @@ class DuplicateTicket {
     required this.priority,
   });
 
+  static String _parseString(dynamic val, {String fallback = ""}) {
+    if (val == null) return fallback;
+    if (val is String) return val;
+    if (val is List) return val.map((e) => e.toString()).join(", ");
+    return val.toString();
+  }
+
   factory DuplicateTicket.fromJson(Map<String, dynamic> json) {
     return DuplicateTicket(
-      id: json["_id"] ?? "",
-      title: json["title"] ?? "",
-      description: json["description"] ?? "",
-      status: json["status"] ?? "",
-      priority: json["priority"] ?? "",
+      id: _parseString(json["_id"] ?? json["id"]),
+      title: _parseString(json["title"]),
+      description: _parseString(json["description"]),
+      status: _parseString(json["status"]),
+      priority: _parseString(json["priority"]),
     );
   }
 

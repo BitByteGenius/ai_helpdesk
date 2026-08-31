@@ -19,27 +19,61 @@ class DashboardModel {
   });
 
   factory DashboardModel.fromJson(Map<String, dynamic> json) {
+    final ticketStatusMap = <String, int>{};
+    final ticketStatusRaw = json["ticketStatus"] ?? json["status"];
+    if (ticketStatusRaw is Map) {
+      ticketStatusRaw.forEach((key, value) {
+        ticketStatusMap[key.toString()] = int.tryParse(value.toString()) ?? 0;
+      });
+    }
+
+    final priorityMap = <String, int>{};
+    final priorityRaw = json["priority"];
+    if (priorityRaw is Map) {
+      priorityRaw.forEach((key, value) {
+        priorityMap[key.toString()] = int.tryParse(value.toString()) ?? 0;
+      });
+    }
+
+    final recentTicketsList = <TicketModel>[];
+    final recentTicketsRaw = json["recentTickets"];
+    if (recentTicketsRaw is List) {
+      for (final item in recentTicketsRaw) {
+        if (item is Map<String, dynamic>) {
+          recentTicketsList.add(TicketModel.fromJson(item));
+        } else if (item is Map) {
+          recentTicketsList.add(TicketModel.fromJson(Map<String, dynamic>.from(item)));
+        }
+      }
+    }
+
+    final recentUsersList = <UserModel>[];
+    final recentUsersRaw = json["recentUsers"];
+    if (recentUsersRaw is List) {
+      for (final item in recentUsersRaw) {
+        if (item is Map<String, dynamic>) {
+          recentUsersList.add(UserModel.fromJson(item));
+        } else if (item is Map) {
+          recentUsersList.add(UserModel.fromJson(Map<String, dynamic>.from(item)));
+        }
+      }
+    }
+
     return DashboardModel(
-      stats: DashboardStats.fromJson(json["stats"] ?? {}),
-
-      ticketStatus:
-          Map<String, int>.from(json["ticketStatus"] ?? {}),
-
-      priority:
-          Map<String, int>.from(json["priority"] ?? {}),
-
-      recentTickets:
-          (json["recentTickets"] as List? ?? [])
-              .map((e) => TicketModel.fromJson(e))
-              .toList(),
-
-      recentUsers:
-          (json["recentUsers"] as List? ?? [])
-              .map((e) => UserModel.fromJson(e))
-              .toList(),
-
-      aiInsights:
-          AiInsights.fromJson(json["aiInsights"] ?? {}),
+      stats: DashboardStats.fromJson(
+        json["stats"] is Map<String, dynamic>
+            ? json["stats"]
+            : (json["stats"] is Map ? Map<String, dynamic>.from(json["stats"]) : {}),
+      ),
+      ticketStatus: ticketStatusMap,
+      priority: priorityMap,
+      recentTickets: recentTicketsList,
+      recentUsers: recentUsersList,
+      aiInsights: AiInsights.fromJson(
+        json["aiInsights"] is Map<String, dynamic>
+            ? json["aiInsights"]
+            : (json["aiInsights"] is Map ? Map<String, dynamic>.from(json["aiInsights"]) : {}),
+      ),
     );
   }
 }
@@ -59,10 +93,10 @@ class DashboardStats {
 
   factory DashboardStats.fromJson(Map<String, dynamic> json) {
     return DashboardStats(
-      totalTickets: json["totalTickets"] ?? 0,
-      open: json["open"] ?? 0,
-      resolved: json["resolved"] ?? 0,
-      users: json["users"] ?? 0,
+      totalTickets: int.tryParse(json["totalTickets"]?.toString() ?? "0") ?? 0,
+      open: int.tryParse(json["open"]?.toString() ?? "0") ?? 0,
+      resolved: int.tryParse(json["resolved"]?.toString() ?? "0") ?? 0,
+      users: int.tryParse(json["users"]?.toString() ?? "0") ?? 0,
     );
   }
 }
@@ -80,9 +114,9 @@ class AiInsights {
 
   factory AiInsights.fromJson(Map<String, dynamic> json) {
     return AiInsights(
-      totalAnalysis: json["totalAnalysis"] ?? 0,
-      duplicates: json["duplicates"] ?? 0,
-      suggestedReplies: json["suggestedReplies"] ?? 0,
+      totalAnalysis: int.tryParse(json["totalAnalysis"]?.toString() ?? "0") ?? 0,
+      duplicates: int.tryParse(json["duplicates"]?.toString() ?? "0") ?? 0,
+      suggestedReplies: int.tryParse(json["suggestedReplies"]?.toString() ?? "0") ?? 0,
     );
   }
 }

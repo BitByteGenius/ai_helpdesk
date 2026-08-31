@@ -1,22 +1,13 @@
 class AuditModel {
   final String id;
-
   final AuditUser user;
-
   final String action;
-
   final String entity;
-
   final String description;
-
   final Map<String, dynamic>? oldData;
-
   final Map<String, dynamic>? newData;
-
   final String ipAddress;
-
   final String userAgent;
-
   final DateTime createdAt;
 
   AuditModel({
@@ -32,47 +23,35 @@ class AuditModel {
     required this.createdAt,
   });
 
-  factory AuditModel.fromJson(
-      Map<String, dynamic> json) {
+  static String _parseString(dynamic val, {String fallback = ""}) {
+    if (val == null) return fallback;
+    if (val is String) return val;
+    if (val is List) return val.map((e) => e.toString()).join(", ");
+    return val.toString();
+  }
+
+  factory AuditModel.fromJson(Map<String, dynamic> json) {
     return AuditModel(
-      id: json["_id"] ?? "",
-
+      id: _parseString(json["_id"]),
       user: AuditUser.fromJson(
-        json["user"] ?? {},
+        json["user"] is Map<String, dynamic> ? json["user"] : {},
       ),
-
-      action: json["action"] ?? "",
-
-      entity: json["entity"] ?? "",
-
-      description:
-          json["description"] ?? "",
-
-      oldData: json["oldData"],
-
-      newData: json["newData"],
-
-      ipAddress:
-          json["ipAddress"] ?? "",
-
-      userAgent:
-          json["userAgent"] ?? "",
-
-      createdAt: DateTime.tryParse(
-            json["createdAt"]?.toString() ?? "",
-          ) ??
-          DateTime.now(),
+      action: _parseString(json["action"]),
+      entity: _parseString(json["entity"]),
+      description: _parseString(json["description"]),
+      oldData: json["oldData"] is Map<String, dynamic> ? json["oldData"] : null,
+      newData: json["newData"] is Map<String, dynamic> ? json["newData"] : null,
+      ipAddress: _parseString(json["ipAddress"]),
+      userAgent: _parseString(json["userAgent"]),
+      createdAt: DateTime.tryParse(json["createdAt"]?.toString() ?? "") ?? DateTime.now(),
     );
   }
 }
 
 class AuditUser {
   final String id;
-
   final String name;
-
   final String email;
-
   final String role;
 
   AuditUser({
@@ -82,16 +61,19 @@ class AuditUser {
     required this.role,
   });
 
-  factory AuditUser.fromJson(
-      Map<String, dynamic> json) {
+  static String _parseString(dynamic val, {String fallback = ""}) {
+    if (val == null) return fallback;
+    if (val is String) return val;
+    if (val is List) return val.map((e) => e.toString()).join(", ");
+    return val.toString();
+  }
+
+  factory AuditUser.fromJson(Map<String, dynamic> json) {
     return AuditUser(
-      id: json["_id"] ?? "",
-
-      name: json["name"] ?? "",
-
-      email: json["email"] ?? "",
-
-      role: json["role"] ?? "",
+      id: _parseString(json["_id"]),
+      name: _parseString(json["name"]),
+      email: _parseString(json["email"]),
+      role: _parseString(json["role"]),
     );
   }
 }

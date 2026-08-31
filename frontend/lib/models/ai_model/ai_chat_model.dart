@@ -17,16 +17,22 @@ class AIChatModel {
     required this.articles,
   });
 
-  factory AIChatModel.fromJson(
-      Map<String, dynamic> json) {
+  static String _parseString(dynamic val, {String fallback = ""}) {
+    if (val == null) return fallback;
+    if (val is String) return val;
+    if (val is List) return val.map((e) => e.toString()).join(", ");
+    return val.toString();
+  }
+
+  factory AIChatModel.fromJson(Map<String, dynamic> json) {
     return AIChatModel(
-      reply: json["reply"] ?? "",
-      category: json["category"] ?? "",
-      priority: json["priority"] ?? "",
-      aiSummary: json["aiSummary"] ?? "",
-      duplicate: json["duplicate"] ?? false,
-      createTicket: json["createTicket"] ?? false,
-      articles: json["articles"] ?? [],
+      reply: _parseString(json["reply"]),
+      category: _parseString(json["category"]),
+      priority: _parseString(json["priority"]),
+      aiSummary: _parseString(json["aiSummary"] ?? json["summary"]),
+      duplicate: json["duplicate"] == true,
+      createTicket: json["createTicket"] == true || json["canCreateTicket"] == true,
+      articles: json["articles"] is List ? json["articles"] : [],
     );
   }
 }

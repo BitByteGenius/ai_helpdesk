@@ -3,7 +3,6 @@ class CommentModel {
   final String ticketId;
   final String message;
   final DateTime createdAt;
-
   final CommentUser user;
   final bool isEdited;
 
@@ -16,25 +15,28 @@ class CommentModel {
     required this.isEdited,
   });
 
-  factory CommentModel.fromJson(
-      Map<String, dynamic> json) {
+  static String _parseString(dynamic val, {String fallback = ""}) {
+    if (val == null) return fallback;
+    if (val is String) return val;
+    if (val is List) return val.map((e) => e.toString()).join(", ");
+    return val.toString();
+  }
+
+  factory CommentModel.fromJson(Map<String, dynamic> json) {
     final ticketRaw = json["ticket"];
     final ticketId = ticketRaw is Map
         ? (ticketRaw["_id"] ?? ticketRaw["id"] ?? "")
         : ticketRaw ?? "";
 
+    final userRaw = json["user"] ?? json["author"];
+
     return CommentModel(
-      id: json["_id"] ?? "",
-      ticketId: ticketId.toString(),
-      message: json["message"] ?? "",
-      createdAt: DateTime.tryParse(
-            json["createdAt"]?.toString() ?? "",
-          ) ??
-          DateTime.now(),
-      user: CommentUser.fromJson(
-        json["user"] ?? json["author"] ?? {},
-      ),
-      isEdited: json["isEdited"] ?? false,
+      id: _parseString(json["_id"]),
+      ticketId: _parseString(ticketId),
+      message: _parseString(json["message"]),
+      createdAt: DateTime.tryParse(json["createdAt"]?.toString() ?? "") ?? DateTime.now(),
+      user: CommentUser.fromJson(userRaw is Map<String, dynamic> ? userRaw : {}),
+      isEdited: json["isEdited"] == true,
     );
   }
 }
@@ -50,12 +52,18 @@ class CommentUser {
     required this.image,
   });
 
-  factory CommentUser.fromJson(
-      Map<String, dynamic> json) {
+  static String _parseString(dynamic val, {String fallback = ""}) {
+    if (val == null) return fallback;
+    if (val is String) return val;
+    if (val is List) return val.map((e) => e.toString()).join(", ");
+    return val.toString();
+  }
+
+  factory CommentUser.fromJson(Map<String, dynamic> json) {
     return CommentUser(
-      id: json["_id"] ?? "",
-      name: json["name"] ?? "",
-      image: json["profileImage"] ?? "",
+      id: _parseString(json["_id"]),
+      name: _parseString(json["name"]),
+      image: _parseString(json["profileImage"]),
     );
   }
 }
