@@ -11,23 +11,23 @@ class CommentInput extends GetView<CommentController> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: AppColors.card,
+        color: context.cardBg,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: context.border),
       ),
       child: Row(
         children: [
           Expanded(
             child: TextField(
               controller: controller.messageController,
-              style: const TextStyle(fontSize: 13, color: AppColors.textPrimary),
-              decoration: const InputDecoration(
+              style: TextStyle(fontSize: 13, color: context.textPrimary),
+              decoration: InputDecoration(
                 hintText: "Write a message or reply...",
-                hintStyle: TextStyle(fontSize: 13, color: AppColors.textMuted),
+                hintStyle: TextStyle(fontSize: 13, color: context.textMuted),
                 isDense: true,
                 filled: true,
-                fillColor: AppColors.surfaceSubtle,
-                contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                fillColor: context.surfaceSubtle,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               ),
               textInputAction: TextInputAction.send,
               onSubmitted: (_) => controller.sendComment(),
@@ -38,7 +38,7 @@ class CommentInput extends GetView<CommentController> {
             icon: const Icon(Icons.send_rounded, size: 18),
             onPressed: controller.sendComment,
             style: IconButton.styleFrom(
-              backgroundColor: AppColors.primary,
+              backgroundColor: context.primaryColor,
               foregroundColor: Colors.white,
               padding: const EdgeInsets.all(12),
             ),
@@ -47,4 +47,4 @@ class CommentInput extends GetView<CommentController> {
       ),
     );
   }
-}
+}

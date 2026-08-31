@@ -32,6 +32,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   }
 
   InputDecoration inputDecoration({
+    required BuildContext context,
     required String label,
     required IconData icon,
     required bool obscure,
@@ -44,7 +45,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         icon: Icon(
           obscure ? Icons.visibility_outlined : Icons.visibility_off_outlined,
           size: 18,
-          color: AppColors.textMuted,
+          color: context.textMuted,
         ),
         onPressed: onToggle,
       ),
@@ -62,9 +63,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             constraints: const BoxConstraints(maxWidth: 520),
             child: Container(
               decoration: BoxDecoration(
-                color: AppColors.card,
+                color: context.cardBg,
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: AppColors.border),
+                border: Border.all(color: context.border),
               ),
               padding: const EdgeInsets.all(28),
               child: Form(
@@ -72,25 +73,27 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       "Update Security Credentials",
                       style: TextStyle(
                         fontWeight: FontWeight.w800,
                         fontSize: 18,
                         letterSpacing: -0.3,
-                        color: AppColors.textPrimary,
+                        color: context.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 4),
-                    const Text(
+                    Text(
                       "Ensure your account is using a strong password with at least 6 characters.",
-                      style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
+                      style: TextStyle(color: context.textSecondary, fontSize: 13),
                     ),
                     const SizedBox(height: 24),
                     TextFormField(
                       controller: currentPasswordController,
                       obscureText: hideCurrent,
+                      style: TextStyle(color: context.textPrimary, fontSize: 14),
                       decoration: inputDecoration(
+                        context: context,
                         label: "Current Password",
                         icon: Icons.lock_outline_rounded,
                         obscure: hideCurrent,
@@ -111,7 +114,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     TextFormField(
                       controller: newPasswordController,
                       obscureText: hideNew,
+                      style: TextStyle(color: context.textPrimary, fontSize: 14),
                       decoration: inputDecoration(
+                        context: context,
                         label: "New Password",
                         icon: Icons.lock_rounded,
                         obscure: hideNew,
@@ -132,7 +137,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     TextFormField(
                       controller: confirmPasswordController,
                       obscureText: hideConfirm,
+                      style: TextStyle(color: context.textPrimary, fontSize: 14),
                       decoration: inputDecoration(
+                        context: context,
                         label: "Confirm New Password",
                         icon: Icons.lock_reset_rounded,
                         obscure: hideConfirm,
@@ -197,4 +204,3 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     );
   }
 }
-

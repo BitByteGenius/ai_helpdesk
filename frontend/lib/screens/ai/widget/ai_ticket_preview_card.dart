@@ -1,78 +1,3 @@
-// import 'package:flutter/material.dart';
-// import 'package:frontend/controllers/ai_chat_controller.dart';
-// import 'package:frontend/controllers/ticket_controller.dart';
-// import 'package:get/get.dart';
-
-
-// class AITicketPreviewCard
-//     extends GetView<AIChatController> {
-//   const AITicketPreviewCard({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Obx(() {
-
-//       final ai = controller.lastResponse.value;
-//       final ticketController = Get.find<TicketController>();
-
-//       if (ai == null || !ai.createTicket) {
-//         return const SizedBox();
-//       }
-
-//       return Card(
-//         color: Colors.orange.shade50,
-//         child: Padding(
-//           padding: const EdgeInsets.all(18),
-//           child: Column(
-//             crossAxisAlignment:
-//                 CrossAxisAlignment.start,
-//             children: [
-
-//               const Text(
-//                 "Ticket Preview",
-//                 style: TextStyle(
-//                   fontWeight: FontWeight.bold,
-//                   fontSize: 18,
-//                 ),
-//               ),
-
-//               const SizedBox(height: 15),
-
-//               Text(
-//                 "Category : ${ai.category}",
-//               ),
-
-//               Text(
-//                 "Priority : ${ai.priority}",
-//               ),
-
-//               const SizedBox(height: 10),
-
-//               Text(
-//                 ai.aiSummary,
-//               ),
-
-//               const SizedBox(height: 18),
-
-//               FilledButton.icon(
-//                 onPressed: () async {
-                  
-//                 await ticketController.createTicket();
-                  
-//                 },
-//                 icon:
-//                     const Icon(Icons.add),
-//                 label:
-//                     const Text("Create Ticket"),
-//               ),
-//             ],
-//           ),
-//         ),
-//       );
-//     });
-//   }
-// }
-
 import 'package:flutter/material.dart';
 import 'package:frontend/controllers/ai_chat_controller.dart';
 import 'package:frontend/core/theme/app_colors.dart';
@@ -91,39 +16,39 @@ class AIEscalationCard extends GetView<AIChatController> {
 
       return Container(
         decoration: BoxDecoration(
-          color: AppColors.primarySubtle,
+          color: context.primarySubtle,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
+          border: Border.all(color: context.primaryColor.withValues(alpha: 0.2)),
         ),
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Row(
+            Row(
               children: [
                 Icon(
                   Icons.support_agent_rounded,
-                  color: AppColors.primary,
+                  color: context.primaryColor,
                   size: 22,
                 ),
-                SizedBox(width: 10),
+                const SizedBox(width: 10),
                 Text(
                   "Need more help?",
                   style: TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 16,
-                    color: AppColors.textPrimary,
+                    color: context.textPrimary,
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 12),
-            const Text(
+            Text(
               "It looks like this issue hasn't been completely resolved. I can create a support ticket using this conversation so our support team has the complete context.",
               style: TextStyle(
                 height: 1.4,
                 fontSize: 13,
-                color: AppColors.textSecondary,
+                color: context.textSecondary,
               ),
             ),
             const SizedBox(height: 18),
@@ -162,7 +87,7 @@ class AIEscalationCard extends GetView<AIChatController> {
                 const SizedBox(width: 12),
                 OutlinedButton(
                   style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: AppColors.border),
+                    side: BorderSide(color: context.border),
                   ),
                   onPressed: () {
                     controller.canCreateTicket.value = false;
@@ -176,4 +101,4 @@ class AIEscalationCard extends GetView<AIChatController> {
       );
     });
   }
-}
+}

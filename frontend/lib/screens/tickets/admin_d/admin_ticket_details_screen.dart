@@ -132,12 +132,12 @@ class _AdminTicketDetailsScreenState extends State<AdminTicketDetailsScreen> {
                       color: AppColors.error,
                     ),
                     const SizedBox(height: 12),
-                    const Text(
+                    Text(
                       "Unable to load ticket details.",
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
-                        color: AppColors.textPrimary,
+                        color: context.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -208,19 +208,20 @@ class _AdminTicketDetailsScreenState extends State<AdminTicketDetailsScreen> {
             if (isUpdating) {
               return Container(
                 color: Colors.black.withValues(alpha: 0.35),
-                child: const Center(
+                child: Center(
                   child: Card(
                     elevation: 8,
+                    color: context.cardBg,
                     child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 32, vertical: 24),
+                      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          CircularProgressIndicator(),
-                          SizedBox(height: 16),
+                          const CircularProgressIndicator(),
+                          const SizedBox(height: 16),
                           Text(
                             "Updating ticket status...",
-                            style: TextStyle(fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+                            style: TextStyle(fontWeight: FontWeight.w700, color: context.textPrimary),
                           ),
                         ],
                       ),
@@ -305,9 +306,9 @@ class _AdminTicketDetailsScreenState extends State<AdminTicketDetailsScreen> {
         return Container(
           height: 120,
           decoration: BoxDecoration(
-            color: AppColors.card,
+            color: context.cardBg,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppColors.border),
+            border: Border.all(color: context.border),
           ),
           child: const Center(child: CircularProgressIndicator()),
         );
@@ -318,4 +319,4 @@ class _AdminTicketDetailsScreenState extends State<AdminTicketDetailsScreen> {
       );
     });
   }
-}
+}

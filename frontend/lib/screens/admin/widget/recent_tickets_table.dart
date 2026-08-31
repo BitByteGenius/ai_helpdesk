@@ -71,9 +71,9 @@ class RecentTicketsTable extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.card,
+        color: context.cardBg,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: context.border),
       ),
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -83,12 +83,12 @@ class RecentTicketsTable extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 "Recent Tickets",
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary,
+                  color: context.textPrimary,
                   letterSpacing: -0.2,
                 ),
               ),
@@ -112,12 +112,12 @@ class RecentTicketsTable extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           if (tickets.isEmpty)
-            const SizedBox(
+            SizedBox(
               height: 120,
               child: Center(
                 child: Text(
                   "No tickets found",
-                  style: TextStyle(color: AppColors.textMuted, fontSize: 13),
+                  style: TextStyle(color: context.textMuted, fontSize: 13),
                 ),
               ),
             )
@@ -137,10 +137,10 @@ class RecentTicketsTable extends StatelessWidget {
                       dataRowMinHeight: 52,
                       dataRowMaxHeight: 60,
                       horizontalMargin: 0,
-                      headingTextStyle: const TextStyle(
+                      headingTextStyle: TextStyle(
                         fontWeight: FontWeight.w700,
                         fontSize: 12,
-                        color: AppColors.textSecondary,
+                        color: context.textSecondary,
                         letterSpacing: 0.2,
                       ),
                       columns: const [
@@ -161,10 +161,10 @@ class RecentTicketsTable extends StatelessWidget {
                                   ticket.title,
                                   overflow: TextOverflow.ellipsis,
                                   maxLines: 1,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontWeight: FontWeight.w600,
                                     fontSize: 13,
-                                    color: AppColors.textPrimary,
+                                    color: context.textPrimary,
                                   ),
                                 ),
                               ),
@@ -172,8 +172,8 @@ class RecentTicketsTable extends StatelessWidget {
                             DataCell(
                               Text(
                                 ticket.createdBy.name,
-                                style: const TextStyle(
-                                  color: AppColors.textSecondary,
+                                style: TextStyle(
+                                  color: context.textSecondary,
                                   fontSize: 13,
                                 ),
                               ),
@@ -182,13 +182,13 @@ class RecentTicketsTable extends StatelessWidget {
                               Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                                 decoration: BoxDecoration(
-                                  color: AppColors.surfaceSubtle,
+                                  color: context.surfaceSubtle,
                                   borderRadius: BorderRadius.circular(6),
                                 ),
                                 child: Text(
                                   ticket.category,
-                                  style: const TextStyle(
-                                    color: AppColors.textSecondary,
+                                  style: TextStyle(
+                                    color: context.textSecondary,
                                     fontSize: 11,
                                     fontWeight: FontWeight.w500,
                                   ),
@@ -200,8 +200,8 @@ class RecentTicketsTable extends StatelessWidget {
                             DataCell(
                               Text(
                                 DateFormat("dd MMM yyyy").format(ticket.createdAt),
-                                style: const TextStyle(
-                                  color: AppColors.textMuted,
+                                style: TextStyle(
+                                  color: context.textMuted,
                                   fontSize: 12,
                                 ),
                               ),
@@ -218,4 +218,4 @@ class RecentTicketsTable extends StatelessWidget {
       ),
     );
   }
-}
+}

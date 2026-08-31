@@ -44,7 +44,7 @@ class TicketListScreen extends GetView<TicketController> {
                   Text(
                     controller.errorMessage.value,
                     textAlign: TextAlign.center,
-                    style: const TextStyle(color: AppColors.textPrimary, fontSize: 15),
+                    style: TextStyle(color: context.textPrimary, fontSize: 15),
                   ),
                   const SizedBox(height: 16),
                   FilledButton.icon(
@@ -83,14 +83,20 @@ class TicketListScreen extends GetView<TicketController> {
                               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                                     fontWeight: FontWeight.w800,
                                     letterSpacing: -0.4,
-                                    color: AppColors.textPrimary,
+                                    color: context.textPrimary,
+                                  ) ??
+                                  TextStyle(
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.w800,
+                                    letterSpacing: -0.4,
+                                    color: context.textPrimary,
                                   ),
                             ),
                             const SizedBox(height: 4),
                             Text(
                               "View, triage, assign and manage all customer support tickets.",
                               style: TextStyle(
-                                color: AppColors.textSecondary,
+                                color: context.textSecondary,
                                 fontSize: 13,
                               ),
                             ),
@@ -105,9 +111,9 @@ class TicketListScreen extends GetView<TicketController> {
                       width: double.infinity,
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: AppColors.card,
+                        color: context.cardBg,
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: AppColors.border),
+                        border: Border.all(color: context.border),
                       ),
                       child: const Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -126,9 +132,9 @@ class TicketListScreen extends GetView<TicketController> {
                         width: double.infinity,
                         padding: const EdgeInsets.symmetric(vertical: 60, horizontal: 20),
                         decoration: BoxDecoration(
-                          color: AppColors.card,
+                          color: context.cardBg,
                           borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: AppColors.border),
+                          border: Border.all(color: context.border),
                         ),
                         child: Center(
                           child: Column(
@@ -138,29 +144,29 @@ class TicketListScreen extends GetView<TicketController> {
                                 width: 52,
                                 height: 52,
                                 decoration: BoxDecoration(
-                                  color: AppColors.primarySubtle,
+                                  color: context.primarySubtle,
                                   borderRadius: BorderRadius.circular(14),
                                 ),
-                                child: const Icon(
+                                child: Icon(
                                   Icons.confirmation_number_outlined,
                                   size: 26,
-                                  color: AppColors.primary,
+                                  color: context.primaryColor,
                                 ),
                               ),
                               const SizedBox(height: 14),
-                              const Text(
+                              Text(
                                 "No Tickets Found",
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w700,
-                                  color: AppColors.textPrimary,
+                                  color: context.textPrimary,
                                 ),
                               ),
                               const SizedBox(height: 4),
-                              const Text(
+                              Text(
                                 "Try modifying your search or clear the active filter parameters.",
                                 style: TextStyle(
-                                  color: AppColors.textSecondary,
+                                  color: context.textSecondary,
                                   fontSize: 13,
                                 ),
                               ),
@@ -172,9 +178,9 @@ class TicketListScreen extends GetView<TicketController> {
                       Container(
                         width: double.infinity,
                         decoration: BoxDecoration(
-                          color: AppColors.card,
+                          color: context.cardBg,
                           borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: AppColors.border),
+                          border: Border.all(color: context.border),
                         ),
                         clipBehavior: Clip.antiAlias,
                         child: TicketTable(
@@ -224,12 +230,12 @@ class TicketListScreen extends GetView<TicketController> {
   void _showDeleteDialog(BuildContext context, String ticketId) {
     Get.defaultDialog(
       title: "Delete Ticket",
-      titleStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 18, color: AppColors.textPrimary),
+      titleStyle: TextStyle(fontWeight: FontWeight.w700, fontSize: 18, color: context.textPrimary),
       middleText: "Are you sure you want to permanently delete this ticket?",
-      middleTextStyle: const TextStyle(color: AppColors.textSecondary, fontSize: 13),
+      middleTextStyle: TextStyle(color: context.textSecondary, fontSize: 13),
       textCancel: "Cancel",
       textConfirm: "Delete",
-      cancelTextColor: AppColors.textPrimary,
+      cancelTextColor: context.textPrimary,
       confirmTextColor: Colors.white,
       buttonColor: AppColors.error,
       radius: 16,
@@ -241,4 +247,4 @@ class TicketListScreen extends GetView<TicketController> {
       },
     );
   }
-}
+}

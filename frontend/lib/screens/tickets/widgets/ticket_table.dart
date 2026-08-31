@@ -30,10 +30,10 @@ class TicketTable extends StatelessWidget {
         dataRowMaxHeight: 68,
         columnSpacing: 24,
         horizontalMargin: 16,
-        headingTextStyle: const TextStyle(
+        headingTextStyle: TextStyle(
           fontWeight: FontWeight.w700,
           fontSize: 12,
-          color: AppColors.textSecondary,
+          color: context.textSecondary,
           letterSpacing: 0.2,
         ),
         columns: const [
@@ -57,10 +57,10 @@ class TicketTable extends StatelessWidget {
                     ticket.title,
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 13,
-                      color: AppColors.textPrimary,
+                      color: context.textPrimary,
                     ),
                   ),
                 ),
@@ -73,7 +73,7 @@ class TicketTable extends StatelessWidget {
                   children: [
                     CircleAvatar(
                       radius: 13,
-                      backgroundColor: AppColors.primarySubtle,
+                      backgroundColor: context.primarySubtle,
                       backgroundImage: ticket.createdBy.profileImage.isNotEmpty
                           ? NetworkImage(ticket.createdBy.profileImage)
                           : null,
@@ -82,10 +82,10 @@ class TicketTable extends StatelessWidget {
                               ticket.createdBy.name.isNotEmpty
                                   ? ticket.createdBy.name[0].toUpperCase()
                                   : "?",
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 10,
                                 fontWeight: FontWeight.w700,
-                                color: AppColors.primary,
+                                color: context.primaryColor,
                               ),
                             )
                           : null,
@@ -93,9 +93,9 @@ class TicketTable extends StatelessWidget {
                     const SizedBox(width: 8),
                     Text(
                       ticket.createdBy.name,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 13,
-                        color: AppColors.textPrimary,
+                        color: context.textPrimary,
                       ),
                     ),
                   ],
@@ -105,10 +105,10 @@ class TicketTable extends StatelessWidget {
               // ── Assigned To ──
               DataCell(
                 ticket.assignedTo == null
-                    ? const Text(
+                    ? Text(
                         "Unassigned",
                         style: TextStyle(
-                          color: AppColors.textMuted,
+                          color: context.textMuted,
                           fontSize: 12,
                           fontStyle: FontStyle.italic,
                         ),
@@ -138,9 +138,9 @@ class TicketTable extends StatelessWidget {
                           const SizedBox(width: 8),
                           Text(
                             ticket.assignedTo!.name,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 13,
-                              color: AppColors.textPrimary,
+                              color: context.textPrimary,
                             ),
                           ),
                         ],
@@ -166,14 +166,14 @@ class TicketTable extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                   decoration: BoxDecoration(
-                    color: AppColors.surfaceSubtle,
+                    color: context.surfaceSubtle,
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Text(
                     ticket.category,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 11,
-                      color: AppColors.textSecondary,
+                      color: context.textSecondary,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -184,8 +184,8 @@ class TicketTable extends StatelessWidget {
               DataCell(
                 Text(
                   DateFormat("dd MMM yyyy").format(ticket.createdAt),
-                  style: const TextStyle(
-                    color: AppColors.textMuted,
+                  style: TextStyle(
+                    color: context.textMuted,
                     fontSize: 12,
                   ),
                 ),
@@ -199,9 +199,9 @@ class TicketTable extends StatelessWidget {
                     IconButton(
                       tooltip: "View Details",
                       onPressed: () => onView?.call(ticket),
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.visibility_outlined,
-                        color: AppColors.primary,
+                        color: context.primaryColor,
                         size: 18,
                       ),
                     ),
@@ -223,4 +223,4 @@ class TicketTable extends StatelessWidget {
       ),
     );
   }
-}
+}

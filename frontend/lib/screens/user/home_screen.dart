@@ -54,12 +54,12 @@ class UserDashboard extends GetView<TicketController> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
+                      Text(
                         "Recent Tickets",
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w700,
-                          color: AppColors.textPrimary,
+                          color: context.textPrimary,
                           letterSpacing: -0.3,
                         ),
                       ),
@@ -97,9 +97,9 @@ class UserDashboard extends GetView<TicketController> {
                       return Container(
                         padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
                         decoration: BoxDecoration(
-                          color: AppColors.card,
+                          color: context.cardBg,
                           borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: AppColors.border),
+                          border: Border.all(color: context.border),
                         ),
                         child: Center(
                           child: Column(
@@ -109,30 +109,30 @@ class UserDashboard extends GetView<TicketController> {
                                 width: 48,
                                 height: 48,
                                 decoration: BoxDecoration(
-                                  color: AppColors.primarySubtle,
+                                  color: context.primarySubtle,
                                   borderRadius: BorderRadius.circular(12),
                                 ),
-                                child: const Icon(
+                                child: Icon(
                                   Icons.confirmation_number_outlined,
-                                  color: AppColors.primary,
+                                  color: context.primaryColor,
                                   size: 24,
                                 ),
                               ),
                               const SizedBox(height: 12),
-                              const Text(
+                              Text(
                                 "No tickets raised yet",
                                 style: TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.w700,
-                                  color: AppColors.textPrimary,
+                                  color: context.textPrimary,
                                 ),
                               ),
                               const SizedBox(height: 4),
-                              const Text(
+                              Text(
                                 "Create a ticket if you need assistance from our support team.",
                                 style: TextStyle(
                                   fontSize: 13,
-                                  color: AppColors.textSecondary,
+                                  color: context.textSecondary,
                                 ),
                                 textAlign: TextAlign.center,
                               ),
@@ -174,4 +174,3 @@ class UserDashboard extends GetView<TicketController> {
     );
   }
 }
-

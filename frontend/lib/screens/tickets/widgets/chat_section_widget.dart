@@ -52,9 +52,9 @@ class _ChatSectionWidgetState extends State<ChatSectionWidget> {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.card,
+        color: context.cardBg,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: context.border),
       ),
       clipBehavior: Clip.antiAlias,
       child: Column(
@@ -63,24 +63,24 @@ class _ChatSectionWidgetState extends State<ChatSectionWidget> {
           // ── Header ──
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-            decoration: const BoxDecoration(
-              color: AppColors.surfaceSubtle,
-              border: Border(bottom: BorderSide(color: AppColors.border)),
+            decoration: BoxDecoration(
+              color: context.surfaceSubtle,
+              border: Border(bottom: BorderSide(color: context.border)),
             ),
             child: Row(
               children: [
-                const Icon(
+                Icon(
                   Icons.chat_bubble_outline_rounded,
-                  color: AppColors.primary,
+                  color: context.primaryColor,
                   size: 18,
                 ),
                 const SizedBox(width: 10),
-                const Text(
+                Text(
                   "Conversation Stream",
                   style: TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 15,
-                    color: AppColors.textPrimary,
+                    color: context.textPrimary,
                   ),
                 ),
                 const Spacer(),
@@ -101,7 +101,7 @@ class _ChatSectionWidgetState extends State<ChatSectionWidget> {
           // ── Message Stream ──
           Container(
             height: 400,
-            color: AppColors.card,
+            color: context.cardBg,
             child: Obx(() {
               final messages = chatController.messagesList;
 
@@ -110,29 +110,29 @@ class _ChatSectionWidgetState extends State<ChatSectionWidget> {
               }
 
               if (messages.isEmpty) {
-                return const Center(
+                return Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(
                         Icons.forum_outlined,
                         size: 40,
-                        color: AppColors.textMuted,
+                        color: context.textMuted,
                       ),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       Text(
                         "No messages yet",
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 14,
-                          color: AppColors.textPrimary,
+                          color: context.textPrimary,
                         ),
                       ),
-                      SizedBox(height: 4),
+                      const SizedBox(height: 4),
                       Text(
                         "Type a reply to start the conversation.",
                         style: TextStyle(
-                          color: AppColors.textSecondary,
+                          color: context.textSecondary,
                           fontSize: 12,
                         ),
                       ),
@@ -162,7 +162,7 @@ class _ChatSectionWidgetState extends State<ChatSectionWidget> {
           // ── Inline Loading Bar ──
           Obx(() {
             if (chatController.isUpdating.value) {
-              return const LinearProgressIndicator(minHeight: 2, color: AppColors.primary);
+              return LinearProgressIndicator(minHeight: 2, color: context.primaryColor);
             }
             return const SizedBox(height: 2);
           }),
@@ -170,29 +170,29 @@ class _ChatSectionWidgetState extends State<ChatSectionWidget> {
           // ── Chat Input Bar ──
           Container(
             padding: const EdgeInsets.all(12),
-            decoration: const BoxDecoration(
-              color: AppColors.surfaceSubtle,
-              border: Border(top: BorderSide(color: AppColors.border)),
+            decoration: BoxDecoration(
+              color: context.surfaceSubtle,
+              border: Border(top: BorderSide(color: context.border)),
             ),
             child: Row(
               children: [
                 Expanded(
                   child: Container(
                     decoration: BoxDecoration(
-                      color: AppColors.card,
+                      color: context.cardBg,
                       borderRadius: BorderRadius.circular(24),
-                      border: Border.all(color: AppColors.border),
+                      border: Border.all(color: context.border),
                     ),
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: TextField(
                       controller: textEditingController,
-                      style: const TextStyle(fontSize: 13, color: AppColors.textPrimary),
-                      decoration: const InputDecoration(
+                      style: TextStyle(fontSize: 13, color: context.textPrimary),
+                      decoration: InputDecoration(
                         hintText: "Type your message...",
-                        hintStyle: TextStyle(fontSize: 13, color: AppColors.textMuted),
+                        hintStyle: TextStyle(fontSize: 13, color: context.textMuted),
                         border: InputBorder.none,
                         isDense: true,
-                        contentPadding: EdgeInsets.symmetric(vertical: 10),
+                        contentPadding: const EdgeInsets.symmetric(vertical: 10),
                       ),
                       textInputAction: TextInputAction.send,
                       onSubmitted: (_) => _handleSend(),
@@ -204,7 +204,7 @@ class _ChatSectionWidgetState extends State<ChatSectionWidget> {
                   icon: const Icon(Icons.send_rounded, size: 16),
                   onPressed: _handleSend,
                   style: IconButton.styleFrom(
-                    backgroundColor: AppColors.primary,
+                    backgroundColor: context.primaryColor,
                     foregroundColor: Colors.white,
                   ),
                 ),
@@ -219,9 +219,9 @@ class _ChatSectionWidgetState extends State<ChatSectionWidget> {
   Widget _buildMessageBubble(BuildContext context, CommentModel message, bool isAdminReply) {
     final timeStr = "${message.createdAt.hour.toString().padLeft(2, '0')}:${message.createdAt.minute.toString().padLeft(2, '0')}";
 
-    final bubbleColor = isAdminReply ? AppColors.primary : AppColors.surfaceSubtle;
-    final textColor = isAdminReply ? Colors.white : AppColors.textPrimary;
-    final senderColor = isAdminReply ? Colors.white.withValues(alpha: 0.85) : AppColors.primary;
+    final bubbleColor = isAdminReply ? context.primaryColor : (context.isDark ? const Color(0xFF334155) : AppColors.surfaceSubtle);
+    final textColor = isAdminReply ? Colors.white : context.textPrimary;
+    final senderColor = isAdminReply ? Colors.white.withValues(alpha: 0.85) : context.primaryColor;
 
     return Align(
       alignment: isAdminReply ? Alignment.centerRight : Alignment.centerLeft,
@@ -237,7 +237,7 @@ class _ChatSectionWidgetState extends State<ChatSectionWidget> {
             bottomLeft: isAdminReply ? const Radius.circular(14) : Radius.zero,
             bottomRight: isAdminReply ? Radius.zero : const Radius.circular(14),
           ),
-          border: isAdminReply ? null : Border.all(color: AppColors.border),
+          border: isAdminReply ? null : Border.all(color: context.border),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -267,7 +267,7 @@ class _ChatSectionWidgetState extends State<ChatSectionWidget> {
                 timeStr,
                 style: TextStyle(
                   fontSize: 10,
-                  color: isAdminReply ? Colors.white.withValues(alpha: 0.6) : AppColors.textMuted,
+                  color: isAdminReply ? Colors.white.withValues(alpha: 0.6) : context.textMuted,
                 ),
               ),
             ),
@@ -277,4 +277,3 @@ class _ChatSectionWidgetState extends State<ChatSectionWidget> {
     );
   }
 }
-

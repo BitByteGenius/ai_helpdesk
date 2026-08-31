@@ -18,9 +18,9 @@ class UserPanel extends StatelessWidget {
         // ── Assigned Engineer ──
         Container(
           decoration: BoxDecoration(
-            color: AppColors.card,
+            color: context.cardBg,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppColors.border),
+            border: Border.all(color: context.border),
           ),
           padding: const EdgeInsets.all(16),
           child: Row(
@@ -42,18 +42,18 @@ class UserPanel extends StatelessWidget {
                   children: [
                     Text(
                       ticket.assignedTo?.name ?? "Awaiting Assignment",
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.w700,
                         fontSize: 14,
-                        color: AppColors.textPrimary,
+                        color: context.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       ticket.assignedTo?.email ?? "Support team will assign an engineer soon.",
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
-                        color: AppColors.textSecondary,
+                        color: context.textSecondary,
                       ),
                     ),
                   ],
@@ -68,20 +68,20 @@ class UserPanel extends StatelessWidget {
         // ── Ticket Details Summary ──
         Container(
           decoration: BoxDecoration(
-            color: AppColors.card,
+            color: context.cardBg,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppColors.border),
+            border: Border.all(color: context.border),
           ),
           padding: const EdgeInsets.all(20),
           child: Column(
             children: [
-              _infoRow("Category", ticket.category),
-              const Divider(color: AppColors.borderLight, height: 16),
-              _infoRow("Priority", ticket.priority),
-              const Divider(color: AppColors.borderLight, height: 16),
-              _infoRow("Created", DateFormat("dd MMM yyyy, hh:mm a").format(ticket.createdAt)),
-              const Divider(color: AppColors.borderLight, height: 16),
-              _infoRow("Updated", DateFormat("dd MMM yyyy, hh:mm a").format(ticket.updatedAt)),
+              _infoRow(context, "Category", ticket.category),
+              Divider(color: context.borderLight, height: 16),
+              _infoRow(context, "Priority", ticket.priority),
+              Divider(color: context.borderLight, height: 16),
+              _infoRow(context, "Created", DateFormat("dd MMM yyyy, hh:mm a").format(ticket.createdAt)),
+              Divider(color: context.borderLight, height: 16),
+              _infoRow(context, "Updated", DateFormat("dd MMM yyyy, hh:mm a").format(ticket.updatedAt)),
             ],
           ),
         ),
@@ -92,26 +92,26 @@ class UserPanel extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: AppColors.primarySubtle,
+            color: context.primarySubtle,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
+            border: Border.all(color: context.primaryColor.withValues(alpha: 0.2)),
           ),
-          child: const Row(
+          child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Icon(
                 Icons.info_outline_rounded,
-                color: AppColors.primary,
+                color: context.primaryColor,
                 size: 20,
               ),
-              SizedBox(width: 12),
+              const SizedBox(width: 12),
               Expanded(
                 child: Text(
                   "Our support team is actively reviewing your ticket. You'll receive updates here whenever the status changes or an engineer replies.",
                   style: TextStyle(
                     height: 1.4,
                     fontSize: 12,
-                    color: AppColors.textPrimary,
+                    color: context.textPrimary,
                   ),
                 ),
               ),
@@ -122,27 +122,27 @@ class UserPanel extends StatelessWidget {
     );
   }
 
-  Widget _infoRow(String title, String value) {
+  Widget _infoRow(BuildContext context, String title, String value) {
     return Row(
       children: [
         Text(
           title,
-          style: const TextStyle(
+          style: TextStyle(
             fontWeight: FontWeight.w600,
             fontSize: 13,
-            color: AppColors.textSecondary,
+            color: context.textSecondary,
           ),
         ),
         const Spacer(),
         Text(
           value,
-          style: const TextStyle(
+          style: TextStyle(
             fontWeight: FontWeight.w700,
             fontSize: 13,
-            color: AppColors.textPrimary,
+            color: context.textPrimary,
           ),
         ),
       ],
     );
   }
-}
+}

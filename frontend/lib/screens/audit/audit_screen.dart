@@ -47,11 +47,11 @@ class AuditScreen extends StatelessWidget {
                             width: 44,
                             height: 44,
                             decoration: BoxDecoration(
-                              color: AppColors.primarySubtle,
+                              color: context.primarySubtle,
                               borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: AppColors.primary.withValues(alpha: 0.15)),
+                              border: Border.all(color: context.primaryColor.withValues(alpha: 0.15)),
                             ),
-                            child: const Icon(Icons.shield_outlined, color: AppColors.primary, size: 24),
+                            child: Icon(Icons.shield_outlined, color: context.primaryColor, size: 24),
                           ),
                           const SizedBox(width: 14),
                           Expanded(
@@ -65,14 +65,20 @@ class AuditScreen extends StatelessWidget {
                                       style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                                             fontWeight: FontWeight.w800,
                                             letterSpacing: -0.4,
-                                            color: AppColors.textPrimary,
+                                            color: context.textPrimary,
+                                          ) ??
+                                          TextStyle(
+                                            fontSize: 22,
+                                            fontWeight: FontWeight.w800,
+                                            letterSpacing: -0.4,
+                                            color: context.textPrimary,
                                           ),
                                     ),
                                     const SizedBox(width: 10),
                                     Container(
                                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                                       decoration: BoxDecoration(
-                                        color: AppColors.successSubtle,
+                                        color: AppColors.success.withValues(alpha: context.isDark ? 0.15 : 0.1),
                                         borderRadius: BorderRadius.circular(20),
                                         border: Border.all(color: AppColors.success.withValues(alpha: 0.2)),
                                       ),
@@ -91,10 +97,10 @@ class AuditScreen extends StatelessWidget {
                                   ],
                                 ),
                                 const SizedBox(height: 4),
-                                const Text(
+                                Text(
                                   "Real-time compliance monitoring, user authentication history, entity state mutations, and AI telemetry.",
                                   style: TextStyle(
-                                    color: AppColors.textSecondary,
+                                    color: context.textSecondary,
                                     fontSize: 13,
                                   ),
                                 ),
@@ -116,13 +122,13 @@ class AuditScreen extends StatelessWidget {
                         if (isWide) {
                           return Row(
                             children: [
-                              Expanded(child: _buildMetricCard(title: "Total Logged Events", value: "$total", icon: Icons.receipt_long_rounded, color: AppColors.primary)),
+                              Expanded(child: _buildMetricCard(context: context, title: "Total Logged Events", value: "$total", icon: Icons.receipt_long_rounded, color: AppColors.primary)),
                               const SizedBox(width: 14),
-                              Expanded(child: _buildMetricCard(title: "Auth & Security", value: "$authCount", icon: Icons.verified_user_rounded, color: AppColors.success)),
+                              Expanded(child: _buildMetricCard(context: context, title: "Auth & Security", value: "$authCount", icon: Icons.verified_user_rounded, color: AppColors.success)),
                               const SizedBox(width: 14),
-                              Expanded(child: _buildMetricCard(title: "Data Mutations", value: "$mutationsCount", icon: Icons.swap_horiz_rounded, color: AppColors.warning)),
+                              Expanded(child: _buildMetricCard(context: context, title: "Data Mutations", value: "$mutationsCount", icon: Icons.swap_horiz_rounded, color: AppColors.warning)),
                               const SizedBox(width: 14),
-                              Expanded(child: _buildMetricCard(title: "AI & Automations", value: "$aiCount", icon: Icons.auto_awesome_rounded, color: AppColors.purple)),
+                              Expanded(child: _buildMetricCard(context: context, title: "AI & Automations", value: "$aiCount", icon: Icons.auto_awesome_rounded, color: AppColors.purple)),
                             ],
                           );
                         } else {
@@ -130,10 +136,10 @@ class AuditScreen extends StatelessWidget {
                             spacing: 12,
                             runSpacing: 12,
                             children: [
-                              SizedBox(width: constraints.maxWidth > 500 ? (constraints.maxWidth - 12) / 2 : double.infinity, child: _buildMetricCard(title: "Total Events", value: "$total", icon: Icons.receipt_long_rounded, color: AppColors.primary)),
-                              SizedBox(width: constraints.maxWidth > 500 ? (constraints.maxWidth - 12) / 2 : double.infinity, child: _buildMetricCard(title: "Auth Events", value: "$authCount", icon: Icons.verified_user_rounded, color: AppColors.success)),
-                              SizedBox(width: constraints.maxWidth > 500 ? (constraints.maxWidth - 12) / 2 : double.infinity, child: _buildMetricCard(title: "Mutations", value: "$mutationsCount", icon: Icons.swap_horiz_rounded, color: AppColors.warning)),
-                              SizedBox(width: constraints.maxWidth > 500 ? (constraints.maxWidth - 12) / 2 : double.infinity, child: _buildMetricCard(title: "AI Actions", value: "$aiCount", icon: Icons.auto_awesome_rounded, color: AppColors.purple)),
+                              SizedBox(width: constraints.maxWidth > 500 ? (constraints.maxWidth - 12) / 2 : double.infinity, child: _buildMetricCard(context: context, title: "Total Events", value: "$total", icon: Icons.receipt_long_rounded, color: AppColors.primary)),
+                              SizedBox(width: constraints.maxWidth > 500 ? (constraints.maxWidth - 12) / 2 : double.infinity, child: _buildMetricCard(context: context, title: "Auth Events", value: "$authCount", icon: Icons.verified_user_rounded, color: AppColors.success)),
+                              SizedBox(width: constraints.maxWidth > 500 ? (constraints.maxWidth - 12) / 2 : double.infinity, child: _buildMetricCard(context: context, title: "Mutations", value: "$mutationsCount", icon: Icons.swap_horiz_rounded, color: AppColors.warning)),
+                              SizedBox(width: constraints.maxWidth > 500 ? (constraints.maxWidth - 12) / 2 : double.infinity, child: _buildMetricCard(context: context, title: "AI Actions", value: "$aiCount", icon: Icons.auto_awesome_rounded, color: AppColors.purple)),
                             ],
                           );
                         }
@@ -158,6 +164,7 @@ class AuditScreen extends StatelessWidget {
   }
 
   Widget _buildMetricCard({
+    required BuildContext context,
     required String title,
     required String value,
     required IconData icon,
@@ -166,16 +173,16 @@ class AuditScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
       decoration: BoxDecoration(
-        color: AppColors.card,
+        color: context.cardBg,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: context.border),
       ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.1),
+              color: color.withValues(alpha: context.isDark ? 0.16 : 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(icon, color: color, size: 22),
@@ -188,20 +195,20 @@ class AuditScreen extends StatelessWidget {
               children: [
                 Text(
                   value,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.textPrimary,
+                    color: context.textPrimary,
                     letterSpacing: -0.5,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w500,
-                    color: AppColors.textSecondary,
+                    color: context.textSecondary,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -214,5 +221,3 @@ class AuditScreen extends StatelessWidget {
     );
   }
 }
-
-

@@ -16,9 +16,9 @@ class UploadCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.card,
+        color: context.cardBg,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: context.border),
       ),
       padding: const EdgeInsets.all(14),
       child: Row(
@@ -28,7 +28,7 @@ class UploadCard extends StatelessWidget {
             width: 52,
             height: 52,
             decoration: BoxDecoration(
-              color: AppColors.surfaceSubtle,
+              color: context.surfaceSubtle,
               borderRadius: BorderRadius.circular(10),
             ),
             child: upload.isImage
@@ -37,10 +37,10 @@ class UploadCard extends StatelessWidget {
                     child: Image.network(
                       upload.url,
                       fit: BoxFit.cover,
-                      errorBuilder: (ctx, err, stack) => const Icon(
+                      errorBuilder: (ctx, err, stack) => Icon(
                         Icons.image_outlined,
                         size: 24,
-                        color: AppColors.textSecondary,
+                        color: context.textSecondary,
                       ),
                     ),
                   )
@@ -49,7 +49,7 @@ class UploadCard extends StatelessWidget {
                         ? Icons.picture_as_pdf_outlined
                         : Icons.insert_drive_file_outlined,
                     size: 26,
-                    color: upload.isPdf ? AppColors.error : AppColors.primary,
+                    color: upload.isPdf ? AppColors.error : context.primaryColor,
                   ),
           ),
 
@@ -64,10 +64,10 @@ class UploadCard extends StatelessWidget {
                   upload.originalName,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 13.5,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
+                    color: context.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -76,24 +76,24 @@ class UploadCard extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
-                        color: AppColors.surfaceSubtle,
+                        color: context.surfaceSubtle,
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
                         upload.fileType.toUpperCase(),
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.w700,
-                          color: AppColors.textSecondary,
+                          color: context.textSecondary,
                         ),
                       ),
                     ),
                     const SizedBox(width: 8),
                     Text(
                       upload.formattedSize,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
-                        color: AppColors.textMuted,
+                        color: context.textMuted,
                       ),
                     ),
                   ],
@@ -105,10 +105,10 @@ class UploadCard extends StatelessWidget {
           /// View Button
           IconButton(
             tooltip: "Preview",
-            icon: const Icon(
+            icon: Icon(
               Icons.visibility_outlined,
               size: 20,
-              color: AppColors.primary,
+              color: context.primaryColor,
             ),
             onPressed: () {
               Get.toNamed(
@@ -128,11 +128,14 @@ class UploadCard extends StatelessWidget {
             ),
             onPressed: () {
               Get.defaultDialog(
+                backgroundColor: context.cardBg,
                 title: "Delete File",
-                titleStyle: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
-                middleText: "Are you sure you want to delete this file permanentely?",
+                titleStyle: TextStyle(fontWeight: FontWeight.w800, fontSize: 16, color: context.textPrimary),
+                middleText: "Are you sure you want to delete this file permanently?",
+                middleTextStyle: TextStyle(color: context.textSecondary, fontSize: 13),
                 textCancel: "Cancel",
                 textConfirm: "Delete",
+                cancelTextColor: context.textPrimary,
                 confirmTextColor: Colors.white,
                 buttonColor: AppColors.error,
                 onConfirm: () {
@@ -146,4 +149,4 @@ class UploadCard extends StatelessWidget {
       ),
     );
   }
-}
+}

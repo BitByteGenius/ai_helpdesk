@@ -142,6 +142,7 @@ class _AITicketPreviewDialogState extends State<AITicketPreviewDialog> {
     final isDesktop = MediaQuery.of(context).size.width > 700;
 
     return Dialog(
+      backgroundColor: context.cardBg,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
       child: ConstrainedBox(
@@ -159,16 +160,16 @@ class _AITicketPreviewDialogState extends State<AITicketPreviewDialog> {
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: AppColors.primarySubtle,
+                      color: context.primarySubtle,
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: const Icon(Icons.confirmation_number_outlined, color: AppColors.primary, size: 22),
+                    child: Icon(Icons.confirmation_number_outlined, color: context.primaryColor, size: 22),
                   ),
                   const SizedBox(width: 12),
-                  const Expanded(
+                  Expanded(
                     child: Text(
                       "Submit Support Ticket",
-                      style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18, color: AppColors.textPrimary),
+                      style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18, color: context.textPrimary),
                     ),
                   ),
                   IconButton(
@@ -178,7 +179,7 @@ class _AITicketPreviewDialogState extends State<AITicketPreviewDialog> {
                 ],
               ),
             ),
-            const Divider(height: 1, color: AppColors.borderLight),
+            Divider(height: 1, color: context.borderLight),
 
             // ── Dialog Scrollable Fields ──
             Expanded(
@@ -193,7 +194,7 @@ class _AITicketPreviewDialogState extends State<AITicketPreviewDialog> {
                         margin: const EdgeInsets.only(bottom: 20),
                         padding: const EdgeInsets.all(14),
                         decoration: BoxDecoration(
-                          color: AppColors.errorSubtle,
+                          color: AppColors.error.withValues(alpha: context.isDark ? 0.15 : 0.08),
                           border: Border.all(color: AppColors.error.withValues(alpha: 0.3)),
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -216,8 +217,8 @@ class _AITicketPreviewDialogState extends State<AITicketPreviewDialog> {
                                   const SizedBox(height: 2),
                                   Text(
                                     widget.draft["duplicateTicket"]?["title"] ?? "Similar ticket is active on dashboard.",
-                                    style: const TextStyle(
-                                      color: AppColors.textPrimary,
+                                    style: TextStyle(
+                                      color: context.textPrimary,
                                       fontSize: 12,
                                     ),
                                   ),
@@ -234,20 +235,20 @@ class _AITicketPreviewDialogState extends State<AITicketPreviewDialog> {
                       margin: const EdgeInsets.only(bottom: 20),
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: AppColors.surfaceSubtle,
+                        color: context.surfaceSubtle,
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: AppColors.border),
+                        border: Border.all(color: context.border),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Row(
+                          Row(
                             children: [
-                              Icon(Icons.auto_awesome_rounded, size: 16, color: AppColors.primary),
-                              SizedBox(width: 8),
+                              Icon(Icons.auto_awesome_rounded, size: 16, color: context.primaryColor),
+                              const SizedBox(width: 8),
                               Text(
                                 "AI Copilot Insights",
-                                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: AppColors.textPrimary),
+                                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: context.textPrimary),
                               ),
                             ],
                           ),
@@ -274,6 +275,7 @@ class _AITicketPreviewDialogState extends State<AITicketPreviewDialog> {
                     // ── Ticket Editable Title ──
                     TextField(
                       controller: _titleController,
+                      style: TextStyle(color: context.textPrimary, fontSize: 14),
                       decoration: const InputDecoration(
                         labelText: "Ticket Title",
                         prefixIcon: Icon(Icons.title_rounded, size: 18),
@@ -301,6 +303,7 @@ class _AITicketPreviewDialogState extends State<AITicketPreviewDialog> {
                     TextField(
                       controller: _descriptionController,
                       maxLines: 5,
+                      style: TextStyle(color: context.textPrimary, fontSize: 14),
                       decoration: const InputDecoration(
                         labelText: "Issue Description",
                         alignLabelWithHint: true,
@@ -310,8 +313,8 @@ class _AITicketPreviewDialogState extends State<AITicketPreviewDialog> {
 
                     // ── Conversation Transcript Toggle ──
                     CheckboxListTile(
-                      title: const Text("Include full chat transcript in description", style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
-                      subtitle: const Text("Appends conversation history for the support engineer", style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+                      title: Text("Include full chat transcript in description", style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: context.textPrimary)),
+                      subtitle: Text("Appends conversation history for the support engineer", style: TextStyle(fontSize: 12, color: context.textSecondary)),
                       value: _includeTranscript,
                       onChanged: (val) {
                         setState(() {
@@ -324,7 +327,7 @@ class _AITicketPreviewDialogState extends State<AITicketPreviewDialog> {
                     const SizedBox(height: 16),
 
                     // ── Attachments Upload UI ──
-                    const Text("Attachments (Optional)", style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.textPrimary)),
+                    Text("Attachments (Optional)", style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: context.textPrimary)),
                     const SizedBox(height: 8),
                     Obx(() {
                       return Column(
@@ -333,7 +336,7 @@ class _AITicketPreviewDialogState extends State<AITicketPreviewDialog> {
                           OutlinedButton.icon(
                             style: OutlinedButton.styleFrom(
                               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                              side: const BorderSide(color: AppColors.border),
+                              side: BorderSide(color: context.border),
                             ),
                             onPressed: _uploadController.pickAndUpload,
                             icon: const Icon(Icons.cloud_upload_outlined, size: 16),
@@ -356,7 +359,7 @@ class _AITicketPreviewDialogState extends State<AITicketPreviewDialog> {
                 ),
               ),
             ),
-            const Divider(height: 1, color: AppColors.borderLight),
+            Divider(height: 1, color: context.borderLight),
 
             // ── Dialog Footer Actions ──
             Padding(
@@ -391,11 +394,11 @@ class _AITicketPreviewDialogState extends State<AITicketPreviewDialog> {
       child: RichText(
         text: TextSpan(
           text: "$label: ",
-          style: const TextStyle(fontWeight: FontWeight.w700, color: AppColors.textPrimary, fontSize: 12),
+          style: TextStyle(fontWeight: FontWeight.w700, color: context.textPrimary, fontSize: 12),
           children: [
             TextSpan(
               text: value,
-              style: const TextStyle(fontWeight: FontWeight.normal, color: AppColors.textSecondary, fontSize: 12),
+              style: TextStyle(fontWeight: FontWeight.normal, color: context.textSecondary, fontSize: 12),
             ),
           ],
         ),
@@ -406,6 +409,8 @@ class _AITicketPreviewDialogState extends State<AITicketPreviewDialog> {
   Widget _buildCategoryDropdown() {
     return DropdownButtonFormField<String>(
       initialValue: _selectedCategory,
+      dropdownColor: context.cardBg,
+      style: TextStyle(color: context.textPrimary, fontSize: 13),
       decoration: const InputDecoration(
         labelText: "Category",
         prefixIcon: Icon(Icons.category_outlined, size: 18),
@@ -424,6 +429,8 @@ class _AITicketPreviewDialogState extends State<AITicketPreviewDialog> {
   Widget _buildPriorityDropdown() {
     return DropdownButtonFormField<String>(
       initialValue: _selectedPriority,
+      dropdownColor: context.cardBg,
+      style: TextStyle(color: context.textPrimary, fontSize: 13),
       decoration: const InputDecoration(
         labelText: "Priority",
         prefixIcon: Icon(Icons.outlined_flag_rounded, size: 18),
@@ -439,4 +446,3 @@ class _AITicketPreviewDialogState extends State<AITicketPreviewDialog> {
     );
   }
 }
-

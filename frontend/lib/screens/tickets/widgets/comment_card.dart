@@ -22,9 +22,9 @@ class CommentCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 6),
       decoration: BoxDecoration(
-        color: AppColors.card,
+        color: context.cardBg,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: context.border),
       ),
       padding: const EdgeInsets.all(14),
       child: Column(
@@ -35,12 +35,12 @@ class CommentCard extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 16,
-                backgroundColor: AppColors.primarySubtle,
+                backgroundColor: context.primarySubtle,
                 backgroundImage: comment.user.image.isNotEmpty ? NetworkImage(comment.user.image) : null,
                 child: comment.user.image.isEmpty
                     ? Text(
                         comment.user.name.isNotEmpty ? comment.user.name[0].toUpperCase() : "?",
-                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: AppColors.primary),
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: context.primaryColor),
                       )
                     : null,
               ),
@@ -51,17 +51,17 @@ class CommentCard extends StatelessWidget {
                   children: [
                     Text(
                       comment.user.name,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.w700,
                         fontSize: 13.5,
-                        color: AppColors.textPrimary,
+                        color: context.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       DateFormat("dd MMM, hh:mm a").format(comment.createdAt.toLocal()),
-                      style: const TextStyle(
-                        color: AppColors.textMuted,
+                      style: TextStyle(
+                        color: context.textMuted,
                         fontSize: 11,
                       ),
                     ),
@@ -73,17 +73,18 @@ class CommentCard extends StatelessWidget {
                   margin: const EdgeInsets.only(right: 4),
                   padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                   decoration: BoxDecoration(
-                    color: AppColors.surfaceSubtle,
+                    color: context.surfaceSubtle,
                     borderRadius: BorderRadius.circular(4),
                   ),
-                  child: const Text(
+                  child: Text(
                     "Edited",
-                    style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: AppColors.textMuted),
+                    style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: context.textMuted),
                   ),
                 ),
               if (isMine)
                 PopupMenuButton<String>(
-                  icon: const Icon(Icons.more_vert_rounded, size: 18, color: AppColors.textMuted),
+                  color: context.cardBg,
+                  icon: Icon(Icons.more_vert_rounded, size: 18, color: context.textMuted),
                   onSelected: (value) {
                     if (value == "edit") {
                       _showEditDialog(context, controller);
@@ -120,9 +121,9 @@ class CommentCard extends StatelessWidget {
           const SizedBox(height: 10),
           Text(
             comment.message,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 13.5,
-              color: AppColors.textPrimary,
+              color: context.textPrimary,
               height: 1.4,
             ),
           ),
@@ -136,6 +137,7 @@ class CommentCard extends StatelessWidget {
 
     Get.dialog(
       Dialog(
+        backgroundColor: context.cardBg,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         child: Container(
           width: 480,
@@ -144,14 +146,15 @@ class CommentCard extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 "Edit Comment",
-                style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16, color: AppColors.textPrimary),
+                style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16, color: context.textPrimary),
               ),
               const SizedBox(height: 16),
               TextField(
                 controller: textController,
                 maxLines: 4,
+                style: TextStyle(color: context.textPrimary, fontSize: 13),
                 decoration: const InputDecoration(
                   hintText: "Enter updated comment...",
                 ),
@@ -180,4 +183,4 @@ class CommentCard extends StatelessWidget {
       ),
     );
   }
-}
+}

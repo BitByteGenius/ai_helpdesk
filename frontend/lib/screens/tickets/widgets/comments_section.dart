@@ -16,9 +16,9 @@ class CommentsSection extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.card,
+        color: context.cardBg,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: context.border),
       ),
       padding: const EdgeInsets.all(20),
       child: Obx(() {
@@ -32,7 +32,7 @@ class CommentsSection extends StatelessWidget {
         }
 
         if (commentController.comments.isEmpty) {
-          return const SizedBox(
+          return SizedBox(
             height: 140,
             child: Center(
               child: Column(
@@ -41,22 +41,22 @@ class CommentsSection extends StatelessWidget {
                   Icon(
                     Icons.chat_bubble_outline_rounded,
                     size: 36,
-                    color: AppColors.textMuted,
+                    color: context.textMuted,
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Text(
                     "No comments yet",
                     style: TextStyle(
                       fontWeight: FontWeight.w700,
                       fontSize: 15,
-                      color: AppColors.textPrimary,
+                      color: context.textPrimary,
                     ),
                   ),
-                  SizedBox(height: 2),
+                  const SizedBox(height: 2),
                   Text(
                     "Start the discussion below.",
                     style: TextStyle(
-                      color: AppColors.textSecondary,
+                      color: context.textSecondary,
                       fontSize: 12,
                     ),
                   ),
@@ -82,4 +82,4 @@ class CommentsSection extends StatelessWidget {
       }),
     );
   }
-}
+}

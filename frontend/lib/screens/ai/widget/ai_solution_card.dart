@@ -18,9 +18,9 @@ class AISolutionCard extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: 10),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.card,
+        color: context.cardBg,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: context.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -30,18 +30,18 @@ class AISolutionCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
-                  color: AppColors.primarySubtle,
+                  color: context.primarySubtle,
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Icon(Icons.auto_awesome_rounded, size: 16, color: AppColors.primary),
+                child: Icon(Icons.auto_awesome_rounded, size: 16, color: context.primaryColor),
               ),
               const SizedBox(width: 10),
-              const Text(
+              Text(
                 "AI Analysis",
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary,
+                  color: context.textPrimary,
                 ),
               ),
             ],
@@ -58,29 +58,29 @@ class AISolutionCard extends StatelessWidget {
           const SizedBox(height: 14),
           Text(
             response.aiSummary,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 13,
-              color: AppColors.textSecondary,
+              color: context.textSecondary,
               height: 1.4,
             ),
           ),
           const SizedBox(height: 16),
-          const Divider(height: 1, color: AppColors.borderLight),
+          Divider(height: 1, color: context.borderLight),
           const SizedBox(height: 14),
-          const Text(
+          Text(
             "Suggested Solution",
             style: TextStyle(
               fontWeight: FontWeight.w700,
               fontSize: 13,
-              color: AppColors.textPrimary,
+              color: context.textPrimary,
             ),
           ),
           const SizedBox(height: 6),
           Text(
             response.reply,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 13,
-              color: AppColors.textPrimary,
+              color: context.textPrimary,
               height: 1.4,
             ),
           ),
@@ -89,4 +89,3 @@ class AISolutionCard extends StatelessWidget {
     );
   }
 }
-

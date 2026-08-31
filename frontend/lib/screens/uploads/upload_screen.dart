@@ -37,14 +37,20 @@ class UploadScreen extends GetView<UploadController> {
                                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                                       fontWeight: FontWeight.w800,
                                       letterSpacing: -0.4,
-                                      color: AppColors.textPrimary,
+                                      color: context.textPrimary,
+                                    ) ??
+                                    TextStyle(
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.w800,
+                                      letterSpacing: -0.4,
+                                      color: context.textPrimary,
                                     ),
                               ),
                               const SizedBox(height: 4),
-                              const Text(
+                              Text(
                                 "Supported formats: JPG, PNG, WEBP, PDF, DOC, DOCX (Max 25MB)",
                                 style: TextStyle(
-                                  color: AppColors.textSecondary,
+                                  color: context.textSecondary,
                                   fontSize: 13,
                                 ),
                               ),
@@ -67,10 +73,10 @@ class UploadScreen extends GetView<UploadController> {
                           width: double.infinity,
                           padding: const EdgeInsets.symmetric(vertical: 36, horizontal: 20),
                           decoration: BoxDecoration(
-                            color: AppColors.surfaceSubtle,
+                            color: context.surfaceSubtle,
                             borderRadius: BorderRadius.circular(16),
                             border: Border.all(
-                              color: AppColors.primary.withValues(alpha: 0.3),
+                              color: context.primaryColor.withValues(alpha: 0.3),
                               style: BorderStyle.solid,
                               width: 1.5,
                             ),
@@ -79,21 +85,21 @@ class UploadScreen extends GetView<UploadController> {
                             children: [
                               Container(
                                 padding: const EdgeInsets.all(14),
-                                decoration: const BoxDecoration(
-                                  color: AppColors.primarySubtle,
+                                decoration: BoxDecoration(
+                                  color: context.primarySubtle,
                                   shape: BoxShape.circle,
                                 ),
-                                child: const Icon(Icons.cloud_upload_rounded, size: 32, color: AppColors.primary),
+                                child: Icon(Icons.cloud_upload_rounded, size: 32, color: context.primaryColor),
                               ),
                               const SizedBox(height: 12),
-                              const Text(
+                              Text(
                                 "Click to select a file from your device",
-                                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: AppColors.textPrimary),
+                                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: context.textPrimary),
                               ),
                               const SizedBox(height: 4),
-                              const Text(
+                              Text(
                                 "Files will be processed and indexed automatically",
-                                style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                                style: TextStyle(fontSize: 12, color: context.textSecondary),
                               ),
                             ],
                           ),
@@ -110,24 +116,24 @@ class UploadScreen extends GetView<UploadController> {
                           width: double.infinity,
                           padding: const EdgeInsets.all(40),
                           decoration: BoxDecoration(
-                            color: AppColors.card,
+                            color: context.cardBg,
                             borderRadius: BorderRadius.circular(16),
-                            border: Border.all(color: AppColors.border),
+                            border: Border.all(color: context.border),
                           ),
-                          child: const Column(
+                          child: Column(
                             children: [
                               Icon(
                                 Icons.folder_open_rounded,
                                 size: 48,
-                                color: AppColors.textMuted,
+                                color: context.textMuted,
                               ),
-                              SizedBox(height: 12),
+                              const SizedBox(height: 12),
                               Text(
                                 "No uploaded files found",
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
-                                  color: AppColors.textSecondary,
+                                  color: context.textSecondary,
                                 ),
                               ),
                             ],
@@ -156,4 +162,3 @@ class UploadScreen extends GetView<UploadController> {
     );
   }
 }
-

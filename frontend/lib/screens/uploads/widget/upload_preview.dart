@@ -27,6 +27,7 @@ class UploadPreview extends StatelessWidget {
     final isImage = upload.isImage;
 
     return Scaffold(
+      backgroundColor: context.isDark ? AppColors.darkBackground : AppColors.lightBackground,
       appBar: AppBar(
         title: Text(upload.originalName, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
         actions: [
@@ -49,12 +50,12 @@ class UploadPreview extends StatelessWidget {
                     upload.url,
                     fit: BoxFit.contain,
                     errorBuilder: (_, _, _) {
-                      return const Column(
+                      return Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.broken_image_outlined, size: 48, color: AppColors.error),
-                          SizedBox(height: 12),
-                          Text("Unable to load image preview.", style: TextStyle(color: AppColors.textSecondary)),
+                          const Icon(Icons.broken_image_outlined, size: 48, color: AppColors.error),
+                          const SizedBox(height: 12),
+                          Text("Unable to load image preview.", style: TextStyle(color: context.textSecondary)),
                         ],
                       );
                     },
@@ -64,9 +65,9 @@ class UploadPreview extends StatelessWidget {
                   constraints: const BoxConstraints(maxWidth: 480),
                   padding: const EdgeInsets.all(32),
                   decoration: BoxDecoration(
-                    color: AppColors.card,
+                    color: context.cardBg,
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: AppColors.border),
+                    border: Border.all(color: context.border),
                   ),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -74,30 +75,30 @@ class UploadPreview extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.all(18),
                         decoration: BoxDecoration(
-                          color: (upload.isPdf ? AppColors.error : AppColors.primary).withValues(alpha: 0.1),
+                          color: (upload.isPdf ? AppColors.error : context.primaryColor).withValues(alpha: context.isDark ? 0.16 : 0.1),
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
                           upload.isPdf ? Icons.picture_as_pdf_outlined : Icons.insert_drive_file_outlined,
                           size: 48,
-                          color: upload.isPdf ? AppColors.error : AppColors.primary,
+                          color: upload.isPdf ? AppColors.error : context.primaryColor,
                         ),
                       ),
                       const SizedBox(height: 20),
                       Text(
                         upload.originalName,
                         textAlign: TextAlign.center,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w800,
-                          color: AppColors.textPrimary,
+                          color: context.textPrimary,
                         ),
                       ),
                       const SizedBox(height: 6),
                       Text(
                         "${upload.fileType.toUpperCase()} • ${upload.formattedSize}",
-                        style: const TextStyle(
-                          color: AppColors.textSecondary,
+                        style: TextStyle(
+                          color: context.textSecondary,
                           fontSize: 13,
                         ),
                       ),
@@ -118,4 +119,4 @@ class UploadPreview extends StatelessWidget {
       ),
     );
   }
-}
+}

@@ -1,75 +1,3 @@
-// import 'package:flutter/material.dart';
-// import 'package:frontend/models/notification_model.dart';
-
-
-// class NotificationTile extends StatelessWidget {
-//   final NotificationModel notification;
-//   final VoidCallback? onTap;
-//   final VoidCallback? onDelete;
-
-//   const NotificationTile({
-//     super.key,
-//     required this.notification,
-//     this.onTap,
-//     this.onDelete,
-//   });
-
-//   IconData getIcon() {
-//     switch (notification.type) {
-//       case "ticket":
-//         return Icons.confirmation_number;
-
-//       case "assignment":
-//         return Icons.assignment_ind;
-
-//       case "status":
-//         return Icons.update;
-
-//       case "comment":
-//         return Icons.comment;
-
-//       case "security":
-//         return Icons.security;
-
-//       default:
-//         return Icons.notifications;
-//     }
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Card(
-//       color: notification.isRead
-//           ? Colors.white
-//           : Colors.blue.shade50,
-//       child: ListTile(
-//         onTap: onTap,
-
-//         leading: CircleAvatar(
-//           child: Icon(getIcon()),
-//         ),
-
-//         title: Text(
-//           notification.title,
-//           style: TextStyle(
-//             fontWeight: notification.isRead
-//                 ? FontWeight.normal
-//                 : FontWeight.bold,
-//           ),
-//         ),
-
-//         subtitle: Text(notification.message),
-
-//         trailing: IconButton(
-//           icon: const Icon(Icons.delete),
-//           onPressed: onDelete,
-//         ),
-//       ),
-//     );
-//   }
-// }
-
-
 import 'package:flutter/material.dart';
 import 'package:frontend/core/theme/app_colors.dart';
 import 'package:frontend/models/notification_model.dart';
@@ -104,10 +32,10 @@ class NotificationTile extends StatelessWidget {
     }
   }
 
-  Color _getTypeColor() {
+  Color _getTypeColor(BuildContext context) {
     switch (notification.type.toLowerCase()) {
       case "ticket":
-        return AppColors.primary;
+        return context.primaryColor;
       case "assignment":
         return AppColors.purple;
       case "status":
@@ -117,13 +45,13 @@ class NotificationTile extends StatelessWidget {
       case "security":
         return AppColors.error;
       default:
-        return AppColors.primary;
+        return context.primaryColor;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final typeColor = _getTypeColor();
+    final typeColor = _getTypeColor(context);
 
     return Material(
       color: Colors.transparent,
@@ -132,10 +60,10 @@ class NotificationTile extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         child: Container(
           decoration: BoxDecoration(
-            color: notification.isRead ? AppColors.card : AppColors.primarySubtle.withValues(alpha: 0.5),
+            color: notification.isRead ? context.cardBg : context.primarySubtle.withValues(alpha: 0.5),
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: notification.isRead ? AppColors.border : AppColors.primary.withValues(alpha: 0.25),
+              color: notification.isRead ? context.border : context.primaryColor.withValues(alpha: 0.25),
             ),
           ),
           child: ClipRRect(
@@ -148,7 +76,7 @@ class NotificationTile extends StatelessWidget {
                     top: 0,
                     bottom: 0,
                     width: 4,
-                    child: Container(color: AppColors.primary),
+                    child: Container(color: context.primaryColor),
                   ),
                 Padding(
                   padding: const EdgeInsets.all(16.0),
@@ -158,7 +86,7 @@ class NotificationTile extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
-                          color: typeColor.withValues(alpha: 0.12),
+                          color: typeColor.withValues(alpha: context.isDark ? 0.16 : 0.12),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Icon(_getIcon(), size: 20, color: typeColor),
@@ -176,22 +104,22 @@ class NotificationTile extends StatelessWidget {
                                     style: TextStyle(
                                       fontWeight: notification.isRead ? FontWeight.w600 : FontWeight.w700,
                                       fontSize: 14,
-                                      color: AppColors.textPrimary,
+                                      color: context.textPrimary,
                                     ),
                                   ),
                                 ),
                                 Text(
                                   DateFormat("hh:mm a").format(notification.createdAt),
-                                  style: const TextStyle(fontSize: 11, color: AppColors.textMuted),
+                                  style: TextStyle(fontSize: 11, color: context.textMuted),
                                 ),
                               ],
                             ),
                             const SizedBox(height: 4),
                             Text(
                               notification.message,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 13,
-                                color: AppColors.textSecondary,
+                                color: context.textSecondary,
                                 height: 1.4,
                               ),
                             ),
@@ -200,10 +128,10 @@ class NotificationTile extends StatelessWidget {
                       ),
                       const SizedBox(width: 8),
                       IconButton(
-                        icon: const Icon(
+                        icon: Icon(
                           Icons.close_rounded,
                           size: 16,
-                          color: AppColors.textMuted,
+                          color: context.textMuted,
                         ),
                         tooltip: "Dismiss",
                         onPressed: onDelete,
@@ -218,4 +146,4 @@ class NotificationTile extends StatelessWidget {
       ),
     );
   }
-}
+}

@@ -86,16 +86,18 @@ class RecentTicketCard extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: AppColors.card,
+            color: context.cardBg,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppColors.border),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.02),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
-              ),
-            ],
+            border: Border.all(color: context.border),
+            boxShadow: context.isDark
+                ? null
+                : [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.02),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -110,10 +112,10 @@ class RecentTicketCard extends StatelessWidget {
                       ticket?.title ?? "Unable to Login",
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
-                        color: AppColors.textPrimary,
+                        color: context.textPrimary,
                       ),
                     ),
                   ),
@@ -130,8 +132,8 @@ class RecentTicketCard extends StatelessWidget {
                   ticket?.description ?? "No description provided.",
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    color: AppColors.textSecondary,
+                  style: TextStyle(
+                    color: context.textSecondary,
                     fontSize: 12,
                     height: 1.4,
                   ),
@@ -149,8 +151,8 @@ class RecentTicketCard extends StatelessWidget {
                     ticket == null
                         ? "-"
                         : DateFormat("dd MMM yyyy").format(ticket!.createdAt),
-                    style: const TextStyle(
-                      color: AppColors.textMuted,
+                    style: TextStyle(
+                      color: context.textMuted,
                       fontSize: 11,
                     ),
                   ),
@@ -163,4 +165,3 @@ class RecentTicketCard extends StatelessWidget {
     );
   }
 }
-

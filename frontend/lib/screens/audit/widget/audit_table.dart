@@ -17,19 +17,19 @@ class AuditTable extends GetView<AuditController> {
           height: 300,
           width: double.infinity,
           decoration: BoxDecoration(
-            color: AppColors.card,
+            color: context.cardBg,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppColors.border),
+            border: Border.all(color: context.border),
           ),
-          child: const Center(
+          child: Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                CircularProgressIndicator(),
-                SizedBox(height: 16),
+                const CircularProgressIndicator(),
+                const SizedBox(height: 16),
                 Text(
                   "Fetching audit trail records...",
-                  style: TextStyle(fontSize: 13, color: AppColors.textSecondary, fontWeight: FontWeight.w500),
+                  style: TextStyle(fontSize: 13, color: context.textSecondary, fontWeight: FontWeight.w500),
                 ),
               ],
             ),
@@ -42,9 +42,9 @@ class AuditTable extends GetView<AuditController> {
           width: double.infinity,
           padding: const EdgeInsets.symmetric(vertical: 48, horizontal: 24),
           decoration: BoxDecoration(
-            color: AppColors.card,
+            color: context.cardBg,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppColors.border),
+            border: Border.all(color: context.border),
           ),
           child: Center(
             child: Column(
@@ -53,20 +53,20 @@ class AuditTable extends GetView<AuditController> {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: AppColors.surfaceSubtle,
+                    color: context.surfaceSubtle,
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.history_toggle_off_rounded, size: 40, color: AppColors.textMuted),
+                  child: Icon(Icons.history_toggle_off_rounded, size: 40, color: context.textMuted),
                 ),
                 const SizedBox(height: 16),
-                const Text(
+                Text(
                   "No audit logs found matching criteria",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: context.textPrimary),
                 ),
                 const SizedBox(height: 6),
-                const Text(
+                Text(
                   "Try adjusting your action or entity filters above to see more records.",
-                  style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
+                  style: TextStyle(fontSize: 13, color: context.textSecondary),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 18),
@@ -88,9 +88,9 @@ class AuditTable extends GetView<AuditController> {
           return Container(
             width: double.infinity,
             decoration: BoxDecoration(
-              color: AppColors.card,
+              color: context.cardBg,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: AppColors.border),
+              border: Border.all(color: context.border),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -100,28 +100,28 @@ class AuditTable extends GetView<AuditController> {
                   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                   child: Row(
                     children: [
-                      const Icon(Icons.list_alt_rounded, size: 18, color: AppColors.primary),
+                      Icon(Icons.list_alt_rounded, size: 18, color: context.primaryColor),
                       const SizedBox(width: 8),
-                      const Text(
+                      Text(
                         "Audit Trail History",
-                        style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: AppColors.textPrimary),
+                        style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: context.textPrimary),
                       ),
                       const Spacer(),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                         decoration: BoxDecoration(
-                          color: AppColors.primarySubtle,
+                          color: context.primarySubtle,
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
                           "${controller.audits.length} Records",
-                          style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.primary),
+                          style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: context.primaryColor),
                         ),
                       ),
                     ],
                   ),
                 ),
-                const Divider(height: 1, color: AppColors.borderLight),
+                Divider(height: 1, color: context.borderLight),
 
                 // ── Content: Desktop Data Table or Mobile Card List ──
                 if (isMobile)
@@ -131,7 +131,6 @@ class AuditTable extends GetView<AuditController> {
                     padding: const EdgeInsets.all(12),
                     itemCount: controller.audits.length,
                     separatorBuilder: (_, _) => const SizedBox(height: 10),
-
                     itemBuilder: (context, index) {
                       final audit = controller.audits[index];
                       return _buildMobileCard(context, audit);
@@ -145,11 +144,11 @@ class AuditTable extends GetView<AuditController> {
                       child: DataTable(
                         horizontalMargin: 20,
                         columnSpacing: 24,
-                        headingRowColor: WidgetStateProperty.all(AppColors.surfaceSubtle),
-                        headingTextStyle: const TextStyle(
+                        headingRowColor: WidgetStateProperty.all(context.surfaceSubtle),
+                        headingTextStyle: TextStyle(
                           fontWeight: FontWeight.w700,
                           fontSize: 11.5,
-                          color: AppColors.textSecondary,
+                          color: context.textSecondary,
                           letterSpacing: 0.6,
                         ),
                         columns: const [
@@ -170,10 +169,10 @@ class AuditTable extends GetView<AuditController> {
                                   children: [
                                     CircleAvatar(
                                       radius: 14,
-                                      backgroundColor: AppColors.primary.withValues(alpha: 0.12),
+                                      backgroundColor: context.primaryColor.withValues(alpha: 0.12),
                                       child: Text(
                                         audit.user.name.isNotEmpty ? audit.user.name[0].toUpperCase() : "U",
-                                        style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: AppColors.primary),
+                                        style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: context.primaryColor),
                                       ),
                                     ),
                                     const SizedBox(width: 10),
@@ -183,12 +182,12 @@ class AuditTable extends GetView<AuditController> {
                                       children: [
                                         Text(
                                           audit.user.name.isNotEmpty ? audit.user.name : "System / Anonymous",
-                                          style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: AppColors.textPrimary),
+                                          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: context.textPrimary),
                                         ),
                                         if (audit.user.role.isNotEmpty)
                                           Text(
                                             audit.user.role.toUpperCase(),
-                                            style: const TextStyle(fontSize: 10.5, fontWeight: FontWeight.w600, color: AppColors.textMuted),
+                                            style: TextStyle(fontSize: 10.5, fontWeight: FontWeight.w600, color: context.textMuted),
                                           ),
                                       ],
                                     ),
@@ -202,13 +201,13 @@ class AuditTable extends GetView<AuditController> {
                                 Container(
                                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                                   decoration: BoxDecoration(
-                                    color: AppColors.surfaceSubtle,
+                                    color: context.surfaceSubtle,
                                     borderRadius: BorderRadius.circular(6),
-                                    border: Border.all(color: AppColors.border),
+                                    border: Border.all(color: context.border),
                                   ),
                                   child: Text(
                                     audit.entity,
-                                    style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w600, color: AppColors.textSecondary),
+                                    style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w600, color: context.textSecondary),
                                   ),
                                 ),
                               ),
@@ -219,14 +218,14 @@ class AuditTable extends GetView<AuditController> {
                                     audit.description,
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(fontSize: 12.5, color: AppColors.textPrimary),
+                                    style: TextStyle(fontSize: 12.5, color: context.textPrimary),
                                   ),
                                 ),
                               ),
                               DataCell(
                                 Text(
                                   audit.ipAddress.isNotEmpty ? audit.ipAddress : "—",
-                                  style: const TextStyle(fontFamily: 'monospace', fontSize: 11.5, color: AppColors.textSecondary),
+                                  style: TextStyle(fontFamily: 'monospace', fontSize: 11.5, color: context.textSecondary),
                                 ),
                               ),
                               DataCell(
@@ -236,11 +235,11 @@ class AuditTable extends GetView<AuditController> {
                                   children: [
                                     Text(
                                       DateFormat("dd MMM yyyy").format(audit.createdAt),
-                                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textPrimary),
+                                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: context.textPrimary),
                                     ),
                                     Text(
                                       DateFormat("hh:mm:ss a").format(audit.createdAt),
-                                      style: const TextStyle(fontSize: 11, color: AppColors.textMuted),
+                                      style: TextStyle(fontSize: 11, color: context.textMuted),
                                     ),
                                   ],
                                 ),
@@ -255,17 +254,17 @@ class AuditTable extends GetView<AuditController> {
                                   child: Container(
                                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                                     decoration: BoxDecoration(
-                                      color: AppColors.primarySubtle,
+                                      color: context.primarySubtle,
                                       borderRadius: BorderRadius.circular(8),
                                     ),
-                                    child: const Row(
+                                    child: Row(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        Icon(Icons.visibility_outlined, size: 14, color: AppColors.primary),
-                                        SizedBox(width: 4),
+                                        Icon(Icons.visibility_outlined, size: 14, color: context.primaryColor),
+                                        const SizedBox(width: 4),
                                         Text(
                                           "Inspect",
-                                          style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: AppColors.primary),
+                                          style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: context.primaryColor),
                                         ),
                                       ],
                                     ),
@@ -320,9 +319,9 @@ class AuditTable extends GetView<AuditController> {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: AppColors.background,
+        color: context.cardBg,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: context.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -334,41 +333,41 @@ class AuditTable extends GetView<AuditController> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
                 decoration: BoxDecoration(
-                  color: AppColors.surfaceSubtle,
+                  color: context.surfaceSubtle,
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Text(
                   audit.entity,
-                  style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.textSecondary),
+                  style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: context.textSecondary),
                 ),
               ),
               const Spacer(),
               Text(
                 DateFormat("dd MMM, hh:mm a").format(audit.createdAt),
-                style: const TextStyle(fontSize: 11, color: AppColors.textMuted),
+                style: TextStyle(fontSize: 11, color: context.textMuted),
               ),
             ],
           ),
           const SizedBox(height: 10),
           Text(
             audit.description,
-            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: AppColors.textPrimary),
+            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: context.textPrimary),
           ),
           const SizedBox(height: 10),
           Row(
             children: [
               CircleAvatar(
                 radius: 10,
-                backgroundColor: AppColors.primary.withValues(alpha: 0.12),
+                backgroundColor: context.primaryColor.withValues(alpha: 0.12),
                 child: Text(
                   audit.user.name.isNotEmpty ? audit.user.name[0].toUpperCase() : "U",
-                  style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w800, color: AppColors.primary),
+                  style: TextStyle(fontSize: 9, fontWeight: FontWeight.w800, color: context.primaryColor),
                 ),
               ),
               const SizedBox(width: 6),
               Text(
                 audit.user.name,
-                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textSecondary),
+                style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: context.textSecondary),
               ),
               const Spacer(),
               TextButton.icon(
@@ -434,4 +433,3 @@ class AuditTable extends GetView<AuditController> {
     }
   }
 }
-

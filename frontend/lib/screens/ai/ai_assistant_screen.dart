@@ -21,11 +21,11 @@ class AICopilotScreen extends GetView<AIChatController> {
         // ── Chat Header ──
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-          decoration: const BoxDecoration(
-            color: AppColors.card,
+          decoration: BoxDecoration(
+            color: context.cardBg,
             border: Border(
               bottom: BorderSide(
-                color: AppColors.border,
+                color: context.border,
               ),
             ),
           ),
@@ -42,9 +42,9 @@ class AICopilotScreen extends GetView<AIChatController> {
                       backgroundColor: Colors.transparent,
                       builder: (_) => Container(
                         height: MediaQuery.of(context).size.height * 0.75,
-                        decoration: const BoxDecoration(
-                          color: Color(0xFF0F172A),
-                          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                        decoration: BoxDecoration(
+                          color: context.isDark ? AppColors.darkBackground : const Color(0xFF0F172A),
+                          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
                         ),
                         clipBehavior: Clip.antiAlias,
                         child: const AIConversationSidebar(isDrawer: true),
@@ -59,10 +59,10 @@ class AICopilotScreen extends GetView<AIChatController> {
                 width: 32,
                 height: 32,
                 decoration: BoxDecoration(
-                  color: AppColors.primarySubtle,
+                  color: context.primarySubtle,
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Icon(Icons.auto_awesome_rounded, size: 16, color: AppColors.primary),
+                child: Icon(Icons.auto_awesome_rounded, size: 16, color: context.primaryColor),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -74,18 +74,18 @@ class AICopilotScreen extends GetView<AIChatController> {
                         controller.currentConversationTitle.value,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontWeight: FontWeight.w700,
                           fontSize: 14,
-                          color: AppColors.textPrimary,
+                          color: context.textPrimary,
                         ),
                       ),
                       const SizedBox(height: 1),
-                      const Text(
+                      Text(
                         "AI Copilot Assistant",
                         style: TextStyle(
                           fontSize: 11,
-                          color: AppColors.textMuted,
+                          color: context.textMuted,
                         ),
                       ),
                     ],
@@ -139,16 +139,17 @@ class AICopilotScreen extends GetView<AIChatController> {
                 if (controller.isGeneratingTicket.value) {
                   return Container(
                     color: Colors.black.withValues(alpha: 0.35),
-                    child: const Center(
+                    child: Center(
                       child: Card(
+                        color: context.cardBg,
                         child: Padding(
-                          padding: EdgeInsets.all(24.0),
+                          padding: const EdgeInsets.all(24.0),
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              CircularProgressIndicator(),
-                              SizedBox(height: 16),
-                              Text("Analyzing chat context...", style: TextStyle(fontWeight: FontWeight.w600)),
+                              const CircularProgressIndicator(),
+                              const SizedBox(height: 16),
+                              Text("Analyzing chat context...", style: TextStyle(fontWeight: FontWeight.w600, color: context.textPrimary)),
                             ],
                           ),
                         ),
@@ -191,7 +192,6 @@ class AICopilotScreen extends GetView<AIChatController> {
     );
   }
 
-
   Widget _buildWelcomeScreen(BuildContext context) {
     return SingleChildScrollView(
       child: Center(
@@ -205,45 +205,45 @@ class AICopilotScreen extends GetView<AIChatController> {
                 width: 64,
                 height: 64,
                 decoration: BoxDecoration(
-                  color: AppColors.primarySubtle,
+                  color: context.primarySubtle,
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
+                  border: Border.all(color: context.primaryColor.withValues(alpha: 0.2)),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.auto_awesome_rounded,
                   size: 32,
-                  color: AppColors.primary,
+                  color: context.primaryColor,
                 ),
               ),
               const SizedBox(height: 20),
-              const Text(
+              Text(
                 "Welcome to AI Support Copilot",
                 style: TextStyle(
                   fontWeight: FontWeight.w800,
                   fontSize: 22,
                   letterSpacing: -0.4,
-                  color: AppColors.textPrimary,
+                  color: context.textPrimary,
                 ),
               ),
               const SizedBox(height: 8),
-              const Text(
+              Text(
                 "Ask anything! I can answer questions, diagnose issues, or guide you through solutions. If needed, I can automatically generate a support ticket with your chat transcript.",
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: AppColors.textSecondary,
+                  color: context.textSecondary,
                   fontSize: 13.5,
                   height: 1.5,
                 ),
               ),
               const SizedBox(height: 32),
-              const Align(
+              Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
                   "Suggested Prompts",
                   style: TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 13,
-                    color: AppColors.textPrimary,
+                    color: context.textPrimary,
                   ),
                 ),
               ),
@@ -258,19 +258,19 @@ class AICopilotScreen extends GetView<AIChatController> {
                           child: Container(
                             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                             decoration: BoxDecoration(
-                              color: AppColors.card,
+                              color: context.cardBg,
                               borderRadius: BorderRadius.circular(10),
-                              border: Border.all(color: AppColors.border),
+                              border: Border.all(color: context.border),
                             ),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                const Icon(Icons.chat_bubble_outline_rounded, size: 14, color: AppColors.primary),
+                                Icon(Icons.chat_bubble_outline_rounded, size: 14, color: context.primaryColor),
                                 const SizedBox(width: 8),
                                 Flexible(
                                   child: Text(
                                     prompt,
-                                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textPrimary),
+                                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: context.textPrimary),
                                   ),
                                 ),
                               ],
@@ -291,27 +291,27 @@ class AICopilotScreen extends GetView<AIChatController> {
       margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
-        color: AppColors.primarySubtle,
+        color: context.primarySubtle,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
+        border: Border.all(color: context.primaryColor.withValues(alpha: 0.2)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
-              Icon(Icons.info_outline_rounded, color: AppColors.primary, size: 18),
-              SizedBox(width: 8),
+              Icon(Icons.info_outline_rounded, color: context.primaryColor, size: 18),
+              const SizedBox(width: 8),
               Text(
                 "Need additional help?",
-                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: AppColors.textPrimary),
+                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: context.textPrimary),
               ),
             ],
           ),
           const SizedBox(height: 4),
-          const Text(
+          Text(
             "I can generate a complete support ticket directly from our conversation. You can review and edit it before submission.",
-            style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
+            style: TextStyle(color: context.textSecondary, fontSize: 12),
           ),
           const SizedBox(height: 12),
           Row(
@@ -339,7 +339,7 @@ class AICopilotScreen extends GetView<AIChatController> {
               Expanded(
                 child: OutlinedButton(
                   style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: AppColors.border),
+                    side: BorderSide(color: context.border),
                   ),
                   onPressed: () {
                     controller.canCreateTicket.value = false;
@@ -357,22 +357,31 @@ class AICopilotScreen extends GetView<AIChatController> {
   Widget _buildInputBar(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: const BoxDecoration(
-        color: AppColors.card,
-        border: Border(top: BorderSide(color: AppColors.borderLight)),
+      decoration: BoxDecoration(
+        color: context.cardBg,
+        border: Border(top: BorderSide(color: context.borderLight)),
       ),
       child: Row(
         children: [
           Expanded(
             child: TextField(
               controller: controller.inputController,
-              style: const TextStyle(fontSize: 13, color: AppColors.textPrimary),
-              decoration: const InputDecoration(
+              style: TextStyle(fontSize: 13, color: context.textPrimary),
+              decoration: InputDecoration(
                 hintText: "Describe your issue or ask a question...",
+                hintStyle: TextStyle(fontSize: 13, color: context.textMuted),
                 isDense: true,
                 filled: true,
-                fillColor: AppColors.surfaceSubtle,
-                contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                fillColor: context.surfaceSubtle,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: context.border),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: context.border),
+                ),
               ),
               onSubmitted: (_) {
                 controller.sendMessage();
@@ -384,7 +393,7 @@ class AICopilotScreen extends GetView<AIChatController> {
             icon: const Icon(Icons.send_rounded, size: 18),
             onPressed: () => controller.sendMessage(),
             style: IconButton.styleFrom(
-              backgroundColor: AppColors.primary,
+              backgroundColor: context.primaryColor,
               foregroundColor: Colors.white,
               padding: const EdgeInsets.all(12),
             ),
@@ -393,4 +402,4 @@ class AICopilotScreen extends GetView<AIChatController> {
       ),
     );
   }
-}
+}

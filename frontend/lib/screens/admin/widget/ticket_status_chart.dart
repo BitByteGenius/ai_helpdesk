@@ -35,9 +35,9 @@ class TicketStatusChart extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.card,
+        color: context.cardBg,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: context.border),
       ),
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -46,25 +46,25 @@ class TicketStatusChart extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 "Ticket Status",
                 style: TextStyle(
                   fontWeight: FontWeight.w700,
                   fontSize: 16,
-                  color: AppColors.textPrimary,
+                  color: context.textPrimary,
                   letterSpacing: -0.2,
                 ),
               ),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
-                  color: AppColors.primarySubtle,
+                  color: context.primarySubtle,
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Text(
                   "$total Total",
-                  style: const TextStyle(
-                    color: AppColors.primary,
+                  style: TextStyle(
+                    color: context.primaryColor,
                     fontWeight: FontWeight.w700,
                     fontSize: 11,
                   ),
@@ -74,11 +74,11 @@ class TicketStatusChart extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           if (total == 0)
-            const Expanded(
+            Expanded(
               child: Center(
                 child: Text(
                   "No ticket data available",
-                  style: TextStyle(color: AppColors.textMuted, fontSize: 13),
+                  style: TextStyle(color: context.textMuted, fontSize: 13),
                 ),
               ),
             )
@@ -116,18 +116,18 @@ class TicketStatusChart extends StatelessWidget {
                           children: [
                             Text(
                               "$total",
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w800,
-                                color: AppColors.textPrimary,
+                                color: context.textPrimary,
                               ),
                             ),
-                            const Text(
+                            Text(
                               "Tickets",
                               style: TextStyle(
                                 fontSize: 10,
                                 fontWeight: FontWeight.w500,
-                                color: AppColors.textMuted,
+                                color: context.textMuted,
                               ),
                             ),
                           ],
@@ -157,9 +157,9 @@ class TicketStatusChart extends StatelessWidget {
                               Expanded(
                                 child: Text(
                                   entry.key,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 12,
-                                    color: AppColors.textSecondary,
+                                    color: context.textSecondary,
                                     fontWeight: FontWeight.w500,
                                   ),
                                   overflow: TextOverflow.ellipsis,
@@ -167,10 +167,10 @@ class TicketStatusChart extends StatelessWidget {
                               ),
                               Text(
                                 entry.value.toString(),
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontWeight: FontWeight.w700,
                                   fontSize: 12,
-                                  color: AppColors.textPrimary,
+                                  color: context.textPrimary,
                                 ),
                               ),
                             ],
@@ -186,4 +186,4 @@ class TicketStatusChart extends StatelessWidget {
       ),
     );
   }
-}
+}

@@ -5,8 +5,8 @@ import 'package:frontend/screens/user/widget/user_sidebar.dart';
 
 /// Shared layout for all user-facing screens.
 ///
-/// • Desktop (≥ 1100 px): permanent sidebar + no AppBar.
-/// • Mobile / Tablet (< 1100 px): Drawer-based sidebar + AppBar with
+/// • Desktop (≥ 1024 px): permanent sidebar + no AppBar.
+/// • Mobile / Tablet (< 1024 px): Drawer-based sidebar + AppBar with
 ///   hamburger menu and notifications badge.
 class UserLayout extends StatelessWidget {
   final Widget child;
@@ -28,26 +28,26 @@ class UserLayout extends StatelessWidget {
     final desktop = width >= 1024;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.isDark ? AppColors.darkBackground : AppColors.lightBackground,
       appBar: desktop
           ? null
           : AppBar(
-              backgroundColor: AppColors.card,
+              backgroundColor: context.cardBg,
               surfaceTintColor: Colors.transparent,
               elevation: 0,
               title: Text(
                 title,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary,
+                  color: context.textPrimary,
                   letterSpacing: -0.2,
                 ),
               ),
               centerTitle: false,
-              bottom: const PreferredSize(
-                preferredSize: Size.fromHeight(1),
-                child: Divider(height: 1, color: AppColors.border),
+              bottom: PreferredSize(
+                preferredSize: const Size.fromHeight(1),
+                child: Divider(height: 1, color: context.border),
               ),
               actions: actions ??
                   const [
@@ -79,4 +79,3 @@ class UserLayout extends StatelessWidget {
     );
   }
 }
-

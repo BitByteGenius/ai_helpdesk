@@ -13,7 +13,7 @@ class AuditDetailsDialog extends GetView<AuditController> {
   Widget build(BuildContext context) {
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      backgroundColor: AppColors.card,
+      backgroundColor: context.cardBg,
       insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 720),
@@ -53,7 +53,7 @@ class AuditDetailsDialog extends GetView<AuditController> {
                             children: [
                               Text(
                                 "Audit Event Inspection",
-                                style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 17, color: AppColors.textPrimary, letterSpacing: -0.2),
+                                style: TextStyle(fontWeight: FontWeight.w800, fontSize: 17, color: context.textPrimary, letterSpacing: -0.2),
                               ),
                               const SizedBox(width: 8),
                               Container(
@@ -72,14 +72,14 @@ class AuditDetailsDialog extends GetView<AuditController> {
                           const SizedBox(height: 2),
                           Text(
                             "ID: ${audit.id}",
-                            style: const TextStyle(fontFamily: 'monospace', fontSize: 11, color: AppColors.textMuted),
+                            style: TextStyle(fontFamily: 'monospace', fontSize: 11, color: context.textMuted),
                           ),
                         ],
                       ),
                     ),
                     IconButton(
                       tooltip: "Copy Event ID",
-                      icon: const Icon(Icons.copy_rounded, size: 18, color: AppColors.textSecondary),
+                      icon: Icon(Icons.copy_rounded, size: 18, color: context.textSecondary),
                       onPressed: () {
                         Clipboard.setData(ClipboardData(text: audit.id));
                         Get.snackbar("Copied", "Audit Log ID copied to clipboard", snackPosition: SnackPosition.BOTTOM, duration: const Duration(seconds: 2));
@@ -93,25 +93,25 @@ class AuditDetailsDialog extends GetView<AuditController> {
                   ],
                 ),
                 const SizedBox(height: 18),
-                const Divider(height: 1, color: AppColors.borderLight),
+                Divider(height: 1, color: context.borderLight),
                 const SizedBox(height: 18),
 
                 // ── User Actor Card ──
                 Container(
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
-                    color: AppColors.surfaceSubtle,
+                    color: context.surfaceSubtle,
                     borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: AppColors.border),
+                    border: Border.all(color: context.border),
                   ),
                   child: Row(
                     children: [
                       CircleAvatar(
                         radius: 20,
-                        backgroundColor: AppColors.primary.withValues(alpha: 0.15),
+                        backgroundColor: context.primaryColor.withValues(alpha: 0.15),
                         child: Text(
                           audit.user.name.isNotEmpty ? audit.user.name[0].toUpperCase() : "U",
-                          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: AppColors.primary),
+                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: context.primaryColor),
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -123,19 +123,19 @@ class AuditDetailsDialog extends GetView<AuditController> {
                               children: [
                                 Text(
                                   audit.user.name.isNotEmpty ? audit.user.name : "System Anonymous",
-                                  style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13.5, color: AppColors.textPrimary),
+                                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13.5, color: context.textPrimary),
                                 ),
                                 if (audit.user.role.isNotEmpty) ...[
                                   const SizedBox(width: 8),
                                   Container(
                                     padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                     decoration: BoxDecoration(
-                                      color: AppColors.primary.withValues(alpha: 0.1),
+                                      color: context.primaryColor.withValues(alpha: 0.1),
                                       borderRadius: BorderRadius.circular(4),
                                     ),
                                     child: Text(
                                       audit.user.role.toUpperCase(),
-                                      style: const TextStyle(fontSize: 9.5, fontWeight: FontWeight.w700, color: AppColors.primary),
+                                      style: TextStyle(fontSize: 9.5, fontWeight: FontWeight.w700, color: context.primaryColor),
                                     ),
                                   ),
                                 ],
@@ -144,7 +144,7 @@ class AuditDetailsDialog extends GetView<AuditController> {
                             const SizedBox(height: 2),
                             Text(
                               audit.user.email.isNotEmpty ? audit.user.email : "No email associated",
-                              style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                              style: TextStyle(fontSize: 12, color: context.textSecondary),
                             ),
                           ],
                         ),
@@ -159,11 +159,11 @@ class AuditDetailsDialog extends GetView<AuditController> {
                   spacing: 10,
                   runSpacing: 10,
                   children: [
-                    _metaChip(Icons.category_outlined, "Entity", audit.entity),
-                    _metaChip(Icons.access_time_rounded, "Timestamp", DateFormat("dd MMM yyyy, hh:mm:ss a").format(audit.createdAt)),
-                    _metaChip(Icons.router_rounded, "IP Address", audit.ipAddress.isNotEmpty ? audit.ipAddress : "127.0.0.1"),
+                    _metaChip(context, Icons.category_outlined, "Entity", audit.entity),
+                    _metaChip(context, Icons.access_time_rounded, "Timestamp", DateFormat("dd MMM yyyy, hh:mm:ss a").format(audit.createdAt)),
+                    _metaChip(context, Icons.router_rounded, "IP Address", audit.ipAddress.isNotEmpty ? audit.ipAddress : "127.0.0.1"),
                     if (audit.userAgent.isNotEmpty)
-                      _metaChip(Icons.devices_rounded, "Client", audit.userAgent),
+                      _metaChip(context, Icons.devices_rounded, "Client", audit.userAgent),
                   ],
                 ),
                 const SizedBox(height: 14),
@@ -173,21 +173,21 @@ class AuditDetailsDialog extends GetView<AuditController> {
                   width: double.infinity,
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
-                    color: AppColors.card,
+                    color: context.cardBg,
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppColors.border),
+                    border: Border.all(color: context.border),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         "Activity Description",
-                        style: TextStyle(fontWeight: FontWeight.w700, fontSize: 11.5, color: AppColors.textSecondary, letterSpacing: 0.3),
+                        style: TextStyle(fontWeight: FontWeight.w700, fontSize: 11.5, color: context.textSecondary, letterSpacing: 0.3),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         audit.description,
-                        style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w500, color: AppColors.textPrimary, height: 1.4),
+                        style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w500, color: context.textPrimary, height: 1.4),
                       ),
                     ],
                   ),
@@ -196,9 +196,9 @@ class AuditDetailsDialog extends GetView<AuditController> {
                 // ── State Diff Viewers ──
                 if (audit.oldData != null || audit.newData != null) ...[
                   const SizedBox(height: 20),
-                  const Text(
+                  Text(
                     "State Mutation Payload (Diff)",
-                    style: TextStyle(fontWeight: FontWeight.w800, fontSize: 13.5, color: AppColors.textPrimary),
+                    style: TextStyle(fontWeight: FontWeight.w800, fontSize: 13.5, color: context.textPrimary),
                   ),
                   const SizedBox(height: 10),
                   if (audit.oldData != null) ...[
@@ -206,7 +206,7 @@ class AuditDetailsDialog extends GetView<AuditController> {
                       title: "Previous State (Before Mutation)",
                       data: audit.oldData!,
                       borderColor: AppColors.error.withValues(alpha: 0.3),
-                      badgeColor: AppColors.errorSubtle,
+                      badgeColor: AppColors.error.withValues(alpha: 0.1),
                       textColor: AppColors.error,
                     ),
                     const SizedBox(height: 10),
@@ -216,7 +216,7 @@ class AuditDetailsDialog extends GetView<AuditController> {
                       title: "New State (After Mutation)",
                       data: audit.newData!,
                       borderColor: AppColors.success.withValues(alpha: 0.3),
-                      badgeColor: AppColors.successSubtle,
+                      badgeColor: AppColors.success.withValues(alpha: 0.1),
                       textColor: AppColors.success,
                     ),
                   ],
@@ -241,26 +241,26 @@ class AuditDetailsDialog extends GetView<AuditController> {
     );
   }
 
-  Widget _metaChip(IconData icon, String label, String value) {
+  Widget _metaChip(BuildContext context, IconData icon, String label, String value) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: AppColors.surfaceSubtle,
+        color: context.surfaceSubtle,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: context.border),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 14, color: AppColors.textSecondary),
+          Icon(icon, size: 14, color: context.textSecondary),
           const SizedBox(width: 6),
           Text(
             "$label: ",
-            style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w600, color: AppColors.textSecondary),
+            style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w600, color: context.textSecondary),
           ),
           Text(
             value,
-            style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+            style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: context.textPrimary),
           ),
         ],
       ),
@@ -389,4 +389,3 @@ class AuditDetailsDialog extends GetView<AuditController> {
     }
   }
 }
-

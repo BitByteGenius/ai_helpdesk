@@ -10,9 +10,9 @@ class AuditFilter extends GetView<AuditController> {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.card,
+        color: context.cardBg,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: context.border),
       ),
       padding: const EdgeInsets.all(18),
       child: Column(
@@ -27,17 +27,19 @@ class AuditFilter extends GetView<AuditController> {
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
-                  const Icon(Icons.filter_list_rounded, size: 16, color: AppColors.textSecondary),
+                  Icon(Icons.filter_list_rounded, size: 16, color: context.textSecondary),
                   const SizedBox(width: 8),
-                  const Text("Quick Filters:", style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.textSecondary)),
+                  Text("Quick Filters:", style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: context.textSecondary)),
                   const SizedBox(width: 10),
                   _buildQuickPill(
+                    context: context,
                     label: "All Events",
                     selected: activeAction.isEmpty && activeEntity.isEmpty,
                     onTap: controller.clearFilters,
                   ),
                   const SizedBox(width: 8),
                   _buildQuickPill(
+                    context: context,
                     label: "Logins & Security",
                     selected: activeAction == "LOGIN" || activeEntity == "AUTH",
                     onTap: () {
@@ -47,6 +49,7 @@ class AuditFilter extends GetView<AuditController> {
                   ),
                   const SizedBox(width: 8),
                   _buildQuickPill(
+                    context: context,
                     label: "Tickets",
                     selected: activeEntity == "TICKET",
                     onTap: () {
@@ -56,6 +59,7 @@ class AuditFilter extends GetView<AuditController> {
                   ),
                   const SizedBox(width: 8),
                   _buildQuickPill(
+                    context: context,
                     label: "AI Telemetry",
                     selected: activeAction == "AI_ANALYSIS" || activeEntity == "AI",
                     onTap: () {
@@ -65,6 +69,7 @@ class AuditFilter extends GetView<AuditController> {
                   ),
                   const SizedBox(width: 8),
                   _buildQuickPill(
+                    context: context,
                     label: "Mutations (Create/Update)",
                     selected: activeAction == "CREATE" || activeAction == "UPDATE",
                     onTap: () {
@@ -76,7 +81,7 @@ class AuditFilter extends GetView<AuditController> {
             );
           }),
           const SizedBox(height: 16),
-          const Divider(height: 1, color: AppColors.borderLight),
+          Divider(height: 1, color: context.borderLight),
           const SizedBox(height: 16),
 
           // ── Dropdowns & Reset ──
@@ -91,9 +96,11 @@ class AuditFilter extends GetView<AuditController> {
                   final val = controller.selectedAction.value;
                   return DropdownButtonFormField<String>(
                     initialValue: val.isEmpty ? null : val,
-                    decoration: const InputDecoration(
+                    dropdownColor: context.cardBg,
+                    style: TextStyle(fontSize: 13, color: context.textPrimary, fontWeight: FontWeight.w500),
+                    decoration: InputDecoration(
                       labelText: "Action Filter",
-                      prefixIcon: Icon(Icons.flash_on_rounded, size: 18, color: AppColors.primary),
+                      prefixIcon: Icon(Icons.flash_on_rounded, size: 18, color: context.primaryColor),
                       isDense: true,
                     ),
                     items: const [
@@ -121,6 +128,8 @@ class AuditFilter extends GetView<AuditController> {
                   final val = controller.selectedEntity.value;
                   return DropdownButtonFormField<String>(
                     initialValue: val.isEmpty ? null : val,
+                    dropdownColor: context.cardBg,
+                    style: TextStyle(fontSize: 13, color: context.textPrimary, fontWeight: FontWeight.w500),
                     decoration: const InputDecoration(
                       labelText: "Entity Type",
                       prefixIcon: Icon(Icons.category_outlined, size: 18, color: AppColors.secondary),
@@ -146,7 +155,7 @@ class AuditFilter extends GetView<AuditController> {
                 onPressed: controller.clearFilters,
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
-                  side: const BorderSide(color: AppColors.border),
+                  side: BorderSide(color: context.border),
                 ),
                 icon: const Icon(Icons.restart_alt_rounded, size: 18),
                 label: const Text("Reset All", style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
@@ -159,6 +168,7 @@ class AuditFilter extends GetView<AuditController> {
   }
 
   Widget _buildQuickPill({
+    required BuildContext context,
     required String label,
     required bool selected,
     required VoidCallback onTap,
@@ -170,10 +180,10 @@ class AuditFilter extends GetView<AuditController> {
         duration: const Duration(milliseconds: 150),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
-          color: selected ? AppColors.primary : AppColors.surfaceSubtle,
+          color: selected ? context.primaryColor : context.surfaceSubtle,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: selected ? AppColors.primary : AppColors.border,
+            color: selected ? context.primaryColor : context.border,
           ),
         ),
         child: Text(
@@ -181,11 +191,10 @@ class AuditFilter extends GetView<AuditController> {
           style: TextStyle(
             fontSize: 12,
             fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-            color: selected ? Colors.white : AppColors.textPrimary,
+            color: selected ? Colors.white : context.textPrimary,
           ),
         ),
       ),
     );
   }
 }
-

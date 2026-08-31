@@ -46,6 +46,7 @@ class TicketFilter extends GetView<TicketController> {
         crossAxisAlignment: WrapCrossAlignment.center,
         children: [
           _buildDropdown(
+            context: context,
             label: "Status",
             value: controller.selectedStatus.value,
             items: statuses,
@@ -54,6 +55,7 @@ class TicketFilter extends GetView<TicketController> {
             },
           ),
           _buildDropdown(
+            context: context,
             label: "Priority",
             value: controller.selectedPriority.value,
             items: priorities,
@@ -62,6 +64,7 @@ class TicketFilter extends GetView<TicketController> {
             },
           ),
           _buildDropdown(
+            context: context,
             label: "Category",
             value: controller.selectedCategory.value,
             items: categories,
@@ -75,7 +78,7 @@ class TicketFilter extends GetView<TicketController> {
             label: const Text("Clear Filters", style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
             style: OutlinedButton.styleFrom(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-              side: const BorderSide(color: AppColors.border),
+              side: BorderSide(color: context.border),
             ),
           ),
         ],
@@ -84,6 +87,7 @@ class TicketFilter extends GetView<TicketController> {
   }
 
   Widget _buildDropdown({
+    required BuildContext context,
     required String label,
     required String value,
     required List<String> items,
@@ -93,21 +97,22 @@ class TicketFilter extends GetView<TicketController> {
       width: 160,
       child: DropdownButtonFormField<String>(
         initialValue: items.contains(value) ? value : items.first,
-        style: const TextStyle(fontSize: 13, color: AppColors.textPrimary, fontWeight: FontWeight.w500),
+        dropdownColor: context.cardBg,
+        style: TextStyle(fontSize: 13, color: context.textPrimary, fontWeight: FontWeight.w500),
         decoration: InputDecoration(
           labelText: label,
-          labelStyle: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+          labelStyle: TextStyle(fontSize: 12, color: context.textSecondary),
           filled: true,
-          fillColor: AppColors.surfaceSubtle,
+          fillColor: context.surfaceSubtle,
           isDense: true,
           contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
-            borderSide: const BorderSide(color: AppColors.border),
+            borderSide: BorderSide(color: context.border),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
-            borderSide: const BorderSide(color: AppColors.border),
+            borderSide: BorderSide(color: context.border),
           ),
         ),
         items: items.map((e) {
@@ -115,7 +120,7 @@ class TicketFilter extends GetView<TicketController> {
             value: e,
             child: Text(
               e.isEmpty ? "All $label" : e,
-              style: const TextStyle(fontSize: 13),
+              style: TextStyle(fontSize: 13, color: context.textPrimary),
             ),
           );
         }).toList(),
@@ -123,4 +128,4 @@ class TicketFilter extends GetView<TicketController> {
       ),
     );
   }
-}
+}

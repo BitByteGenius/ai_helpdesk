@@ -83,23 +83,25 @@ class _LoginScreenState extends State<LoginScreen>
     final isDesktop = width >= 900;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.isDark ? AppColors.darkBackground : AppColors.lightBackground,
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 32),
           child: Container(
             constraints: BoxConstraints(maxWidth: isDesktop ? 860 : 440),
             decoration: BoxDecoration(
-              color: AppColors.card,
+              color: context.cardBg,
               borderRadius: BorderRadius.circular(24),
-              border: Border.all(color: AppColors.border),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.04),
-                  blurRadius: 24,
-                  offset: const Offset(0, 8),
-                ),
-              ],
+              border: Border.all(color: context.border),
+              boxShadow: context.isDark
+                  ? null
+                  : [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.04),
+                        blurRadius: 24,
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
             ),
             child: isDesktop
                 ? Row(
@@ -123,7 +125,7 @@ class _LoginScreenState extends State<LoginScreen>
                                 width: 52,
                                 height: 52,
                                 decoration: BoxDecoration(
-                                  color: AppColors.primary,
+                                  color: context.primaryColor,
                                   borderRadius: BorderRadius.circular(14),
                                 ),
                                 child: const Icon(
@@ -212,14 +214,14 @@ class _LoginScreenState extends State<LoginScreen>
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: AppColors.primarySubtle,
+                  color: context.primarySubtle,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Icon(
                   _isAdminMode
                       ? Icons.admin_panel_settings_rounded
                       : Icons.support_agent_rounded,
-                  color: AppColors.primary,
+                  color: context.primaryColor,
                   size: 22,
                 ),
               ),
@@ -227,12 +229,12 @@ class _LoginScreenState extends State<LoginScreen>
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     "Welcome back",
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w700,
-                      color: AppColors.textPrimary,
+                      color: context.textPrimary,
                       letterSpacing: -0.3,
                     ),
                   ),
@@ -240,9 +242,9 @@ class _LoginScreenState extends State<LoginScreen>
                     _isAdminMode
                         ? "Enter admin credentials"
                         : "Sign in to your client account",
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 12,
-                      color: AppColors.textSecondary,
+                      color: context.textSecondary,
                     ),
                   ),
                 ],
@@ -256,9 +258,9 @@ class _LoginScreenState extends State<LoginScreen>
           Container(
             padding: const EdgeInsets.all(4),
             decoration: BoxDecoration(
-              color: AppColors.surfaceSubtle,
+              color: context.surfaceSubtle,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppColors.border),
+              border: Border.all(color: context.border),
             ),
             child: TabBar(
               controller: _tabController,
@@ -266,17 +268,17 @@ class _LoginScreenState extends State<LoginScreen>
               dividerColor: Colors.transparent,
               indicator: BoxDecoration(
                 borderRadius: BorderRadius.circular(9),
-                color: Colors.white,
+                color: context.cardBg,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.06),
+                    color: Colors.black.withValues(alpha: context.isDark ? 0.2 : 0.06),
                     blurRadius: 6,
                     offset: const Offset(0, 2),
                   ),
                 ],
               ),
-              labelColor: AppColors.primary,
-              unselectedLabelColor: AppColors.textSecondary,
+              labelColor: context.primaryColor,
+              unselectedLabelColor: context.textSecondary,
               labelStyle: const TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w700,
@@ -318,6 +320,7 @@ class _LoginScreenState extends State<LoginScreen>
           TextFormField(
             controller: _emailController,
             keyboardType: TextInputType.emailAddress,
+            style: TextStyle(color: context.textPrimary, fontSize: 14),
             decoration: const InputDecoration(
               labelText: "Email address",
               hintText: "you@example.com",
@@ -343,6 +346,7 @@ class _LoginScreenState extends State<LoginScreen>
           TextFormField(
             controller: _passwordController,
             obscureText: _obscurePassword,
+            style: TextStyle(color: context.textPrimary, fontSize: 14),
             decoration: InputDecoration(
               labelText: "Password",
               hintText: "••••••••",
@@ -353,6 +357,7 @@ class _LoginScreenState extends State<LoginScreen>
                       ? Icons.visibility_outlined
                       : Icons.visibility_off_outlined,
                   size: 18,
+                  color: context.textMuted,
                 ),
                 onPressed: () {
                   setState(() => _obscurePassword = !_obscurePassword);
@@ -395,11 +400,11 @@ class _LoginScreenState extends State<LoginScreen>
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text(
+                Text(
                   "Don't have an account?",
                   style: TextStyle(
                     fontSize: 13,
-                    color: AppColors.textSecondary,
+                    color: context.textSecondary,
                   ),
                 ),
                 const SizedBox(width: 4),

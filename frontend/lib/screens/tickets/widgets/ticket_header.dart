@@ -18,9 +18,9 @@ class TicketHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.card,
+        color: context.cardBg,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: context.border),
       ),
       padding: const EdgeInsets.all(24),
       child: Column(
@@ -33,13 +33,13 @@ class TicketHeader extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: AppColors.primarySubtle,
+                  color: context.primarySubtle,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
                   "#${ticket.id.length > 8 ? ticket.id.substring(ticket.id.length - 6).toUpperCase() : ticket.id.toUpperCase()}",
-                  style: const TextStyle(
-                    color: AppColors.primary,
+                  style: TextStyle(
+                    color: context.primaryColor,
                     fontWeight: FontWeight.w800,
                     fontSize: 12,
                     letterSpacing: 0.5,
@@ -50,13 +50,13 @@ class TicketHeader extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
-                  color: AppColors.surfaceSubtle,
+                  color: context.surfaceSubtle,
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Text(
                   ticket.category,
-                  style: const TextStyle(
-                    color: AppColors.textSecondary,
+                  style: TextStyle(
+                    color: context.textSecondary,
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
                   ),
@@ -74,10 +74,10 @@ class TicketHeader extends StatelessWidget {
           // ── Title ──
           Text(
             ticket.title,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w800,
-              color: AppColors.textPrimary,
+              color: context.textPrimary,
               letterSpacing: -0.3,
             ),
           ),
@@ -87,15 +87,15 @@ class TicketHeader extends StatelessWidget {
           // ── Description ──
           Text(
             ticket.description,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
-              color: AppColors.textSecondary,
+              color: context.textSecondary,
               height: 1.5,
             ),
           ),
 
           const SizedBox(height: 20),
-          const Divider(color: AppColors.borderLight, height: 1),
+          Divider(color: context.borderLight, height: 1),
           const SizedBox(height: 16),
 
           // ── User / Assignee Row ──
@@ -152,14 +152,14 @@ class _UserInfo extends StatelessWidget {
       children: [
         CircleAvatar(
           radius: 18,
-          backgroundColor: isAssignee ? AppColors.purple.withValues(alpha: 0.15) : AppColors.primarySubtle,
+          backgroundColor: isAssignee ? AppColors.purple.withValues(alpha: 0.15) : context.primarySubtle,
           backgroundImage: image.isNotEmpty ? NetworkImage(image) : null,
           child: image.isEmpty
               ? Text(
                   name.isNotEmpty ? name[0].toUpperCase() : "?",
                   style: TextStyle(
                     fontWeight: FontWeight.w700,
-                    color: isAssignee ? AppColors.purple : AppColors.primary,
+                    color: isAssignee ? AppColors.purple : context.primaryColor,
                     fontSize: 13,
                   ),
                 )
@@ -172,29 +172,29 @@ class _UserInfo extends StatelessWidget {
             children: [
               Text(
                 title,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.textMuted,
+                  color: context.textMuted,
                   letterSpacing: 0.2,
                 ),
               ),
               const SizedBox(height: 2),
               Text(
                 name,
-                style: const TextStyle(
+                style: TextStyle(
                   fontWeight: FontWeight.w700,
                   fontSize: 13,
-                  color: AppColors.textPrimary,
+                  color: context.textPrimary,
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
               Text(
                 DateFormat("dd MMM yyyy • hh:mm a").format(date),
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 11,
-                  color: AppColors.textMuted,
+                  color: context.textMuted,
                 ),
               ),
             ],
@@ -203,4 +203,4 @@ class _UserInfo extends StatelessWidget {
       ],
     );
   }
-}
+}

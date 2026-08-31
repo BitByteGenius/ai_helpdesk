@@ -16,40 +16,40 @@ class AuditTimelineCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.card,
+        color: context.cardBg,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: context.border),
       ),
       padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
               Icon(
                 Icons.history_rounded,
-                color: AppColors.primary,
+                color: context.primaryColor,
                 size: 20,
               ),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               Text(
                 "Audit Timeline",
                 style: TextStyle(
                   fontWeight: FontWeight.w700,
                   fontSize: 16,
-                  color: AppColors.textPrimary,
+                  color: context.textPrimary,
                 ),
               ),
             ],
           ),
           const SizedBox(height: 20),
           if (audits.isEmpty)
-            const Center(
+            Center(
               child: Padding(
-                padding: EdgeInsets.all(20),
+                padding: const EdgeInsets.all(20),
                 child: Text(
                   "No activity available.",
-                  style: TextStyle(color: AppColors.textMuted, fontSize: 13),
+                  style: TextStyle(color: context.textMuted, fontSize: 13),
                 ),
               ),
             )
@@ -87,7 +87,7 @@ class AuditTimelineCard extends StatelessWidget {
                             Expanded(
                               child: Container(
                                 width: 2,
-                                color: AppColors.borderLight,
+                                color: context.borderLight,
                                 margin: const EdgeInsets.symmetric(vertical: 4),
                               ),
                             ),
@@ -105,18 +105,18 @@ class AuditTimelineCard extends StatelessWidget {
                                   Expanded(
                                     child: Text(
                                       audit.action,
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontWeight: FontWeight.w700,
                                         fontSize: 13,
-                                        color: AppColors.textPrimary,
+                                        color: context.textPrimary,
                                       ),
                                     ),
                                   ),
                                   Text(
                                     DateFormat("dd MMM • hh:mm a").format(audit.createdAt),
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 11,
-                                      color: AppColors.textMuted,
+                                      color: context.textMuted,
                                     ),
                                   ),
                                 ],
@@ -124,22 +124,22 @@ class AuditTimelineCard extends StatelessWidget {
                               const SizedBox(height: 3),
                               Text(
                                 audit.description,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 12,
-                                  color: AppColors.textSecondary,
+                                  color: context.textSecondary,
                                   height: 1.4,
                                 ),
                               ),
                               const SizedBox(height: 4),
                               Row(
                                 children: [
-                                  const Icon(Icons.person_outline_rounded, size: 12, color: AppColors.textMuted),
+                                  Icon(Icons.person_outline_rounded, size: 12, color: context.textMuted),
                                   const SizedBox(width: 4),
                                   Text(
                                     audit.user.name,
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 11,
-                                      color: AppColors.textMuted,
+                                      color: context.textMuted,
                                       fontWeight: FontWeight.w600,
                                     ),
                                   ),
@@ -200,4 +200,4 @@ class AuditTimelineCard extends StatelessWidget {
         return AppColors.secondary;
     }
   }
-}
+}

@@ -24,16 +24,18 @@ class TicketCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.card,
+        color: context.cardBg,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
-            blurRadius: 8,
-            offset: const Offset(0, 3),
-          ),
-        ],
+        border: Border.all(color: context.border),
+        boxShadow: context.isDark
+            ? null
+            : [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.02),
+                  blurRadius: 8,
+                  offset: const Offset(0, 3),
+                ),
+              ],
       ),
       child: Material(
         color: Colors.transparent,
@@ -51,10 +53,10 @@ class TicketCard extends StatelessWidget {
                     Expanded(
                       child: Text(
                         ticket.title,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w700,
-                          color: AppColors.textPrimary,
+                          color: context.textPrimary,
                         ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
@@ -69,9 +71,9 @@ class TicketCard extends StatelessWidget {
                   ticket.description,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 12,
-                    color: AppColors.textSecondary,
+                    color: context.textSecondary,
                     height: 1.4,
                   ),
                 ),
@@ -83,14 +85,14 @@ class TicketCard extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                       decoration: BoxDecoration(
-                        color: AppColors.surfaceSubtle,
+                        color: context.surfaceSubtle,
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Text(
                         ticket.category,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 11,
-                          color: AppColors.textSecondary,
+                          color: context.textSecondary,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -98,16 +100,16 @@ class TicketCard extends StatelessWidget {
                     const Spacer(),
                     Text(
                       DateFormat("dd MMM yyyy").format(ticket.createdAt),
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 11,
-                        color: AppColors.textMuted,
+                        color: context.textMuted,
                       ),
                     ),
                   ],
                 ),
                 if (isAdmin) ...[
                   const SizedBox(height: 8),
-                  const Divider(height: 16, color: AppColors.borderLight),
+                  Divider(height: 16, color: context.borderLight),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
@@ -140,4 +142,4 @@ class TicketCard extends StatelessWidget {
       ),
     );
   }
-}
+}

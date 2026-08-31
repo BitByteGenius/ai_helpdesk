@@ -19,18 +19,18 @@ class DashboardHeader extends StatelessWidget {
           children: [
             Text(
               "Welcome back, $userName",
-              style: const TextStyle(
+              style: TextStyle(
                 fontWeight: FontWeight.w800,
                 fontSize: 22,
-                color: AppColors.textPrimary,
+                color: context.textPrimary,
                 letterSpacing: -0.4,
               ),
             ),
             const SizedBox(height: 4),
-            const Text(
+            Text(
               "Track and manage your support requests and incident reports.",
               style: TextStyle(
-                color: AppColors.textSecondary,
+                color: context.textSecondary,
                 fontSize: 13,
               ),
             ),
@@ -39,4 +39,4 @@ class DashboardHeader extends StatelessWidget {
       ],
     );
   }
-}
+}

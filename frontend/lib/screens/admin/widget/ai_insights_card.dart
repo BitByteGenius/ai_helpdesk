@@ -11,6 +11,7 @@ class AiInsightsCard extends StatelessWidget {
   });
 
   Widget _metric({
+    required BuildContext context,
     required IconData icon,
     required String title,
     required String value,
@@ -20,9 +21,9 @@ class AiInsightsCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.06),
+        color: color.withValues(alpha: context.isDark ? 0.12 : 0.06),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: color.withValues(alpha: 0.18)),
+        border: Border.all(color: color.withValues(alpha: context.isDark ? 0.25 : 0.18)),
       ),
       child: Row(
         children: [
@@ -52,17 +53,17 @@ class AiInsightsCard extends StatelessWidget {
                 ),
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 12,
-                    color: AppColors.textPrimary,
+                    color: context.textPrimary,
                   ),
                 ),
                 Text(
                   subtitle,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 11,
-                    color: AppColors.textMuted,
+                    color: context.textMuted,
                   ),
                 ),
               ],
@@ -77,9 +78,9 @@ class AiInsightsCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.card,
+        color: context.cardBg,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: context.border),
       ),
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -91,22 +92,22 @@ class AiInsightsCard extends StatelessWidget {
                 width: 32,
                 height: 32,
                 decoration: BoxDecoration(
-                  color: AppColors.primarySubtle,
+                  color: context.primarySubtle,
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.auto_awesome_rounded,
-                  color: AppColors.primary,
+                  color: context.primaryColor,
                   size: 18,
                 ),
               ),
               const SizedBox(width: 10),
-              const Text(
+              Text(
                 "AI Insights & Intelligence",
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary,
+                  color: context.textPrimary,
                   letterSpacing: -0.2,
                 ),
               ),
@@ -120,6 +121,7 @@ class AiInsightsCard extends StatelessWidget {
                   children: [
                     Expanded(
                       child: _metric(
+                        context: context,
                         icon: Icons.psychology_rounded,
                         title: "AI Analyses",
                         value: insights.totalAnalysis.toString(),
@@ -130,6 +132,7 @@ class AiInsightsCard extends StatelessWidget {
                     const SizedBox(width: 14),
                     Expanded(
                       child: _metric(
+                        context: context,
                         icon: Icons.copy_all_rounded,
                         title: "Duplicate Tickets",
                         value: insights.duplicates.toString(),
@@ -140,6 +143,7 @@ class AiInsightsCard extends StatelessWidget {
                     const SizedBox(width: 14),
                     Expanded(
                       child: _metric(
+                        context: context,
                         icon: Icons.quickreply_rounded,
                         title: "Suggested Replies",
                         value: insights.suggestedReplies.toString(),
@@ -154,6 +158,7 @@ class AiInsightsCard extends StatelessWidget {
               return Column(
                 children: [
                   _metric(
+                    context: context,
                     icon: Icons.psychology_rounded,
                     title: "AI Analyses",
                     value: insights.totalAnalysis.toString(),
@@ -162,6 +167,7 @@ class AiInsightsCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 10),
                   _metric(
+                    context: context,
                     icon: Icons.copy_all_rounded,
                     title: "Duplicate Tickets",
                     value: insights.duplicates.toString(),
@@ -170,6 +176,7 @@ class AiInsightsCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 10),
                   _metric(
+                    context: context,
                     icon: Icons.quickreply_rounded,
                     title: "Suggested Replies",
                     value: insights.suggestedReplies.toString(),
@@ -184,4 +191,4 @@ class AiInsightsCard extends StatelessWidget {
       ),
     );
   }
-}
+}

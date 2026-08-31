@@ -79,7 +79,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final isDesktop = width >= 900;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.isDark ? AppColors.darkBackground : AppColors.lightBackground,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -95,16 +95,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
             constraints: BoxConstraints(maxWidth: isDesktop ? 500 : 440),
             padding: const EdgeInsets.all(32),
             decoration: BoxDecoration(
-              color: AppColors.card,
+              color: context.cardBg,
               borderRadius: BorderRadius.circular(24),
-              border: Border.all(color: AppColors.border),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.04),
-                  blurRadius: 24,
-                  offset: const Offset(0, 8),
-                ),
-              ],
+              border: Border.all(color: context.border),
+              boxShadow: context.isDark
+                  ? null
+                  : [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.04),
+                        blurRadius: 24,
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
             ),
             child: Form(
               key: _formKey,
@@ -118,17 +120,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         width: 44,
                         height: 44,
                         decoration: BoxDecoration(
-                          color: AppColors.primarySubtle,
+                          color: context.primarySubtle,
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.person_add_rounded,
-                          color: AppColors.primary,
+                          color: context.primaryColor,
                           size: 24,
                         ),
                       ),
                       const SizedBox(width: 14),
-                      const Column(
+                      Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
@@ -136,7 +138,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             style: TextStyle(
                               fontSize: 22,
                               fontWeight: FontWeight.w700,
-                              color: AppColors.textPrimary,
+                              color: context.textPrimary,
                               letterSpacing: -0.3,
                             ),
                           ),
@@ -144,7 +146,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             "Get started with your helpdesk portal",
                             style: TextStyle(
                               fontSize: 12,
-                              color: AppColors.textSecondary,
+                              color: context.textSecondary,
                             ),
                           ),
                         ],
@@ -157,6 +159,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   // ── Full Name Input ──
                   TextFormField(
                     controller: _nameController,
+                    style: TextStyle(color: context.textPrimary, fontSize: 14),
                     decoration: const InputDecoration(
                       labelText: "Full Name",
                       hintText: "John Doe",
@@ -176,6 +179,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   TextFormField(
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
+                    style: TextStyle(color: context.textPrimary, fontSize: 14),
                     decoration: const InputDecoration(
                       labelText: "Email address",
                       hintText: "you@example.com",
@@ -201,6 +205,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   TextFormField(
                     controller: _phoneController,
                     keyboardType: TextInputType.phone,
+                    style: TextStyle(color: context.textPrimary, fontSize: 14),
                     decoration: const InputDecoration(
                       labelText: "Phone Number",
                       hintText: "10-digit number",
@@ -223,6 +228,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   TextFormField(
                     controller: _passwordController,
                     obscureText: _obscurePassword,
+                    style: TextStyle(color: context.textPrimary, fontSize: 14),
                     decoration: InputDecoration(
                       labelText: "Password",
                       hintText: "Min. 6 characters",
@@ -233,6 +239,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               ? Icons.visibility_outlined
                               : Icons.visibility_off_outlined,
                           size: 18,
+                          color: context.textMuted,
                         ),
                         onPressed: () {
                           setState(() => _obscurePassword = !_obscurePassword);
@@ -275,11 +282,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text(
+                      Text(
                         "Already have an account?",
                         style: TextStyle(
                           fontSize: 13,
-                          color: AppColors.textSecondary,
+                          color: context.textSecondary,
                         ),
                       ),
                       const SizedBox(width: 4),
@@ -309,4 +316,3 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 }
-

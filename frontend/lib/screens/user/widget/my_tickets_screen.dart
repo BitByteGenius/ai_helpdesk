@@ -44,14 +44,20 @@ class MyTicketsScreen extends GetView<TicketController> {
                           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                                 fontWeight: FontWeight.w800,
                                 letterSpacing: -0.4,
-                                color: AppColors.textPrimary,
+                                color: context.textPrimary,
+                              ) ??
+                              TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: -0.4,
+                                color: context.textPrimary,
                               ),
                         ),
                         const SizedBox(height: 4),
-                        const Text(
+                        Text(
                           "Search and track all tickets submitted under your account.",
                           style: TextStyle(
-                            color: AppColors.textSecondary,
+                            color: context.textSecondary,
                             fontSize: 13,
                           ),
                         ),
@@ -71,9 +77,9 @@ class MyTicketsScreen extends GetView<TicketController> {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: AppColors.card,
+                    color: context.cardBg,
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: AppColors.border),
+                    border: Border.all(color: context.border),
                   ),
                   child: TextField(
                     onChanged: controller.searchTickets,
@@ -105,7 +111,7 @@ class MyTicketsScreen extends GetView<TicketController> {
                             const SizedBox(height: 12),
                             Text(
                               controller.errorMessage.value,
-                              style: const TextStyle(color: AppColors.textPrimary, fontSize: 15),
+                              style: TextStyle(color: context.textPrimary, fontSize: 15),
                             ),
                             const SizedBox(height: 16),
                             FilledButton.icon(
@@ -127,30 +133,30 @@ class MyTicketsScreen extends GetView<TicketController> {
                               width: 56,
                               height: 56,
                               decoration: BoxDecoration(
-                                color: AppColors.primarySubtle,
+                                color: context.primarySubtle,
                                 borderRadius: BorderRadius.circular(14),
                               ),
-                              child: const Icon(
+                              child: Icon(
                                 Icons.confirmation_number_outlined,
-                                color: AppColors.primary,
+                                color: context.primaryColor,
                                 size: 28,
                               ),
                             ),
                             const SizedBox(height: 16),
-                            const Text(
+                            Text(
                               "No tickets found",
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w700,
-                                color: AppColors.textPrimary,
+                                color: context.textPrimary,
                               ),
                             ),
                             const SizedBox(height: 6),
-                            const Text(
+                            Text(
                               "Try adjusting your search query or submit a new ticket.",
                               style: TextStyle(
                                 fontSize: 13,
-                                color: AppColors.textSecondary,
+                                color: context.textSecondary,
                               ),
                             ),
                           ],
@@ -183,4 +189,3 @@ class MyTicketsScreen extends GetView<TicketController> {
     );
   }
 }
-

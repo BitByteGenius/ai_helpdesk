@@ -24,15 +24,15 @@ class ProfileScreen extends GetView<ProfileController> {
         final user = controller.profile.value;
 
         if (user == null) {
-          return const Center(
+          return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.account_circle_outlined, size: 64, color: AppColors.error),
-                SizedBox(height: 16),
+                const Icon(Icons.account_circle_outlined, size: 64, color: AppColors.error),
+                const SizedBox(height: 16),
                 Text(
                   "Profile not found",
-                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16, color: AppColors.textPrimary),
+                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16, color: context.textPrimary),
                 ),
               ],
             ),
@@ -51,9 +51,18 @@ class ProfileScreen extends GetView<ProfileController> {
                   constraints: const BoxConstraints(maxWidth: 800),
                   child: Container(
                     decoration: BoxDecoration(
-                      color: AppColors.card,
+                      color: context.cardBg,
                       borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: AppColors.border),
+                      border: Border.all(color: context.border),
+                      boxShadow: context.isDark
+                          ? null
+                          : [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.03),
+                                blurRadius: 10,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
                     ),
                     padding: EdgeInsets.all(isDesktop ? 36 : 20),
                     child: Column(
@@ -64,13 +73,13 @@ class ProfileScreen extends GetView<ProfileController> {
                           children: [
                             CircleAvatar(
                               radius: 54,
-                              backgroundColor: AppColors.primarySubtle,
+                              backgroundColor: context.primarySubtle,
                               backgroundImage: user.profileImage.isNotEmpty ? NetworkImage(user.profileImage) : null,
                               child: user.profileImage.isEmpty
-                                  ? const Icon(
+                                  ? Icon(
                                       Icons.person_rounded,
                                       size: 54,
-                                      color: AppColors.primary,
+                                      color: context.primaryColor,
                                     )
                                   : null,
                             ),
@@ -80,7 +89,7 @@ class ProfileScreen extends GetView<ProfileController> {
                                 decoration: BoxDecoration(
                                   color: AppColors.success,
                                   shape: BoxShape.circle,
-                                  border: Border.all(color: Colors.white, width: 2.5),
+                                  border: Border.all(color: context.cardBg, width: 2.5),
                                 ),
                                 child: const Icon(Icons.check, size: 14, color: Colors.white),
                               ),
@@ -90,24 +99,24 @@ class ProfileScreen extends GetView<ProfileController> {
                         Text(
                           user.name,
                           textAlign: TextAlign.center,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontWeight: FontWeight.w800,
                             fontSize: 22,
                             letterSpacing: -0.3,
-                            color: AppColors.textPrimary,
+                            color: context.textPrimary,
                           ),
                         ),
                         const SizedBox(height: 4),
                         Text(
                           user.email,
                           textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            color: AppColors.textSecondary,
+                          style: TextStyle(
+                            color: context.textSecondary,
                             fontSize: 13.5,
                           ),
                         ),
                         const SizedBox(height: 24),
-                        const Divider(height: 1, color: AppColors.borderLight),
+                        Divider(height: 1, color: context.borderLight),
                         const SizedBox(height: 20),
 
                         // --- RESPONSIVE PROFILE INFO GRID ---
@@ -115,19 +124,20 @@ class ProfileScreen extends GetView<ProfileController> {
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Expanded(child: _buildInfoCard("Phone Number", user.phone, Icons.phone_outlined)),
+                              Expanded(child: _buildInfoCard(context, "Phone Number", user.phone, Icons.phone_outlined)),
                               const SizedBox(width: 16),
-                              Expanded(child: _buildInfoCard("Account Role", user.role.toUpperCase(), Icons.badge_outlined)),
+                              Expanded(child: _buildInfoCard(context, "Account Role", user.role.toUpperCase(), Icons.badge_outlined)),
                             ],
                           )
                         else ...[
-                          _buildInfoCard("Phone Number", user.phone, Icons.phone_outlined),
+                          _buildInfoCard(context, "Phone Number", user.phone, Icons.phone_outlined),
                           const SizedBox(height: 12),
-                          _buildInfoCard("Account Role", user.role.toUpperCase(), Icons.badge_outlined),
+                          _buildInfoCard(context, "Account Role", user.role.toUpperCase(), Icons.badge_outlined),
                         ],
 
                         const SizedBox(height: 12),
                         _buildInfoCard(
+                          context,
                           "Verification Status",
                           user.isVerified ? "Verified Account" : "Unverified Account",
                           user.isVerified ? Icons.verified_user_outlined : Icons.gpp_maybe_outlined,
@@ -135,7 +145,7 @@ class ProfileScreen extends GetView<ProfileController> {
                         ),
 
                         const SizedBox(height: 28),
-                        const Divider(height: 1, color: AppColors.borderLight),
+                        Divider(height: 1, color: context.borderLight),
                         const SizedBox(height: 24),
 
                         // --- ACCOUNT ACTIONS BAR ---
@@ -157,7 +167,7 @@ class ProfileScreen extends GetView<ProfileController> {
                                 child: OutlinedButton.icon(
                                   style: OutlinedButton.styleFrom(
                                     padding: const EdgeInsets.symmetric(vertical: 14),
-                                    side: const BorderSide(color: AppColors.border),
+                                    side: BorderSide(color: context.border),
                                   ),
                                   icon: const Icon(Icons.lock_reset_rounded, size: 18),
                                   label: const Text("Change Password", style: TextStyle(fontWeight: FontWeight.w600)),
@@ -184,7 +194,7 @@ class ProfileScreen extends GetView<ProfileController> {
                             child: OutlinedButton.icon(
                               style: OutlinedButton.styleFrom(
                                 padding: const EdgeInsets.symmetric(vertical: 14),
-                                side: const BorderSide(color: AppColors.border),
+                                side: BorderSide(color: context.border),
                               ),
                               icon: const Icon(Icons.lock_reset_rounded, size: 18),
                               label: const Text("Change Password", style: TextStyle(fontWeight: FontWeight.w600)),
@@ -220,23 +230,23 @@ class ProfileScreen extends GetView<ProfileController> {
     );
   }
 
-  Widget _buildInfoCard(String title, String value, IconData icon, {Color? iconColor}) {
-    final color = iconColor ?? AppColors.primary;
+  Widget _buildInfoCard(BuildContext context, String title, String value, IconData icon, {Color? iconColor}) {
+    final color = iconColor ?? context.primaryColor;
 
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surfaceSubtle,
+        color: context.surfaceSubtle,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: context.border),
       ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.1),
+              color: color.withValues(alpha: context.isDark ? 0.16 : 0.1),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(icon, size: 18, color: color),
@@ -248,8 +258,8 @@ class ProfileScreen extends GetView<ProfileController> {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
-                    color: AppColors.textSecondary,
+                  style: TextStyle(
+                    color: context.textSecondary,
                     fontSize: 12,
                     fontWeight: FontWeight.w500,
                   ),
@@ -257,10 +267,10 @@ class ProfileScreen extends GetView<ProfileController> {
                 const SizedBox(height: 2),
                 Text(
                   value.isNotEmpty ? value : "—",
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 13.5,
-                    color: AppColors.textPrimary,
+                    color: context.textPrimary,
                   ),
                 ),
               ],
@@ -270,4 +280,4 @@ class ProfileScreen extends GetView<ProfileController> {
       ),
     );
   }
-}
+}

@@ -26,14 +26,20 @@ class AdminAiScreen extends StatelessWidget {
                       style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                             fontWeight: FontWeight.w800,
                             letterSpacing: -0.4,
-                            color: AppColors.textPrimary,
+                            color: context.textPrimary,
+                          ) ??
+                          TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: -0.4,
+                            color: context.textPrimary,
                           ),
                     ),
                     const SizedBox(height: 4),
-                    const Text(
+                    Text(
                       "Monitor automated ticket categorization, priority prediction, and LLM copilot status across your organization.",
                       style: TextStyle(
-                        color: AppColors.textSecondary,
+                        color: context.textSecondary,
                         fontSize: 13,
                       ),
                     ),
@@ -43,33 +49,33 @@ class AdminAiScreen extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                        color: AppColors.card,
+                        color: context.cardBg,
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: AppColors.border),
+                        border: Border.all(color: context.border),
                       ),
                       child: Row(
                         children: [
                           Container(
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
-                              color: AppColors.successSubtle,
+                              color: AppColors.success.withValues(alpha: context.isDark ? 0.16 : 0.1),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: const Icon(Icons.check_circle_outline_rounded, color: AppColors.success, size: 28),
                           ),
                           const SizedBox(width: 16),
-                          const Expanded(
+                          Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
                                   "AI Services Operational",
-                                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16, color: AppColors.textPrimary),
+                                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16, color: context.textPrimary),
                                 ),
-                                SizedBox(height: 4),
+                                const SizedBox(height: 4),
                                 Text(
                                   "Real-time ticket analysis, automated duplicate detection, and conversational copilot are running normally.",
-                                  style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
+                                  style: TextStyle(color: context.textSecondary, fontSize: 13),
                                 ),
                               ],
                             ),
@@ -84,37 +90,41 @@ class AdminAiScreen extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                        color: AppColors.card,
+                        color: context.cardBg,
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: AppColors.border),
+                        border: Border.all(color: context.border),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
+                          Text(
                             "Active AI Capabilities",
-                            style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15, color: AppColors.textPrimary),
+                            style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15, color: context.textPrimary),
                           ),
                           const SizedBox(height: 16),
                           _buildFeatureRow(
+                            context: context,
                             icon: Icons.auto_awesome_rounded,
                             title: "Smart Categorization & Priority",
                             description: "Automatically analyzes incoming user tickets and assigns appropriate categories and SLA priorities.",
                           ),
-                          const Divider(height: 24, color: AppColors.borderLight),
+                          Divider(height: 24, color: context.borderLight),
                           _buildFeatureRow(
+                            context: context,
                             icon: Icons.content_copy_rounded,
                             title: "Duplicate Ticket Detection",
                             description: "Detects similar pending tickets submitted across departments to prevent duplicate engineering effort.",
                           ),
-                          const Divider(height: 24, color: AppColors.borderLight),
+                          Divider(height: 24, color: context.borderLight),
                           _buildFeatureRow(
+                            context: context,
                             icon: Icons.chat_bubble_outline_rounded,
                             title: "Interactive User Support Copilot",
                             description: "Provides instant conversational troubleshooting and automatically drafts tickets with transcripts.",
                           ),
-                          const Divider(height: 24, color: AppColors.borderLight),
+                          Divider(height: 24, color: context.borderLight),
                           _buildFeatureRow(
+                            context: context,
                             icon: Icons.reply_all_rounded,
                             title: "Agent Suggested Replies & Root Cause",
                             description: "Generates one-click reply drafts and estimated root causes for engineers inside ticket details.",
@@ -132,17 +142,22 @@ class AdminAiScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildFeatureRow({required IconData icon, required String title, required String description}) {
+  Widget _buildFeatureRow({
+    required BuildContext context,
+    required IconData icon,
+    required String title,
+    required String description,
+  }) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: AppColors.primarySubtle,
+            color: context.primarySubtle,
             borderRadius: BorderRadius.circular(10),
           ),
-          child: Icon(icon, size: 18, color: AppColors.primary),
+          child: Icon(icon, size: 18, color: context.primaryColor),
         ),
         const SizedBox(width: 14),
         Expanded(
@@ -151,12 +166,12 @@ class AdminAiScreen extends StatelessWidget {
             children: [
               Text(
                 title,
-                style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13.5, color: AppColors.textPrimary),
+                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13.5, color: context.textPrimary),
               ),
               const SizedBox(height: 2),
               Text(
                 description,
-                style: const TextStyle(fontSize: 12.5, color: AppColors.textSecondary, height: 1.4),
+                style: TextStyle(fontSize: 12.5, color: context.textSecondary, height: 1.4),
               ),
             ],
           ),
@@ -165,4 +180,3 @@ class AdminAiScreen extends StatelessWidget {
     );
   }
 }
-

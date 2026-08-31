@@ -17,9 +17,9 @@ class UploadProgress extends GetView<UploadController> {
 
       return Container(
         decoration: BoxDecoration(
-          color: AppColors.card,
+          color: context.cardBg,
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: AppColors.border),
+          border: Border.all(color: context.border),
         ),
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -29,32 +29,32 @@ class UploadProgress extends GetView<UploadController> {
                 Container(
                   padding: const EdgeInsets.all(6),
                   decoration: BoxDecoration(
-                    color: AppColors.primarySubtle,
+                    color: context.primarySubtle,
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.cloud_upload_outlined,
                     size: 18,
-                    color: AppColors.primary,
+                    color: context.primaryColor,
                   ),
                 ),
                 const SizedBox(width: 10),
-                const Expanded(
+                Expanded(
                   child: Text(
                     "Uploading file...",
                     style: TextStyle(
                       fontWeight: FontWeight.w700,
                       fontSize: 13,
-                      color: AppColors.textPrimary,
+                      color: context.textPrimary,
                     ),
                   ),
                 ),
                 Text(
                   "${(progress * 100).toStringAsFixed(0)}%",
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontWeight: FontWeight.w800,
                     fontSize: 13,
-                    color: AppColors.primary,
+                    color: context.primaryColor,
                   ),
                 ),
               ],
@@ -65,8 +65,8 @@ class UploadProgress extends GetView<UploadController> {
               child: LinearProgressIndicator(
                 value: progress,
                 minHeight: 6,
-                backgroundColor: AppColors.surfaceSubtle,
-                color: AppColors.primary,
+                backgroundColor: context.surfaceSubtle,
+                color: context.primaryColor,
               ),
             ),
           ],
@@ -74,4 +74,4 @@ class UploadProgress extends GetView<UploadController> {
       );
     });
   }
-}
+}

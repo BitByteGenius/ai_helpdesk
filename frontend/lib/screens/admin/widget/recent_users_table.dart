@@ -41,9 +41,9 @@ class RecentUsersTable extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.card,
+        color: context.cardBg,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: context.border),
       ),
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -53,25 +53,25 @@ class RecentUsersTable extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 "Recent Users",
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary,
+                  color: context.textPrimary,
                   letterSpacing: -0.2,
                 ),
               ),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
-                  color: AppColors.surfaceSubtle,
+                  color: context.surfaceSubtle,
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Text(
                   "${users.length} Active",
-                  style: const TextStyle(
-                    color: AppColors.textSecondary,
+                  style: TextStyle(
+                    color: context.textSecondary,
                     fontWeight: FontWeight.w600,
                     fontSize: 11,
                   ),
@@ -83,12 +83,12 @@ class RecentUsersTable extends StatelessWidget {
           const SizedBox(height: 16),
 
           if (users.isEmpty)
-            const SizedBox(
+            SizedBox(
               height: 120,
               child: Center(
                 child: Text(
                   "No users registered yet",
-                  style: TextStyle(color: AppColors.textMuted, fontSize: 13),
+                  style: TextStyle(color: context.textMuted, fontSize: 13),
                 ),
               ),
             )
@@ -97,7 +97,7 @@ class RecentUsersTable extends StatelessWidget {
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemCount: users.length,
-              separatorBuilder: (_, _) => const Divider(height: 16, color: AppColors.borderLight),
+              separatorBuilder: (_, _) => Divider(height: 16, color: context.borderLight),
               itemBuilder: (context, index) {
                 final user = users[index];
                 return _UserRow(
@@ -135,16 +135,16 @@ class _UserRow extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: 18,
-            backgroundColor: AppColors.primarySubtle,
+            backgroundColor: context.primarySubtle,
             backgroundImage: user.profileImage.isNotEmpty
                 ? NetworkImage(user.profileImage)
                 : null,
             child: user.profileImage.isEmpty
                 ? Text(
                     user.name.isNotEmpty ? user.name[0].toUpperCase() : "?",
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontWeight: FontWeight.w700,
-                      color: AppColors.primary,
+                      color: context.primaryColor,
                       fontSize: 14,
                     ),
                   )
@@ -157,17 +157,17 @@ class _UserRow extends StatelessWidget {
               children: [
                 Text(
                   user.name.isNotEmpty ? user.name : "Unnamed User",
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 13,
-                    color: AppColors.textPrimary,
+                    color: context.textPrimary,
                   ),
                 ),
                 Text(
                   user.email,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 11,
-                    color: AppColors.textMuted,
+                    color: context.textMuted,
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -177,9 +177,9 @@ class _UserRow extends StatelessWidget {
           if (isDesktop && user.phone.isNotEmpty) ...[
             Text(
               user.phone,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 12,
-                color: AppColors.textSecondary,
+                color: context.textSecondary,
               ),
             ),
             const SizedBox(width: 16),
@@ -211,9 +211,9 @@ class _UserRow extends StatelessWidget {
             const SizedBox(width: 16),
             Text(
               DateFormat("dd MMM yyyy").format(user.createdAt!),
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 11,
-                color: AppColors.textMuted,
+                color: context.textMuted,
               ),
             ),
           ],
@@ -221,4 +221,4 @@ class _UserRow extends StatelessWidget {
       ),
     );
   }
-}
+}

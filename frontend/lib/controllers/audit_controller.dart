@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:frontend/servicies/audit_service.dart';
 import 'package:get/get.dart';
 
@@ -35,7 +36,7 @@ class AuditController extends GetxController {
       );
       ticketAudits.assignAll(logs);
     } catch (e) {
-      print("Failed to fetch ticket audits: $e");
+      debugPrint("Failed to fetch ticket audits: $e");
     } finally {
       isLoadingTicketAudits.value = false;
     }

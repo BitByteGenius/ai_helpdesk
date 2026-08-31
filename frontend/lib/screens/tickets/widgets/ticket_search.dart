@@ -40,10 +40,11 @@ class _TicketSearchState extends State<TicketSearch> {
     return TextField(
       controller: controller.searchController,
       onChanged: _onSearch,
+      style: TextStyle(color: context.textPrimary, fontSize: 13),
       decoration: InputDecoration(
         hintText: "Search tickets by title, description, or requester...",
-        hintStyle: const TextStyle(fontSize: 13, color: AppColors.textMuted),
-        prefixIcon: const Icon(Icons.search_rounded, size: 18, color: AppColors.textSecondary),
+        hintStyle: TextStyle(fontSize: 13, color: context.textMuted),
+        prefixIcon: Icon(Icons.search_rounded, size: 18, color: context.textSecondary),
         suffixIcon: ValueListenableBuilder<TextEditingValue>(
           valueListenable: controller.searchController,
           builder: (context, value, _) {
@@ -61,22 +62,21 @@ class _TicketSearchState extends State<TicketSearch> {
           },
         ),
         filled: true,
-        fillColor: AppColors.surfaceSubtle,
+        fillColor: context.surfaceSubtle,
         contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.border),
+          borderSide: BorderSide(color: context.border),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.border),
+          borderSide: BorderSide(color: context.border),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+          borderSide: BorderSide(color: context.primaryColor, width: 1.5),
         ),
       ),
     );
   }
 }
-

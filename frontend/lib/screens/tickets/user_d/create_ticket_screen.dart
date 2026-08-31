@@ -70,14 +70,20 @@ class _CreateTicketScreenState extends State<CreateTicketScreen> {
                         style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                               fontWeight: FontWeight.w800,
                               letterSpacing: -0.4,
-                              color: AppColors.textPrimary,
+                              color: context.textPrimary,
+                            ) ??
+                            TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: -0.4,
+                              color: context.textPrimary,
                             ),
                       ),
                       const SizedBox(height: 4),
-                      const Text(
+                      Text(
                         "Fill in the details below. Our AI assistant will automatically classify and suggest priority.",
                         style: TextStyle(
-                          color: AppColors.textSecondary,
+                          color: context.textSecondary,
                           fontSize: 13,
                         ),
                       ),
@@ -85,11 +91,13 @@ class _CreateTicketScreenState extends State<CreateTicketScreen> {
 
                       // ── Ticket Details Form ──
                       _buildFormSection(
+                        context: context,
                         title: "Issue Details",
                         icon: Icons.edit_note_rounded,
                         children: [
                           TextField(
                             controller: ticketController.titleController,
+                            style: TextStyle(color: context.textPrimary, fontSize: 14),
                             decoration: const InputDecoration(
                               labelText: "Subject / Title",
                               hintText: "E.g. Unable to connect to VPN server",
@@ -100,6 +108,7 @@ class _CreateTicketScreenState extends State<CreateTicketScreen> {
                           TextField(
                             controller: ticketController.descriptionController,
                             maxLines: 5,
+                            style: TextStyle(color: context.textPrimary, fontSize: 14),
                             decoration: const InputDecoration(
                               labelText: "Detailed Description",
                               hintText: "Explain what happened, steps to reproduce, and any error codes...",
@@ -116,8 +125,8 @@ class _CreateTicketScreenState extends State<CreateTicketScreen> {
                         height: 48,
                         child: FilledButton.tonalIcon(
                           style: FilledButton.styleFrom(
-                            backgroundColor: AppColors.primarySubtle,
-                            foregroundColor: AppColors.primary,
+                            backgroundColor: context.primarySubtle,
+                            foregroundColor: context.primaryColor,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
@@ -152,7 +161,7 @@ class _CreateTicketScreenState extends State<CreateTicketScreen> {
                             margin: const EdgeInsets.only(bottom: 20),
                             padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
-                              color: AppColors.errorSubtle,
+                              color: AppColors.error.withValues(alpha: context.isDark ? 0.15 : 0.1),
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(color: AppColors.error.withValues(alpha: 0.3)),
                             ),
@@ -171,7 +180,7 @@ class _CreateTicketScreenState extends State<CreateTicketScreen> {
                                       const SizedBox(height: 2),
                                       Text(
                                         result.duplicateTicket?.title ?? "An identical ticket was recently submitted.",
-                                        style: const TextStyle(color: AppColors.textPrimary, fontSize: 12),
+                                        style: TextStyle(color: context.textPrimary, fontSize: 12),
                                       ),
                                     ],
                                   ),
@@ -181,31 +190,33 @@ class _CreateTicketScreenState extends State<CreateTicketScreen> {
                           ),
                         ],
                         _buildFormSection(
+                          context: context,
                           title: "AI Smart Classification",
                           icon: Icons.auto_awesome_rounded,
                           children: [
                             if (isDesktop)
                               Row(
                                 children: [
-                                  Expanded(child: _buildMetaField("Category", ticketController.categoryController, Icons.category_outlined)),
+                                  Expanded(child: _buildMetaField(context, "Category", ticketController.categoryController, Icons.category_outlined)),
                                   const SizedBox(width: 16),
-                                  Expanded(child: _buildMetaField("Priority", ticketController.priorityController, Icons.outlined_flag_rounded)),
+                                  Expanded(child: _buildMetaField(context, "Priority", ticketController.priorityController, Icons.outlined_flag_rounded)),
                                 ],
                               )
                             else ...[
-                              _buildMetaField("Category", ticketController.categoryController, Icons.category_outlined),
+                              _buildMetaField(context, "Category", ticketController.categoryController, Icons.category_outlined),
                               const SizedBox(height: 16),
-                              _buildMetaField("Priority", ticketController.priorityController, Icons.outlined_flag_rounded),
+                              _buildMetaField(context, "Priority", ticketController.priorityController, Icons.outlined_flag_rounded),
                             ],
                             const SizedBox(height: 16),
                             TextField(
                               controller: ticketController.summaryController,
                               maxLines: 3,
                               readOnly: true,
-                              decoration: const InputDecoration(
+                              style: TextStyle(color: context.textPrimary, fontSize: 13),
+                              decoration: InputDecoration(
                                 labelText: "AI Generated Summary",
                                 filled: true,
-                                fillColor: AppColors.surfaceSubtle,
+                                fillColor: context.surfaceSubtle,
                               ),
                             ),
                           ],
@@ -215,13 +226,14 @@ class _CreateTicketScreenState extends State<CreateTicketScreen> {
 
                       // ── Attachments ──
                       _buildFormSection(
+                        context: context,
                         title: "Supporting Files",
                         icon: Icons.attach_file_rounded,
                         children: [
                           OutlinedButton.icon(
                             style: OutlinedButton.styleFrom(
                               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                              side: const BorderSide(color: AppColors.border),
+                              side: BorderSide(color: context.border),
                             ),
                             onPressed: upload.pickAndUpload,
                             icon: const Icon(Icons.cloud_upload_outlined, size: 18),
@@ -284,27 +296,32 @@ class _CreateTicketScreenState extends State<CreateTicketScreen> {
     );
   }
 
-  Widget _buildFormSection({required String title, required IconData icon, required List<Widget> children}) {
+  Widget _buildFormSection({
+    required BuildContext context,
+    required String title,
+    required IconData icon,
+    required List<Widget> children,
+  }) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.card,
+        color: context.cardBg,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: context.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(icon, size: 18, color: AppColors.primary),
+              Icon(icon, size: 18, color: context.primaryColor),
               const SizedBox(width: 8),
               Text(
                 title,
-                style: const TextStyle(
+                style: TextStyle(
                   fontWeight: FontWeight.w700,
                   fontSize: 15,
-                  color: AppColors.textPrimary,
+                  color: context.textPrimary,
                 ),
               ),
             ],
@@ -316,19 +333,17 @@ class _CreateTicketScreenState extends State<CreateTicketScreen> {
     );
   }
 
-  Widget _buildMetaField(String label, TextEditingController controller, IconData icon) {
+  Widget _buildMetaField(BuildContext context, String label, TextEditingController controller, IconData icon) {
     return TextField(
       controller: controller,
       readOnly: true,
+      style: TextStyle(color: context.textPrimary, fontSize: 13),
       decoration: InputDecoration(
         labelText: label,
         prefixIcon: Icon(icon, size: 18),
         filled: true,
-        fillColor: AppColors.surfaceSubtle,
+        fillColor: context.surfaceSubtle,
       ),
     );
   }
 }
-
-
-

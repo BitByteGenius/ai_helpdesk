@@ -14,6 +14,8 @@ class CommentBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bubbleColor = isMine ? context.primaryColor : (context.isDark ? const Color(0xFF334155) : AppColors.surfaceSubtle);
+
     return Align(
       alignment: isMine ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
@@ -21,14 +23,14 @@ class CommentBubble extends StatelessWidget {
         padding: const EdgeInsets.all(12),
         constraints: const BoxConstraints(maxWidth: 400),
         decoration: BoxDecoration(
-          color: isMine ? AppColors.primary : AppColors.surfaceSubtle,
+          color: bubbleColor,
           borderRadius: BorderRadius.only(
             topLeft: const Radius.circular(14),
             topRight: const Radius.circular(14),
             bottomLeft: isMine ? const Radius.circular(14) : Radius.zero,
             bottomRight: isMine ? Radius.zero : const Radius.circular(14),
           ),
-          border: isMine ? null : Border.all(color: AppColors.border),
+          border: isMine ? null : Border.all(color: context.border),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -38,14 +40,14 @@ class CommentBubble extends StatelessWidget {
               style: TextStyle(
                 fontWeight: FontWeight.w700,
                 fontSize: 11,
-                color: isMine ? Colors.white.withValues(alpha: 0.9) : AppColors.primary,
+                color: isMine ? Colors.white.withValues(alpha: 0.9) : context.primaryColor,
               ),
             ),
             const SizedBox(height: 4),
             Text(
               comment.message,
               style: TextStyle(
-                color: isMine ? Colors.white : AppColors.textPrimary,
+                color: isMine ? Colors.white : context.textPrimary,
                 fontSize: 13,
                 height: 1.4,
               ),
@@ -57,7 +59,7 @@ class CommentBubble extends StatelessWidget {
                 "${comment.createdAt.hour.toString().padLeft(2, '0')}:${comment.createdAt.minute.toString().padLeft(2, '0')}",
                 style: TextStyle(
                   fontSize: 10,
-                  color: isMine ? Colors.white.withValues(alpha: 0.6) : AppColors.textMuted,
+                  color: isMine ? Colors.white.withValues(alpha: 0.6) : context.textMuted,
                 ),
               ),
             ),
@@ -66,4 +68,4 @@ class CommentBubble extends StatelessWidget {
       ),
     );
   }
-}
+}

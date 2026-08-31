@@ -35,20 +35,20 @@ class PriorityChart extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.card,
+        color: context.cardBg,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: context.border),
       ),
       padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             "Priority Distribution",
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w700,
-              color: AppColors.textPrimary,
+              color: context.textPrimary,
               letterSpacing: -0.2,
             ),
           ),
@@ -63,7 +63,7 @@ class PriorityChart extends StatelessWidget {
                   drawVerticalLine: false,
                   horizontalInterval: maxValue > 10 ? 5 : 2,
                   getDrawingHorizontalLine: (value) => FlLine(
-                    color: AppColors.border.withValues(alpha: 0.7),
+                    color: context.border.withValues(alpha: 0.7),
                     strokeWidth: 1,
                   ),
                 ),
@@ -76,9 +76,9 @@ class PriorityChart extends StatelessWidget {
                       reservedSize: 28,
                       getTitlesWidget: (val, meta) => Text(
                         val.toInt().toString(),
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 11,
-                          color: AppColors.textMuted,
+                          color: context.textMuted,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -95,9 +95,9 @@ class PriorityChart extends StatelessWidget {
                           padding: const EdgeInsets.only(top: 8),
                           child: Text(
                             priorities[value.toInt()],
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 12,
-                              color: AppColors.textSecondary,
+                              color: context.textSecondary,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -135,4 +135,4 @@ class PriorityChart extends StatelessWidget {
       ),
     );
   }
-}
+}

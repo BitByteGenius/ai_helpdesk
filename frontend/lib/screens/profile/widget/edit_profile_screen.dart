@@ -22,9 +22,9 @@ class EditProfileScreen extends GetView<ProfileController> {
                 constraints: const BoxConstraints(maxWidth: 600),
                 child: Container(
                   decoration: BoxDecoration(
-                    color: AppColors.card,
+                    color: context.cardBg,
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: AppColors.border),
+                    border: Border.all(color: context.border),
                   ),
                   padding: const EdgeInsets.all(28),
                   child: Column(
@@ -37,15 +37,15 @@ class EditProfileScreen extends GetView<ProfileController> {
                           children: [
                             CircleAvatar(
                               radius: 50,
-                              backgroundColor: AppColors.primarySubtle,
+                              backgroundColor: context.primarySubtle,
                               backgroundImage: profile != null && profile.profileImage.isNotEmpty
                                   ? NetworkImage(profile.profileImage)
                                   : null,
                               child: profile == null || profile.profileImage.isEmpty
-                                  ? const Icon(
+                                  ? Icon(
                                       Icons.person_rounded,
                                       size: 50,
-                                      color: AppColors.primary,
+                                      color: context.primaryColor,
                                     )
                                   : null,
                             ),
@@ -55,7 +55,7 @@ class EditProfileScreen extends GetView<ProfileController> {
                       const SizedBox(height: 12),
                       OutlinedButton.icon(
                         style: OutlinedButton.styleFrom(
-                          side: const BorderSide(color: AppColors.border),
+                          side: BorderSide(color: context.border),
                         ),
                         onPressed: () async {
                           await controller.uploadProfileImage();
@@ -66,6 +66,7 @@ class EditProfileScreen extends GetView<ProfileController> {
                       const SizedBox(height: 28),
                       TextField(
                         controller: controller.nameController,
+                        style: TextStyle(color: context.textPrimary, fontSize: 14),
                         decoration: const InputDecoration(
                           labelText: "Full Name",
                           prefixIcon: Icon(Icons.person_outline_rounded, size: 18),
@@ -74,6 +75,7 @@ class EditProfileScreen extends GetView<ProfileController> {
                       const SizedBox(height: 16),
                       TextField(
                         controller: controller.emailController,
+                        style: TextStyle(color: context.textPrimary, fontSize: 14),
                         decoration: const InputDecoration(
                           labelText: "Email Address",
                           prefixIcon: Icon(Icons.mail_outline_rounded, size: 18),
@@ -82,6 +84,7 @@ class EditProfileScreen extends GetView<ProfileController> {
                       const SizedBox(height: 16),
                       TextField(
                         controller: controller.phoneController,
+                        style: TextStyle(color: context.textPrimary, fontSize: 14),
                         decoration: const InputDecoration(
                           labelText: "Phone Number",
                           prefixIcon: Icon(Icons.phone_outlined, size: 18),
@@ -124,4 +127,3 @@ class EditProfileScreen extends GetView<ProfileController> {
     );
   }
 }
-

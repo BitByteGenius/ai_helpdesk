@@ -34,14 +34,14 @@ class AIMessageBubble extends GetView<AIChatController> {
               width: 32,
               height: 32,
               decoration: BoxDecoration(
-                color: AppColors.primarySubtle,
+                color: context.primarySubtle,
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
+                border: Border.all(color: context.primaryColor.withValues(alpha: 0.2)),
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.auto_awesome_rounded,
                 size: 16,
-                color: AppColors.primary,
+                color: context.primaryColor,
               ),
             ),
           ],
@@ -55,21 +55,23 @@ class AIMessageBubble extends GetView<AIChatController> {
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   constraints: const BoxConstraints(maxWidth: 600),
                   decoration: BoxDecoration(
-                    color: isUser ? AppColors.primary : AppColors.card,
+                    color: isUser ? context.primaryColor : context.cardBg,
                     borderRadius: BorderRadius.only(
                       topLeft: const Radius.circular(16),
                       topRight: const Radius.circular(16),
                       bottomLeft: Radius.circular(isUser ? 16 : 4),
                       bottomRight: Radius.circular(isUser ? 4 : 16),
                     ),
-                    border: isUser ? null : Border.all(color: AppColors.border),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.02),
-                        blurRadius: 6,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
+                    border: isUser ? null : Border.all(color: context.border),
+                    boxShadow: context.isDark
+                        ? null
+                        : [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.02),
+                              blurRadius: 6,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
                   ),
                   child: isUser
                       ? Text(
@@ -84,22 +86,22 @@ class AIMessageBubble extends GetView<AIChatController> {
                           data: message.message,
                           selectable: true,
                           styleSheet: MarkdownStyleSheet.fromTheme(theme).copyWith(
-                            p: const TextStyle(
-                              color: AppColors.textPrimary,
+                            p: TextStyle(
+                              color: context.textPrimary,
                               fontSize: 13.5,
                               height: 1.5,
                             ),
-                            code: const TextStyle(
-                              backgroundColor: AppColors.surfaceSubtle,
-                              color: AppColors.primary,
+                            code: TextStyle(
+                              backgroundColor: context.surfaceSubtle,
+                              color: context.primaryColor,
                               fontFamily: 'monospace',
                               fontSize: 12,
                             ),
                             codeblockPadding: const EdgeInsets.all(12),
                             codeblockDecoration: BoxDecoration(
-                              color: AppColors.surfaceSubtle,
+                              color: context.surfaceSubtle,
                               borderRadius: BorderRadius.circular(8),
-                              border: Border.all(color: AppColors.border),
+                              border: Border.all(color: context.border),
                             ),
                           ),
                         ),
@@ -120,10 +122,10 @@ class AIMessageBubble extends GetView<AIChatController> {
                       const SizedBox(width: 8),
                       InkWell(
                         onTap: () => controller.retryFailedMessage(message),
-                        child: const Text(
+                        child: Text(
                           "Retry",
                           style: TextStyle(
-                            color: AppColors.primary,
+                            color: context.primaryColor,
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
                             decoration: TextDecoration.underline,
@@ -144,7 +146,7 @@ class AIMessageBubble extends GetView<AIChatController> {
                         IconButton(
                           padding: EdgeInsets.zero,
                           constraints: const BoxConstraints(),
-                          icon: const Icon(Icons.copy_rounded, size: 14, color: AppColors.textMuted),
+                          icon: Icon(Icons.copy_rounded, size: 14, color: context.textMuted),
                           tooltip: "Copy message",
                           onPressed: () => controller.copyToClipboard(message.message),
                         ),
@@ -153,7 +155,7 @@ class AIMessageBubble extends GetView<AIChatController> {
                           IconButton(
                             padding: EdgeInsets.zero,
                             constraints: const BoxConstraints(),
-                            icon: const Icon(Icons.refresh_rounded, size: 14, color: AppColors.textMuted),
+                            icon: Icon(Icons.refresh_rounded, size: 14, color: context.textMuted),
                             tooltip: "Regenerate response",
                             onPressed: () => controller.regenerateResponse(),
                           ),
@@ -173,7 +175,7 @@ class AIMessageBubble extends GetView<AIChatController> {
                         IconButton(
                           padding: EdgeInsets.zero,
                           constraints: const BoxConstraints(),
-                          icon: const Icon(Icons.edit_outlined, size: 14, color: AppColors.textMuted),
+                          icon: Icon(Icons.edit_outlined, size: 14, color: context.textMuted),
                           tooltip: "Edit message",
                           onPressed: () => _showEditMessageDialog(context),
                         ),
@@ -192,14 +194,14 @@ class AIMessageBubble extends GetView<AIChatController> {
               width: 32,
               height: 32,
               decoration: BoxDecoration(
-                color: AppColors.surfaceSubtle,
+                color: context.surfaceSubtle,
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: AppColors.border),
+                border: Border.all(color: context.border),
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.person_outline_rounded,
                 size: 18,
-                color: AppColors.textSecondary,
+                color: context.textSecondary,
               ),
             ),
           ],
@@ -212,11 +214,13 @@ class AIMessageBubble extends GetView<AIChatController> {
     final textController = TextEditingController(text: message.message);
     Get.dialog(
       AlertDialog(
+        backgroundColor: context.cardBg,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text("Edit Message", style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18)),
+        title: Text("Edit Message", style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18, color: context.textPrimary)),
         content: TextField(
           controller: textController,
           maxLines: 4,
+          style: TextStyle(color: context.textPrimary, fontSize: 13),
           decoration: const InputDecoration(
             hintText: "Edit your prompt...",
           ),
@@ -240,4 +244,4 @@ class AIMessageBubble extends GetView<AIChatController> {
       ),
     );
   }
-}
+}

@@ -40,29 +40,29 @@ class NotificationScreen extends GetView<NotificationController> {
                 Container(
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: AppColors.surfaceSubtle,
+                    color: context.surfaceSubtle,
                     borderRadius: BorderRadius.circular(24),
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.notifications_none_rounded,
                     size: 48,
-                    color: AppColors.textMuted,
+                    color: context.textMuted,
                   ),
                 ),
                 const SizedBox(height: 16),
-                const Text(
+                Text(
                   "All caught up!",
                   style: TextStyle(
                     fontWeight: FontWeight.w800,
                     fontSize: 18,
-                    color: AppColors.textPrimary,
+                    color: context.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 4),
-                const Text(
+                Text(
                   "You don't have any pending notifications right now.",
                   style: TextStyle(
-                    color: AppColors.textSecondary,
+                    color: context.textSecondary,
                     fontSize: 13,
                   ),
                 ),
@@ -88,10 +88,10 @@ class NotificationScreen extends GetView<NotificationController> {
                         children: [
                           Text(
                             "Activity Alerts (${controller.unreadCount.value} unread)",
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontWeight: FontWeight.w800,
                               fontSize: 16,
-                              color: AppColors.textPrimary,
+                              color: context.textPrimary,
                             ),
                           ),
                         ],
@@ -127,4 +127,4 @@ class NotificationScreen extends GetView<NotificationController> {
       }),
     );
   }
-}
+}

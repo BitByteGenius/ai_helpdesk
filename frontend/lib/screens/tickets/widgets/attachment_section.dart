@@ -21,9 +21,9 @@ class AttachmentSection extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.card,
+        color: context.cardBg,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: context.border),
       ),
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -31,26 +31,26 @@ class AttachmentSection extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(Icons.attach_file_rounded, size: 18, color: AppColors.primary),
+              Icon(Icons.attach_file_rounded, size: 18, color: context.primaryColor),
               const SizedBox(width: 8),
-              const Text(
+              Text(
                 "Attachments",
                 style: TextStyle(
                   fontWeight: FontWeight.w700,
                   fontSize: 16,
-                  color: AppColors.textPrimary,
+                  color: context.textPrimary,
                 ),
               ),
               const SizedBox(width: 8),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
-                  color: AppColors.surfaceSubtle,
+                  color: context.surfaceSubtle,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Text(
                   "${ticket.attachments.length}",
-                  style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.textSecondary),
+                  style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: context.textSecondary),
                 ),
               ),
             ],
@@ -121,9 +121,9 @@ class _AttachmentTile extends StatelessWidget {
           width: 240,
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: AppColors.surfaceSubtle,
+            color: context.surfaceSubtle,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.border),
+            border: Border.all(color: context.border),
           ),
           child: Row(
             children: [
@@ -131,12 +131,12 @@ class _AttachmentTile extends StatelessWidget {
                 width: 36,
                 height: 36,
                 decoration: BoxDecoration(
-                  color: AppColors.primarySubtle,
+                  color: context.primarySubtle,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(
                   _icon(fileName),
-                  color: AppColors.primary,
+                  color: context.primaryColor,
                   size: 18,
                 ),
               ),
@@ -149,28 +149,28 @@ class _AttachmentTile extends StatelessWidget {
                       fileName,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 12,
-                        color: AppColors.textPrimary,
+                        color: context.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 2),
-                    const Text(
+                    Text(
                       "Click to open",
                       style: TextStyle(
                         fontSize: 11,
-                        color: AppColors.textMuted,
+                        color: context.textMuted,
                       ),
                     ),
                   ],
                 ),
               ),
-              const Icon(Icons.open_in_new_rounded, size: 14, color: AppColors.textMuted),
+              Icon(Icons.open_in_new_rounded, size: 14, color: context.textMuted),
             ],
           ),
         ),
       ),
     );
   }
-}
+}

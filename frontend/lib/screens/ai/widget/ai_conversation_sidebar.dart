@@ -17,9 +17,9 @@ class AIConversationSidebar extends GetView<AIChatController> {
   Widget build(BuildContext context) {
     final content = Container(
       width: 280,
-      decoration: const BoxDecoration(
-        color: AppColors.card,
-        border: Border(right: BorderSide(color: AppColors.border)),
+      decoration: BoxDecoration(
+        color: context.cardBg,
+        border: Border(right: BorderSide(color: context.border)),
       ),
       child: Column(
         children: [
@@ -49,9 +49,11 @@ class AIConversationSidebar extends GetView<AIChatController> {
                     onChanged: (val) {
                       controller.searchConversationsQuery.value = val;
                     },
-                    decoration: const InputDecoration(
+                    style: TextStyle(color: context.textPrimary, fontSize: 13),
+                    decoration: InputDecoration(
                       hintText: "Search chats...",
-                      prefixIcon: Icon(Icons.search_rounded, size: 18),
+                      hintStyle: TextStyle(fontSize: 13, color: context.textMuted),
+                      prefixIcon: Icon(Icons.search_rounded, size: 18, color: context.textSecondary),
                       isDense: true,
                     ),
                   ),
@@ -59,7 +61,7 @@ class AIConversationSidebar extends GetView<AIChatController> {
               ),
             ),
           ),
-          const Divider(height: 1, color: AppColors.borderLight),
+          Divider(height: 1, color: context.borderLight),
 
           // ── Conversation Lists ──
           Expanded(
@@ -70,13 +72,13 @@ class AIConversationSidebar extends GetView<AIChatController> {
 
               final filtered = controller.filteredConversations;
               if (filtered.isEmpty) {
-                return const Center(
+                return Center(
                   child: Padding(
-                    padding: EdgeInsets.all(20.0),
+                    padding: const EdgeInsets.all(20.0),
                     child: Text(
                       "No conversations found",
                       style: TextStyle(
-                        color: AppColors.textMuted,
+                        color: context.textMuted,
                         fontSize: 13,
                       ),
                     ),
@@ -91,15 +93,15 @@ class AIConversationSidebar extends GetView<AIChatController> {
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 children: [
                   if (pinned.isNotEmpty) ...[
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                       child: Text(
                         "PINNED",
                         style: TextStyle(
                           fontWeight: FontWeight.w800,
                           fontSize: 11,
                           letterSpacing: 0.5,
-                          color: AppColors.primary,
+                          color: context.primaryColor,
                         ),
                       ),
                     ),
@@ -107,15 +109,15 @@ class AIConversationSidebar extends GetView<AIChatController> {
                     const SizedBox(height: 12),
                   ],
                   if (recent.isNotEmpty) ...[
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                       child: Text(
                         "RECENT CHATS",
                         style: TextStyle(
                           fontWeight: FontWeight.w800,
                           fontSize: 11,
                           letterSpacing: 0.5,
-                          color: AppColors.textMuted,
+                          color: context.textMuted,
                         ),
                       ),
                     ),
@@ -144,7 +146,7 @@ class AIConversationSidebar extends GetView<AIChatController> {
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 2.0),
         child: Material(
-          color: isActive ? AppColors.primarySubtle : Colors.transparent,
+          color: isActive ? context.primarySubtle : Colors.transparent,
           borderRadius: BorderRadius.circular(10),
           child: InkWell(
             borderRadius: BorderRadius.circular(10),
@@ -158,7 +160,7 @@ class AIConversationSidebar extends GetView<AIChatController> {
                   Icon(
                     chat.isPinned ? Icons.push_pin_rounded : Icons.chat_bubble_outline_rounded,
                     size: 16,
-                    color: isActive ? AppColors.primary : AppColors.textSecondary,
+                    color: isActive ? context.primaryColor : context.textSecondary,
                   ),
                   const SizedBox(width: 10),
                   Expanded(
@@ -171,16 +173,16 @@ class AIConversationSidebar extends GetView<AIChatController> {
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
-                            color: isActive ? AppColors.primary : AppColors.textPrimary,
+                            color: isActive ? context.primaryColor : context.textPrimary,
                             fontSize: 13,
                           ),
                         ),
                         const SizedBox(height: 2),
                         Text(
                           DateFormat('MMM dd, hh:mm a').format(chat.updatedAt),
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 11,
-                            color: AppColors.textMuted,
+                            color: context.textMuted,
                           ),
                         ),
                       ],
@@ -204,7 +206,7 @@ class AIConversationSidebar extends GetView<AIChatController> {
           padding: EdgeInsets.zero,
           constraints: const BoxConstraints(),
           icon: Icon(chat.isPinned ? Icons.push_pin_rounded : Icons.push_pin_outlined, size: 14),
-          color: AppColors.primary,
+          color: context.primaryColor,
           tooltip: chat.isPinned ? "Unpin" : "Pin",
           onPressed: () {
             controller.togglePinConversation(chat.id, !chat.isPinned);
@@ -214,7 +216,7 @@ class AIConversationSidebar extends GetView<AIChatController> {
         IconButton(
           padding: EdgeInsets.zero,
           constraints: const BoxConstraints(),
-          icon: const Icon(Icons.edit_outlined, size: 14, color: AppColors.textSecondary),
+          icon: Icon(Icons.edit_outlined, size: 14, color: context.textSecondary),
           tooltip: "Rename",
           onPressed: () {
             _showRenameDialog(context, chat);
@@ -239,10 +241,12 @@ class AIConversationSidebar extends GetView<AIChatController> {
     final editController = TextEditingController(text: chat.title);
     Get.dialog(
       AlertDialog(
+        backgroundColor: context.cardBg,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text("Rename Chat", style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18)),
+        title: Text("Rename Chat", style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18, color: context.textPrimary)),
         content: TextField(
           controller: editController,
+          style: TextStyle(color: context.textPrimary, fontSize: 13),
           decoration: const InputDecoration(
             hintText: "Enter conversation title",
           ),
@@ -268,9 +272,10 @@ class AIConversationSidebar extends GetView<AIChatController> {
   void _showDeleteDialog(BuildContext context, AIConversationModel chat) {
     Get.dialog(
       AlertDialog(
+        backgroundColor: context.cardBg,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text("Delete Chat?", style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18)),
-        content: Text("Are you sure you want to delete '${chat.title}'? This action cannot be undone.", style: const TextStyle(fontSize: 13, color: AppColors.textSecondary)),
+        title: Text("Delete Chat?", style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18, color: context.textPrimary)),
+        content: Text("Are you sure you want to delete '${chat.title}'? This action cannot be undone.", style: TextStyle(fontSize: 13, color: context.textSecondary)),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
@@ -289,4 +294,3 @@ class AIConversationSidebar extends GetView<AIChatController> {
     );
   }
 }
-

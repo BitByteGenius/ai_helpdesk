@@ -48,7 +48,7 @@ class AdminDashboard extends GetView<DashboardController> {
                       const SizedBox(height: 12),
                       Text(
                         controller.errorMessage.value,
-                        style: const TextStyle(color: AppColors.textPrimary, fontSize: 16),
+                        style: TextStyle(color: context.textPrimary, fontSize: 16),
                       ),
                       const SizedBox(height: 16),
                       FilledButton.icon(
@@ -65,8 +65,11 @@ class AdminDashboard extends GetView<DashboardController> {
             final dashboard = controller.dashboard.value;
 
             if (dashboard == null) {
-              return const Center(
-                child: Text("No Data Available"),
+              return Center(
+                child: Text(
+                  "No Data Available",
+                  style: TextStyle(color: context.textSecondary),
+                ),
               );
             }
 
@@ -95,14 +98,20 @@ class AdminDashboard extends GetView<DashboardController> {
                               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                                     fontWeight: FontWeight.w800,
                                     letterSpacing: -0.4,
-                                    color: AppColors.textPrimary,
+                                    color: context.textPrimary,
+                                  ) ??
+                                  TextStyle(
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.w800,
+                                    letterSpacing: -0.4,
+                                    color: context.textPrimary,
                                   ),
                             ),
                             const SizedBox(height: 4),
                             Text(
                               "Monitor tickets, users, AI insights and support activity in real time.",
                               style: TextStyle(
-                                color: AppColors.textSecondary,
+                                color: context.textSecondary,
                                 fontSize: 13,
                               ),
                             ),
@@ -260,5 +269,3 @@ List<String> _statValues(DashboardModel dashboard) {
     dashboard.stats.resolved.toString(),
   ];
 }
-
-

@@ -20,33 +20,33 @@ class AdminLayout extends StatelessWidget {
     final desktop = width >= 1024;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.isDark ? AppColors.darkBackground : AppColors.lightBackground,
       appBar: desktop
           ? null
           : AppBar(
-              backgroundColor: AppColors.card,
+              backgroundColor: context.cardBg,
               surfaceTintColor: Colors.transparent,
               elevation: 0,
               title: Text(
                 title,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary,
+                  color: context.textPrimary,
                   letterSpacing: -0.2,
                 ),
               ),
               centerTitle: false,
-              bottom: const PreferredSize(
-                preferredSize: Size.fromHeight(1),
-                child: Divider(height: 1, color: AppColors.border),
+              bottom: PreferredSize(
+                preferredSize: const Size.fromHeight(1),
+                child: Divider(height: 1, color: context.border),
               ),
               actions: actions,
             ),
       drawer: desktop
           ? null
-          : Drawer(
-              backgroundColor: const Color(0xFF0F172A),
+          : const Drawer(
+              backgroundColor: Color(0xFF0F172A),
               surfaceTintColor: Colors.transparent,
               child: DashboardSidebar(compact: false),
             ),
@@ -54,7 +54,7 @@ class AdminLayout extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (desktop) DashboardSidebar(compact: false),
+            if (desktop) const DashboardSidebar(compact: false),
             Expanded(
               child: child,
             ),
@@ -64,4 +64,3 @@ class AdminLayout extends StatelessWidget {
     );
   }
 }
-
